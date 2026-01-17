@@ -1,0 +1,29 @@
+spring:
+  application:
+    name: liblis
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/liblis_db}
+    username: ${SPRING_DATASOURCE_USERNAME:liblis}
+    password: ${SPRING_DATASOURCE_PASSWORD:liblis}
+    driver-class-name: org.postgresql.Driver
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
+            scope:
+              - email
+              - profile
+        provider:
+          google:
+            authorization-uri: https://accounts.google.com/o/oauth2/v2/auth
+            token-uri: https://oauth2.googleapis.com/token
+            user-info: https://www.googleapis.com/oauth2/v3/userinfo
+            user-name-attribute: sub
+
+  # MyBatisの設定もここに追加していく
+  mybatis:
+    configuration:
+      map-underscore-to-camel-case: true

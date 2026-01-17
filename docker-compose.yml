@@ -1,0 +1,27 @@
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: liblis-db
+    restart: always
+    environment:
+      POSTGRES_DB: liblis_db
+      POSTGRES_USER: liblis
+      POSTGRES_PASSWORD: liblis
+    ports:
+      - "5432:5432"
+    volumes:
+      - liblis-db-data:/var/lib/postgresql/data
+
+  app:
+    build: .
+    container_name: liblis-app
+    depends_on:
+      - db
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/liblis_db
+      SPRING_DATASOURCE_USERNAME: liblis
+      SPRING_DATASOURCE_PASSWORD: liblis
+volumes:
+  liblis-db-data:
