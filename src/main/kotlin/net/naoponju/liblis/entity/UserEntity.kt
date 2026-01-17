@@ -2,7 +2,7 @@ package net.naoponju.liblis.entity
 
 import java.util.UUID
 
-data class User(
+data class UserEntity(
     val id: UUID?,
     val displayName: String,
     val mailAddress: String,

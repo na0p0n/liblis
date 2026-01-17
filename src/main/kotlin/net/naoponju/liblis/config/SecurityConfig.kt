@@ -1,5 +1,6 @@
 package net.naoponju.liblis.config
 
+import net.naoponju.liblis.service.CustomOAuth2UserService
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
@@ -14,7 +15,9 @@ import org.springframework.security.web.SecurityFilterChain
 
 @Configuration
 @EnableWebSecurity
-class SecurityConfig {
+class SecurityConfig(
+    private val customOAuth2UserService: CustomOAuth2UserService
+) {
 
     @Bean
     fun passwordEncoder(): PasswordEncoder = BCryptPasswordEncoder()
@@ -32,20 +35,19 @@ class SecurityConfig {
                     .defaultSuccessUrl("/home", true)
                     .permitAll()
             }
-//            .oauth2Login { auth ->
-//                auth.loginPage("/login")
-//                    .defaultSuccessUrl("/home", true)
-//                    .userInfoEndpoint { userInfo ->
-//                        userInfo.userService(customOAuth2UserService())
-//                    }
-//            }
+            .oauth2Login { auth ->
+                auth
+                    .loginPage("/login")
+                    .defaultSuccessUrl("/home", true)
+                    // SNSから取得した情報を自前DBと照合するロジックを指定
+                    .userInfoEndpoint { userInfo ->
+                        userInfo.userService(customOAuth2UserService)
+                    }
+                    // 連携エラー（未連携時など）の遷移先を指定
+                    .failureUrl("/login?error=oauth2_failure")
+            }
             .logout { it.logoutSuccessUrl("/login") }
 
         return http.build()
     }
-
-//    @Bean
-//    fun customOAuth2UserService(): OAuth2UserService<OAuth2UserRequest, OAuth2User> {
-//        return CustomOAuth2UserService()
-//    }
 }
