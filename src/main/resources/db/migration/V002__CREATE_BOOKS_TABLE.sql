@@ -1,0 +1,31 @@
+CREATE TABLE books (
+  id UUID NOT NULL
+  , title VARCHAR(255) NOT NULL
+  , author VARCHAR(255)
+  , isbn VARCHAR(13)
+  , list_price INTEGER
+  , category VARCHAR(100)
+  , registration_count INTEGER DEFAULT 0
+  , created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  , updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  , CONSTRAINT BOOKS_PK PRIMARY KEY (id)
+  , CONSTRAINT BOOKS_UK_ISBN UNIQUE (isbn)
+);
+
+CREATE TABLE user_books (
+  id UUID NOT NULL
+  , user_id UUID NOT NULL
+  , book_id UUID NOT NULL
+  , status VARCHAR(20) DEFAULT 'OWNED' NOT NULL
+  , purchase_price INTEGER
+  , is_deleted BOOLEAN DEFAULT FALSE NOT NULL
+  , created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  , updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  , CONSTRAINT USER_BOOKS_PK PRIMARY KEY (id)
+  , CONSTRAINT USER_BOOKS_FK_USER FOREIGN KEY (user_id) REFERENCES users(id)
+  , CONSTRAINT USER_BOOKS_FK_BOOK FOREIGN KEY (book_id) REFERENCES books(id)
+);
+
+CREATE UNIQUE INDEX idx_user_books_unique_entry
+ON user_books (user_id, book_id)
+WHERE (is_deleted IS FALSE);

@@ -13,16 +13,24 @@
         <h5>ログイン</h5>
     </div>
     <div class="card-body">
-        <div class="mb-3">
-            <h6 class="card-title">メールアドレス</h6>
-            <input type="email" class="form-control" id="emailInput" placeholder="name@example.com">
+        <div th:if="${param.error}" class="alert alert-danger p-2 small">
+            メールアドレスまたはパスワードが正しくありません。
         </div>
-        <div class="mb-3">
-            <h6 class="card-title">パスワード</h6>
-            <input type="password" class="form-control" id="passwordInput">
+        <div th:if="${param.logout}" class="alert alert-info p-2 small">
+            ログアウトしました。
         </div>
+        <form th:action="@{/login}" method="post">
+            <div class="mb-3">
+                <h6 class="card-title">メールアドレス</h6>
+                <input type="email" class="form-control" id="email" name="email" placeholder="name@example.com" required>
+            </div>
+            <div class="mb-3">
+                <h6 class="card-title">パスワード</h6>
+                <input type="password" class="form-control" id="password" name="password" required>
+            </div>
 
-        <a href="#" class="btn btn-primary">ログイン</a>
+            <button type="submit" class="btn btn-primary">ログイン</button>
+        </form>
 
         <div class="mb-3">
             <a href="/oauth2/authorization/google">

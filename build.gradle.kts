@@ -1,6 +1,7 @@
 plugins {
 	kotlin("jvm") version "2.2.21"
 	kotlin("plugin.spring") version "2.2.21"
+	id("org.flywaydb.flyway") version "11.20.2"
 	id("org.springframework.boot") version "4.0.1"
 	id("io.spring.dependency-management") version "1.1.7"
 }
@@ -48,6 +49,10 @@ dependencies {
 	testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
 	testImplementation("org.mybatis.spring.boot:mybatis-spring-boot-starter-test:4.0.1")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+}
+
+flyway {
+	baselineOnMigrate = true
 }
 
 kotlin {
