@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"> <nav th:fragment="navbar" class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+    <div class="container">
+        <a class="navbar-brand fw-bold" th:href="@{/}">Liblis</a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/}">ホーム</a>
+                </li>
+
+                <th:block sec:authorize="isAuthenticated()">
+                    <li class="nav-item py-2 py-lg-1 col-12 col-lg-auto">
+                        <div class="vr d-none d-lg-flex h-100 mx-lg-2 text-white-50"></div>
+                        <hr class="d-lg-none text-white-50 my-2">
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/}">書籍一覧</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/}">気になる本</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/}">書籍登録</a>
+                    </li>
+
+                    <li class="nav-item py-2 py-lg-1 col-12 col-lg-auto">
+                        <div class="vr d-none d-lg-flex h-100 mx-lg-2 text-white-50"></div>
+                        <hr class="d-lg-none text-white-50 my-2">
+                    </li>
+
+                    <li class="nav-item">
+                        <form class="d-flex align-items-center h-100" role="search">
+                            <input class="form-control form-control-sm me-2" type="search" placeholder="書籍検索" aria-label="Search">
+                            <button class="btn btn-sm btn-outline-success" type="submit">検索</button>
+                        </form>
+                    </li>
+
+                    <li class="nav-item py-2 py-lg-1 col-12 col-lg-auto">
+                        <div class="vr d-none d-lg-flex h-100 mx-lg-2 text-white-50"></div>
+                        <hr class="d-lg-none text-white-50 my-2">
+                    </li>
+                </th:block>
+
+                <li sec:authorize="isAuthenticated()" class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                        <span th:text="${#authentication.principal instanceof T(org.springframework.security.oauth2.core.user.OAuth2User) ?
+                              #authentication.principal.attributes['displayName'] :
+                              #authentication.principal.displayName}">ユーザー名</span> さん
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" th:href="@{/account}">アカウント設定</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <form th:action="@{/logout}" method="post">
+                                <button type="submit" class="dropdown-item text-danger">ログアウト</button>
+                            </form>
+                        </li>
+                    </ul>
+                </li>
+
+                <li sec:authorize="isAnonymous()" class="nav-item">
+                    <a class="nav-link" th:href="@{/login}">ログイン</a>
+                </li>
+                <li sec:authorize="isAnonymous()" class="nav-item">
+                    <a class="nav-link" th:href="@{/register}">新規登録</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+</html>
