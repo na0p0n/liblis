@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <meta charset="UTF-8">
+    <title>アカウント設定 - Liblis</title>
+    <style>
+        body { background-color: #f8f9fa; }
+        .settings-card { max-width: 600px; margin: 2rem auto; }
+    </style>
+</head>
+<body class="bg-light">
+<div th:replace="~{common/navbar :: navbar}"></div>
+<div class="container">
+    <div class="card shadow-sm settings-card">
+        <div class="card-header bg-white py-3">
+            <h5 class="mb-0 fw-bold">アカウント設定</h5>
+        </div>
+        <div class="card-body p-4">
+
+            <section class="mb-4">
+                <h6 class="fw-bold mb-3">プロフィール</h6>
+                <div class="mb-3">
+                    <label class="form-label text-muted small mb-0">表示名</label>
+                    <div class="fw-bold" th:text="${user.displayName}"></div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label text-muted small mb-0">メールアドレス</label>
+                    <div class="fw-bold" th:text="${user.mailAddress}"></div>
+                </div>
+            </section>
+
+            <hr class="my-4">
+
+            <section>
+                <h6 class="fw-bold mb-3">外部サービス連携</h6>
+
+                <div class="d-flex align-items-center justify-content-between mb-3 p-3 border rounded">
+                    <div>
+                        <span class="fw-bold">Google</span>
+                        <div class="small text-muted" th:text="${user.isGoogleLinked ? '連携済み' : '未連携'}"></div>
+                    </div>
+                    <div>
+                        <a th:if="${!user.isGoogleLinked}" th:href="@{/oauth2/authorization/google}" class="btn btn-outline-primary btn-sm">連携する</a>
+                        <form th:action="@{/account/unlink/google}" method="post" onsubmit="return confirm('Google連携を解除しますか？');">
+                            <button th:if="${user.isGoogleLinked}" type="submit" class="btn btn-outline-danger btn-sm">連携解除</button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="d-flex align-items-center justify-content-between mb-3 p-3 border rounded">
+                    <div>
+                        <span class="fw-bold">GitHub</span>
+                        <div class="small text-muted" th:text="${user.isGithubLinked ? '連携済み' : '未連携'}"></div>
+                    </div>
+                    <div>
+                        <a th:if="${!user.isGithubLinked}" th:href="@{/oauth2/authorization/github}" class="btn btn-outline-dark btn-sm">連携する</a>
+                        <form th:action="@{/account/unlink/github}" method="post" onsubmit="return confirm('Github連携を解除しますか？');">
+                            <button th:if="${user.isGithubLinked}" type="submit" class="btn btn-outline-danger btn-sm">連携解除</button>
+                        </form>
+                    </div>
+                </div>
+
+            </section>
+        </div>
+        <div class="card-footer bg-light text-center py-3">
+            <a th:href="@{/}" class="text-decoration-none small">ホームに戻る</a>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
