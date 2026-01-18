@@ -51,7 +51,6 @@ class CustomOAuth2UserService(
             }
         }
 
-        println(providerId)
         val user = when (registrationId) {
             "google" -> userService.findEntityByGoogleId(providerId)
             "github" -> userService.findEntityByGithubId(providerId)

@@ -44,6 +44,8 @@ class AccountController(
             when (provider) {
                 "google" -> userService.unLinkGoogleAccount(email)
                 "github" -> userService.unLinkGithubAccount(email)
+                "apple" -> userService.unLinkAppleAccount(email)
+                else -> redirectAttributes.addFlashAttribute("errorMessage", "不明なプロバイダーです。")
             }
             redirectAttributes.addFlashAttribute("successMessage", "${provider.capitalize()} の連携を解除しました。")
         } catch (e: Exception) {
