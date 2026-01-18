@@ -28,13 +28,13 @@ class SecurityConfig(
             .formLogin { form ->
                 form.loginPage("/login")
                     .usernameParameter("email")
-                    .defaultSuccessUrl("/home", true)
+                    .defaultSuccessUrl("/", true)
                     .permitAll()
             }
             .oauth2Login { auth ->
                 auth
                     .loginPage("/login")
-                    .defaultSuccessUrl("/home", true)
+                    .defaultSuccessUrl("/", true)
                     // SNSから取得した情報を自前DBと照合するロジックを指定
                     .userInfoEndpoint { userInfo ->
                         userInfo.userService(customOAuth2UserService)

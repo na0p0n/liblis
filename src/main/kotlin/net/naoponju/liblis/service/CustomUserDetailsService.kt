@@ -1,5 +1,6 @@
 package net.naoponju.liblis.service
 
+import net.naoponju.liblis.security.CustomUserDetails
 import org.springframework.security.core.userdetails.User.withUsername
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
@@ -13,9 +14,6 @@ class CustomUserDetailsService(
     override fun loadUserByUsername(email: String): UserDetails {
         val user = userService.findEntityByEmail(email) ?: throw UsernameNotFoundException("User not found: $email")
 
-        return withUsername(user.mailAddress)
-            .password(user.passwordHash)
-            .roles(user.role)
-            .build()
+        return CustomUserDetails(user)
     }
 }

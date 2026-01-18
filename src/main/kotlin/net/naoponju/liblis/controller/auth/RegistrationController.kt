@@ -39,7 +39,7 @@ class RegistrationController(
         } catch (e: InvalidPasswordException) {
             model.addAttribute("errorMessage", e.message)
         } catch (e: Exception) {
-            model.addAttribute("errorMessage", "予期せぬエラーが発生しました。${e.message}")
+            model.addAttribute("errorMessage", "予期せぬエラーが発生しました。")
         }
 
         return "auth/register"

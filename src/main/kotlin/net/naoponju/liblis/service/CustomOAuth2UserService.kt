@@ -65,7 +65,7 @@ class CustomOAuth2UserService(
 
         return DefaultOAuth2User(
             listOf(SimpleGrantedAuthority(user.role)),
-            attributes,
+            attributes + ("displayName" to user.displayName),
             userRequest.clientRegistration.providerDetails.userInfoEndpoint.userNameAttributeName
         )
     }
