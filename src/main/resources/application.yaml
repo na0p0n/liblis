@@ -13,9 +13,9 @@ spring:
           apple:
             client-id: ${APPLE_CLIENT_ID}
             client-secret: ${APPLE_CLIENT_SECRET}
-            client-authentication-method: client_secret_post}
+            client-authentication-method: client_secret_post
             authorization-grant-type: authorization_code
-            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId"
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
             scope:
               - name
               - email
@@ -44,10 +44,10 @@ spring:
             user-info: https://www.googleapis.com/oauth2/v3/userinfo
             user-name-attribute: sub
 
-  # MyBatisの設定もここに追加していく
-  mybatis:
-    configuration:
-      map-underscore-to-camel-case: true
-    type-handlers-package: net.naoponju.liblis.config
-  flyway:
-    baseline-on-migrate: true
+# MyBatisの設定もここに追加していく
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true
+  type-handlers-package: net.naoponju.liblis.config
+flyway:
+  baseline-on-migrate: true

@@ -7,4 +7,5 @@ interface UserRepository {
     fun findByGoogleCredential(googleId: String): UserEntity?
     fun findByAppleCredential(appleId: String): UserEntity?
     fun findByGitHubCredential(githubId: String): UserEntity?
+    fun save(user: UserEntity)
 }

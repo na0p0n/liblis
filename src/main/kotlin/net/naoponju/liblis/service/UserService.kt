@@ -1,6 +1,7 @@
 package net.naoponju.liblis.service
 
 import net.naoponju.liblis.dto.UserDto
+import net.naoponju.liblis.dto.UserRegistrationDto
 import net.naoponju.liblis.entity.UserEntity
 
 interface UserService {
@@ -10,4 +11,6 @@ interface UserService {
     fun findEntityByGoogleId(googleId: String): UserEntity?
     fun findEntityByGithubId(githubId: String): UserEntity?
     fun findEntityByAppleId(appleId: String): UserEntity?
+
+    fun registerUser(dto: UserRegistrationDto)
 }

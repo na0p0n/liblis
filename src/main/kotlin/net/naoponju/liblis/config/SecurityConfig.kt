@@ -18,15 +18,11 @@ import org.springframework.security.web.SecurityFilterChain
 class SecurityConfig(
     private val customOAuth2UserService: CustomOAuth2UserService
 ) {
-
-    @Bean
-    fun passwordEncoder(): PasswordEncoder = BCryptPasswordEncoder()
-
     @Bean
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
         http
             .authorizeHttpRequests { auth ->
-                auth.requestMatchers("/login", "/css/**", "/js/**").permitAll()
+                auth.requestMatchers("/login", "/register", "/css/**", "/js/**").permitAll()
                     .anyRequest().authenticated()
             }
             .formLogin { form ->

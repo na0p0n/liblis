@@ -2,11 +2,15 @@ package net.naoponju.liblis.mapper
 
 import net.naoponju.liblis.config.UUIDTypeHandler
 import net.naoponju.liblis.entity.UserEntity
+import org.apache.ibatis.annotations.Insert
 import org.apache.ibatis.annotations.Mapper
 import org.apache.ibatis.annotations.Result
 import org.apache.ibatis.annotations.ResultMap
 import org.apache.ibatis.annotations.Results
 import org.apache.ibatis.annotations.Select
+import org.apache.ibatis.annotations.Update
+import org.apache.ibatis.type.JdbcType
+import java.sql.JDBCType
 
 @Mapper
 interface UserMapper {
@@ -19,6 +23,9 @@ interface UserMapper {
           , mail_address
           , password_hash
           , role
+          , google_auth
+          , github_auth
+          , apple_auth
           , is_deleted
         FROM users 
         WHERE mail_address = #{mailAddress}
@@ -30,6 +37,9 @@ interface UserMapper {
         Result(column = "mail_address", property = "mailAddress"),
         Result(column = "password_hash", property = "passwordHash"),
         Result(column = "role", property = "role"),
+        Result(column = "google_auth", property = "googleId"),
+        Result(column = "github_auth", property = "githubId"),
+        Result(column = "apple_auth", property = "appleId"),
         Result(column = "is_deleted", property = "isDeleted")
     ])
     fun findByEmail(mailAddress: String): UserEntity?
@@ -76,9 +86,18 @@ interface UserMapper {
           , role
           , is_deleted
         FROM users 
-        WHERE Apple_auth = #{appleCredential}
+        WHERE apple_auth = #{appleCredential}
         AND is_deleted = false
     """)
     @ResultMap("userResult")
     fun findByAppleCredential(appleCredential: String): UserEntity?
+
+    @Insert("""
+        INSERT INTO users (
+            id, display_name, mail_address, password_hash, role, is_deleted
+        ) VALUES (
+            #{id, jdbcType=OTHER}, #{displayName}, #{mailAddress}, #{passwordHash}, #{role}, false
+        )
+    """)
+    fun insert(user: UserEntity)
 }

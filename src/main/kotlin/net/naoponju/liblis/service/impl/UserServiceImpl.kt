@@ -1,13 +1,47 @@
 package net.naoponju.liblis.service.impl
 
 import net.naoponju.liblis.dto.UserDto
+import net.naoponju.liblis.dto.UserRegistrationDto
 import net.naoponju.liblis.entity.UserEntity
+import net.naoponju.liblis.exception.InvalidPasswordException
+import net.naoponju.liblis.exception.UserAlreadyExistsException
 import net.naoponju.liblis.repository.UserRepository
 import net.naoponju.liblis.service.UserService
+import org.springframework.security.crypto.password.PasswordEncoder
+import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
+@Service
 class UserServiceImpl(
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val passwordEncoder: PasswordEncoder
 ): UserService {
+
+    @Transactional
+    override fun registerUser(dto: UserRegistrationDto) {
+        if (userRepository.findByEmail(dto.mailAddress) != null) {
+            throw UserAlreadyExistsException("このメールアドレスは既に登録されています。")
+        }
+
+        validatePassword(dto.password)
+
+        val encodedPassword = passwordEncoder.encode(dto.password)
+
+        val user = UserEntity(
+            id = java.util.UUID.randomUUID(),
+            displayName = dto.displayName,
+            mailAddress = dto.mailAddress,
+            passwordHash = encodedPassword,
+            role = "USER",
+            isDeleted = false,
+            googleId = null,
+            githubId = null,
+            appleId = null
+        )
+
+        userRepository.save(user)
+    }
+
     override fun findByEmail(email: String): UserDto? {
         val user = userRepository.findByEmail(email)
         return user?.let { toDto(it) }
@@ -28,5 +62,15 @@ class UserServiceImpl(
             isGithubLinked = entity.githubId != null,
             isAppleLinked = entity.appleId != null
         )
+    }
+
+    private fun validatePassword(password: String) {
+        if (password.length < 8) {
+            throw InvalidPasswordException("パスワードは8文字以上で入力してください。")
+        }
+        val regex = Regex("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#\$%^&*(),.-?\":{}|<>]).{8,}\$")
+        if (!regex.matches(password)) {
+            throw InvalidPasswordException("パスワードは英字、数字、記号を含めてください。")
+        }
     }
 }

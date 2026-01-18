@@ -24,6 +24,10 @@
         <h5 class="mb-0 text-center fw-bold">ログイン</h5>
     </div>
     <div class="card-body p-4">
+        <div th:if="${successMessage}" class="alert alert-success p-2 small">
+            <span th:text="${successMessage}"></span>
+        </div>
+
         <div th:if="${param.error}" class="alert alert-danger p-2 small">
             <span th:if="${param.error[0] == 'true'}">メールアドレスまたはパスワードが正しくありません。</span>
             <span th:if="${param.error[0] == 'oauth2_failure'}">
