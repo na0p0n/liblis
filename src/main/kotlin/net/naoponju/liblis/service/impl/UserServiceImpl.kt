@@ -10,6 +10,7 @@ import net.naoponju.liblis.service.UserService
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.util.UUID
 
 @Service
 class UserServiceImpl(
@@ -28,7 +29,7 @@ class UserServiceImpl(
         val encodedPassword = passwordEncoder.encode(dto.password)
 
         val user = UserEntity(
-            id = java.util.UUID.randomUUID(),
+            id = UUID.randomUUID(),
             displayName = dto.displayName,
             mailAddress = dto.mailAddress,
             passwordHash = encodedPassword,
@@ -51,6 +52,36 @@ class UserServiceImpl(
     override fun findEntityByGoogleId(googleId: String): UserEntity? = userRepository.findByGoogleCredential(googleId)
     override fun findEntityByGithubId(githubId: String): UserEntity? = userRepository.findByGitHubCredential(githubId)
     override fun findEntityByAppleId(appleId: String): UserEntity? = userRepository.findByAppleCredential(appleId)
+
+    @Transactional
+    override fun linkGoogleAccount(userId: UUID, googleId: String) {
+        userRepository.addGoogleCredentialById(userId, googleId)
+    }
+
+    @Transactional
+    override fun linkGithubAccount(userId: UUID, githubId: String) {
+        userRepository.addGithubCredentialById(userId, githubId)
+    }
+
+    @Transactional
+    override fun linkAppleAccount(userId: UUID, appleId: String) {
+        userRepository.addAppleCredentialById(userId, appleId)
+    }
+
+    @Transactional
+    override fun unLinkGoogleAccount(email: String) {
+        userRepository.clearGoogleCredentialByMailAddress(email)
+    }
+
+    @Transactional
+    override fun unLinkGithubAccount(email: String) {
+        userRepository.clearGithubCredentialByMailAddress(email)
+    }
+
+    @Transactional
+    override fun unLinkAppleAccount(email: String) {
+        userRepository.clearAppleCredentialByMailAddress(email)
+    }
 
     private fun toDto(entity: UserEntity): UserDto {
         return UserDto(

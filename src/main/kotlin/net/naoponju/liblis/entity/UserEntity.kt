@@ -3,7 +3,7 @@ package net.naoponju.liblis.entity
 import java.util.UUID
 
 data class UserEntity(
-    val id: UUID? = null,
+    val id: UUID,
     val displayName: String,
     val mailAddress: String,
     val passwordHash: String?,

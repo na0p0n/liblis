@@ -9,8 +9,7 @@ import org.apache.ibatis.annotations.ResultMap
 import org.apache.ibatis.annotations.Results
 import org.apache.ibatis.annotations.Select
 import org.apache.ibatis.annotations.Update
-import org.apache.ibatis.type.JdbcType
-import java.sql.JDBCType
+import java.util.UUID
 
 @Mapper
 interface UserMapper {
@@ -52,6 +51,9 @@ interface UserMapper {
           , mail_address
           , password_hash
           , role
+          , google_auth
+          , github_auth
+          , apple_auth
           , is_deleted
         FROM users 
         WHERE google_auth = #{googleCredential}
@@ -68,6 +70,9 @@ interface UserMapper {
           , mail_address
           , password_hash
           , role
+          , google_auth
+          , github_auth
+          , apple_auth
           , is_deleted
         FROM users 
         WHERE github_auth = #{githubCredential}
@@ -84,6 +89,9 @@ interface UserMapper {
           , mail_address
           , password_hash
           , role
+          , google_auth
+          , github_auth
+          , apple_auth
           , is_deleted
         FROM users 
         WHERE apple_auth = #{appleCredential}
@@ -100,4 +108,22 @@ interface UserMapper {
         )
     """)
     fun insert(user: UserEntity)
+
+    @Update("UPDATE users SET google_auth = #{googleCredential} WHERE id = #{id, jdbcType=OTHER}")
+    fun updateGoogleCredential(id: UUID, googleCredential: String)
+
+    @Update("UPDATE users SET github_auth = #{githubCredential} WHERE id = #{id, jdbcType=OTHER}")
+    fun updateGithubCredential(id: UUID, githubCredential: String)
+
+    @Update("UPDATE users SET apple_auth = #{appleCredential} WHERE id = #{id, jdbcType=OTHER}")
+    fun updateAppleCredential(id: UUID, appleCredential: String)
+
+    @Update("UPDATE users SET google_auth = NULL WHERE mail_address = #{mailAddress}")
+    fun clearGoogleCredential(mailAddress: String)
+
+    @Update("UPDATE users SET github_auth = NULL WHERE mail_address = #{mailAddress}")
+    fun clearGithubCredential(mailAddress: String)
+
+    @Update("UPDATE users SET apple_auth = NULL WHERE mail_address = #{mailAddress}")
+    fun clearAppleCredential(mailAddress: String)
 }

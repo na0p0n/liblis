@@ -13,7 +13,7 @@ import java.util.*
 @MappedTypes(UUID::class)
 class UUIDTypeHandler : BaseTypeHandler<UUID>() {
 
-    override fun setNonNullParameter(ps: PreparedStatement, i: Int, parameter: UUID, jdbcType: JdbcType) {
+    override fun setNonNullParameter(ps: PreparedStatement, i: Int, parameter: UUID, jdbcType: JdbcType?) {
         // PostgreSQLドライバに直接UUIDオブジェクトを渡します
         ps.setObject(i, parameter)
     }

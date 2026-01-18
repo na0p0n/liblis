@@ -42,7 +42,9 @@
                     </div>
                     <div>
                         <a th:if="${!user.isGoogleLinked}" th:href="@{/oauth2/authorization/google}" class="btn btn-outline-primary btn-sm">連携する</a>
-                        <button th:if="${user.isGoogleLinked}" class="btn btn-outline-danger btn-sm" disabled>連携解除</button>
+                        <form th:action="@{/account/unlink/google}" method="post" onsubmit="return confirm('Google連携を解除しますか？');">
+                            <button th:if="${user.isGoogleLinked}" type="submit" class="btn btn-outline-danger btn-sm">連携解除</button>
+                        </form>
                     </div>
                 </div>
 
@@ -53,14 +55,16 @@
                     </div>
                     <div>
                         <a th:if="${!user.isGithubLinked}" th:href="@{/oauth2/authorization/github}" class="btn btn-outline-dark btn-sm">連携する</a>
-                        <button th:if="${user.isGithubLinked}" class="btn btn-outline-danger btn-sm" disabled>連携解除</button>
+                        <form th:action="@{/account/unlink/github}" method="post" onsubmit="return confirm('Github連携を解除しますか？');">
+                            <button th:if="${user.isGithubLinked}" type="submit" class="btn btn-outline-danger btn-sm">連携解除</button>
+                        </form>
                     </div>
                 </div>
 
             </section>
         </div>
         <div class="card-footer bg-light text-center py-3">
-            <a th:href="@{/}" class="text-decoration-none small">ホームに戻る</a>
+            <a th:href="@{/home}" class="text-decoration-none small">ホームに戻る</a>
         </div>
     </div>
 </div>
