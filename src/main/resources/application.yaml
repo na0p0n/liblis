@@ -51,3 +51,13 @@ mybatis:
   type-handlers-package: net.naoponju.liblis.config
 flyway:
   baseline-on-migrate: true
+logging:
+  level:
+    root: INFO
+    net.naoponju.liblis: DEBUG
+    org.springframework.web: INFO
+    org.mybatis: DEBUG
+  file:
+    name: logs/liblis.log
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
