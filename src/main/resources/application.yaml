@@ -51,3 +51,21 @@ mybatis:
   type-handlers-package: net.naoponju.liblis.config
 flyway:
   baseline-on-migrate: true
+logging:
+  logback:
+    rollingpolicy:
+      file-name-pattern: "${LOG_FILE}.%d{yyyy-MM-dd}.%i.gz"
+      max-file-size: 10MB
+      max-history: 30
+      total-size-cap: 1GB
+      clean-history-on-start: false
+  level:
+    root: INFO
+    net.naoponju.liblis: DEBUG
+    org.springframework.web: INFO
+    org.mybatis: DEBUG
+  file:
+    name: logs/liblis.log
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
