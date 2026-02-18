@@ -20,20 +20,23 @@ class LoggingAspect {
         logger.info("実行開始: $signature")
 
         val stopWatch = StopWatch()
-        try {
-            stopWatch.start()
-            val result = joinPoint.proceed()
-            stopWatch.stop()
-            logger.info("実行完了: $signature (実行時間 : ${stopWatch.totalTimeMillis}ms)")
+        stopWatch.start()
 
-            return result
-        } catch (e: Throwable) {
-            if (stopWatch.isRunning) {
-                stopWatch.stop()
-            }
-            logger.error("実行時例外が発生: $signature (実行時間: ${stopWatch.totalTimeMillis}ms)", e)
-            throw e
+        val result = runCatching { joinPoint.proceed() }
+
+        if (stopWatch.isRunning) {
+            stopWatch.stop()
         }
+
+        result
+            .onSuccess {
+                logger.info("実行完了: $signature (実行時間 : ${stopWatch.totalTimeMillis}ms)")
+            }
+            .onFailure { e ->
+                logger.error("実行時例外が発生: $signature (実行時間: ${stopWatch.totalTimeMillis}ms)", e)
+            }
+
+        return result.getOrThrow()
     }
 
     companion object {
