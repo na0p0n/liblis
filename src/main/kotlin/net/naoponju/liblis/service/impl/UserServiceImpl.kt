@@ -11,6 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
+import org.slf4j.LoggerFactory
 
 @Service
 class UserServiceImpl(
@@ -18,8 +19,11 @@ class UserServiceImpl(
     private val passwordEncoder: PasswordEncoder
 ): UserService {
 
+    private val logger = LoggerFactory.getLogger(javaClass)
+
     @Transactional
     override fun registerUser(dto: UserRegistrationDto) {
+        logger.info("")
         if (userRepository.findByEmail(dto.mailAddress) != null) {
             throw UserAlreadyExistsException("このメールアドレスは既に登録されています。")
         }
