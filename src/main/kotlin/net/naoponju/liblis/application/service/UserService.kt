@@ -5,7 +5,7 @@ import net.naoponju.liblis.application.dto.UserRegistrationDto
 import net.naoponju.liblis.domain.entity.UserEntity
 import net.naoponju.liblis.common.exception.InvalidPasswordException
 import net.naoponju.liblis.common.exception.UserAlreadyExistsException
-import net.naoponju.liblis.infra.repository.UserRepository
+import net.naoponju.liblis.domain.repository.UserRepository
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
