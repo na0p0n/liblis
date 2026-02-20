@@ -48,7 +48,7 @@ spring:
 mybatis:
   configuration:
     map-underscore-to-camel-case: true
-  type-handlers-package: net.naoponju.liblis.config
+  type-handlers-package: net.naoponju.liblis.common.config
 flyway:
   baseline-on-migrate: true
 logging:
