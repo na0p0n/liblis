@@ -2,7 +2,7 @@ package net.naoponju.liblis.infra.repository.impl
 
 import net.naoponju.liblis.domain.entity.UserEntity
 import net.naoponju.liblis.infra.mapper.UserMapper
-import net.naoponju.liblis.infra.repository.UserRepository
+import net.naoponju.liblis.domain.repository.UserRepository
 import org.springframework.stereotype.Repository
 import java.util.UUID
 

@@ -1,4 +1,4 @@
-package net.naoponju.liblis.infra.repository
+package net.naoponju.liblis.domain.repository
 
 import net.naoponju.liblis.domain.entity.UserEntity
 import java.util.UUID
