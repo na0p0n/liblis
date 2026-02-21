@@ -12,13 +12,14 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.servlet.mvc.support.RedirectAttributes
 
 @Controller
+@Suppress("FunctionOnlyReturningConstant", "SwallowedException", "TooGenericExceptionCaught")
 class AccountController(
-    private val userService: UserService
+    private val userService: UserService,
 ) {
     @GetMapping("/account")
     fun showAccountSettings(
         @AuthenticationPrincipal principal: Any?,
-        model: Model
+        model: Model,
     ): String {
         val email = getEmailFromPrincipal(principal)
 
@@ -36,7 +37,7 @@ class AccountController(
     fun unlinkAccount(
         @PathVariable provider: String,
         @AuthenticationPrincipal principal: Any?,
-        redirectAttributes: RedirectAttributes
+        redirectAttributes: RedirectAttributes,
     ): String {
         val email = getEmailFromPrincipal(principal) ?: return "redirect:/login"
 

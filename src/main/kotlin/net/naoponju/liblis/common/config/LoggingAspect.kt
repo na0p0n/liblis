@@ -12,6 +12,7 @@ import org.springframework.util.StopWatch
 @Component
 class LoggingAspect {
     @Pointcut("execution(* net.naoponju.liblis.controller..*.*(..))")
+    @Suppress("EmptyFunctionBlock")
     fun controllerMethodExecution() {}
 
     @Around("controllerMethodExecution()")

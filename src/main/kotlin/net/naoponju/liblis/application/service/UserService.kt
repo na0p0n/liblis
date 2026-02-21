@@ -2,9 +2,9 @@ package net.naoponju.liblis.application.service
 
 import net.naoponju.liblis.application.dto.UserDto
 import net.naoponju.liblis.application.dto.UserRegistrationDto
-import net.naoponju.liblis.domain.entity.UserEntity
 import net.naoponju.liblis.common.exception.InvalidPasswordException
 import net.naoponju.liblis.common.exception.UserAlreadyExistsException
+import net.naoponju.liblis.domain.entity.UserEntity
 import net.naoponju.liblis.domain.repository.UserRepository
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
@@ -12,11 +12,11 @@ import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
 
 @Service
+@Suppress("TooManyFunctions")
 class UserService(
     private val userRepository: UserRepository,
-    private val passwordEncoder: PasswordEncoder
+    private val passwordEncoder: PasswordEncoder,
 ) {
-
     @Transactional
     fun registerUser(dto: UserRegistrationDto) {
         if (userRepository.findByEmail(dto.mailAddress) != null) {
@@ -27,17 +27,18 @@ class UserService(
 
         val encodedPassword = passwordEncoder.encode(dto.password)
 
-        val user = UserEntity(
-            id = UUID.randomUUID(),
-            displayName = dto.displayName,
-            mailAddress = dto.mailAddress,
-            passwordHash = encodedPassword,
-            role = "USER",
-            isDeleted = false,
-            googleId = null,
-            githubId = null,
-            appleId = null
-        )
+        val user =
+            UserEntity(
+                id = UUID.randomUUID(),
+                displayName = dto.displayName,
+                mailAddress = dto.mailAddress,
+                passwordHash = encodedPassword,
+                role = "USER",
+                isDeleted = false,
+                googleId = null,
+                githubId = null,
+                appleId = null,
+            )
 
         userRepository.save(user)
     }
@@ -48,22 +49,34 @@ class UserService(
     }
 
     fun findEntityByEmail(email: String): UserEntity? = userRepository.findByEmail(email)
+
     fun findEntityByGoogleId(googleId: String): UserEntity? = userRepository.findByGoogleCredential(googleId)
+
     fun findEntityByGithubId(githubId: String): UserEntity? = userRepository.findByGitHubCredential(githubId)
+
     fun findEntityByAppleId(appleId: String): UserEntity? = userRepository.findByAppleCredential(appleId)
 
     @Transactional
-    fun linkGoogleAccount(userId: UUID, googleId: String) {
+    fun linkGoogleAccount(
+        userId: UUID,
+        googleId: String,
+    ) {
         userRepository.addGoogleCredentialById(userId, googleId)
     }
 
     @Transactional
-    fun linkGithubAccount(userId: UUID, githubId: String) {
+    fun linkGithubAccount(
+        userId: UUID,
+        githubId: String,
+    ) {
         userRepository.addGithubCredentialById(userId, githubId)
     }
 
     @Transactional
-    fun linkAppleAccount(userId: UUID, appleId: String) {
+    fun linkAppleAccount(
+        userId: UUID,
+        appleId: String,
+    ) {
         userRepository.addAppleCredentialById(userId, appleId)
     }
 
@@ -90,10 +103,11 @@ class UserService(
             role = entity.role,
             isGoogleLinked = entity.googleId != null,
             isGithubLinked = entity.githubId != null,
-            isAppleLinked = entity.appleId != null
+            isAppleLinked = entity.appleId != null,
         )
     }
 
+    @Suppress("MagicNumber")
     private fun validatePassword(password: String) {
         if (password.length < 8) {
             throw InvalidPasswordException("パスワードは8文字以上で入力してください。")

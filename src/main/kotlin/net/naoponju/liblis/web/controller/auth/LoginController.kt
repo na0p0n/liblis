@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.GetMapping
 
 @Controller
 class LoginController {
+    @Suppress("FunctionOnlyReturningConstant")
     @GetMapping("/login")
     fun login(): String {
         return "auth/login"

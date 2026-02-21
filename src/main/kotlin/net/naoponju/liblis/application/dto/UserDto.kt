@@ -9,5 +9,5 @@ data class UserDto(
     val role: String,
     val isGoogleLinked: Boolean,
     val isGithubLinked: Boolean,
-    val isAppleLinked: Boolean
+    val isAppleLinked: Boolean,
 )
