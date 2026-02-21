@@ -2,7 +2,7 @@ plugins {
     kotlin("jvm") version "1.9.22"
     kotlin("plugin.spring") version "1.9.22"
     id("org.flywaydb.flyway") version "11.20.2"
-    id("org.springframework.boot") version "3.5.10"
+    id("org.springframework.boot") version "3.4.2"
     id("io.spring.dependency-management") version "1.1.7"
     id("org.jlleitschuh.gradle.ktlint") version "12.1.1"
     id("com.github.jakemarsden.git-hooks") version "0.0.2"
