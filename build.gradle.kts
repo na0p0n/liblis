@@ -1,6 +1,6 @@
 plugins {
-    kotlin("jvm") version "1.9.22"
-    kotlin("plugin.spring") version "1.9.22"
+    kotlin("jvm") version "2.0.21"
+    kotlin("plugin.spring") version "2.0.21"
     id("org.flywaydb.flyway") version "11.20.2"
     id("org.springframework.boot") version "3.4.2"
     id("io.spring.dependency-management") version "1.1.7"
@@ -9,6 +9,7 @@ plugins {
 }
 
 detekt {
+    toolVersion = "1.23.8"
     buildUponDefaultConfig = true
     allRules = false
 }
@@ -64,7 +65,7 @@ dependencies {
     implementation("org.flywaydb:flyway-core")
     implementation("org.flywaydb:flyway-database-postgresql")
     implementation("org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.5")
-    implementation("org.postgresql:postgresql")
+    runtimeOnly("org.postgresql:postgresql")
 
     // その他
     implementation("me.paulschwarz:spring-dotenv:4.0.0")
@@ -87,9 +88,8 @@ kotlin {
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-    kotlinOptions {
+    compilerOptions {
         freeCompilerArgs = listOf("-Xjsr305=strict")
-        jvmTarget = "21"
     }
 }
 
