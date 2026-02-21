@@ -11,5 +11,5 @@ data class UserEntity(
     val googleId: String? = null,
     val githubId: String? = null,
     val appleId: String? = null,
-    val isDeleted: Boolean
+    val isDeleted: Boolean,
 )

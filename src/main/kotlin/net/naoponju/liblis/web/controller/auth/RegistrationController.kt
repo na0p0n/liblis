@@ -1,9 +1,9 @@
 package net.naoponju.liblis.web.controller.auth
 
 import net.naoponju.liblis.application.dto.UserRegistrationDto
+import net.naoponju.liblis.application.service.UserService
 import net.naoponju.liblis.common.exception.InvalidPasswordException
 import net.naoponju.liblis.common.exception.UserAlreadyExistsException
-import net.naoponju.liblis.application.service.UserService
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.GetMapping
@@ -12,8 +12,9 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.servlet.mvc.support.RedirectAttributes
 
 @Controller
+@Suppress("FunctionOnlyReturningConstant", "SwallowedException", "TooGenericExceptionCaught")
 class RegistrationController(
-    private val userService: UserService
+    private val userService: UserService,
 ) {
     @GetMapping("/register")
     fun showRegistrationForm(model: Model): String {
@@ -26,14 +27,13 @@ class RegistrationController(
     fun registerUser(
         @ModelAttribute userRegistrationDto: UserRegistrationDto,
         model: Model,
-        redirectAttributes: RedirectAttributes
+        redirectAttributes: RedirectAttributes,
     ): String {
         try {
             userService.registerUser(userRegistrationDto)
 
             redirectAttributes.addFlashAttribute("successMessage", "ユーザー登録が完了しました。ログインしてください。")
             return "redirect:/login"
-
         } catch (e: UserAlreadyExistsException) {
             model.addAttribute("errorMessage", e.message)
         } catch (e: InvalidPasswordException) {

@@ -22,5 +22,5 @@ data class BookEntity(
     val isSearchedGoogle: Boolean = false,
     val googleUrl: String?,
     val createdAt: LocalDateTime? = LocalDateTime.now(),
-    val updatedAt: LocalDateTime? = LocalDateTime.now()
+    val updatedAt: LocalDateTime? = LocalDateTime.now(),
 )

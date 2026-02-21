@@ -8,8 +8,8 @@ import org.springframework.stereotype.Service
 
 @Service
 class CustomUserDetailsService(
-    private val userService: UserService
-): UserDetailsService {
+    private val userService: UserService,
+) : UserDetailsService {
     override fun loadUserByUsername(email: String): UserDetails {
         val user = userService.findEntityByEmail(email) ?: throw UsernameNotFoundException("User not found: $email")
 
