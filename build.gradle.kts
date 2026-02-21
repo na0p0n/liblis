@@ -32,12 +32,6 @@ group = "net.naoponju"
 version = "0.0.1-SNAPSHOT"
 description = "Manage Book System"
 
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
-    }
-}
-
 configurations {
     compileOnly {
         extendsFrom(configurations.annotationProcessor.get())
