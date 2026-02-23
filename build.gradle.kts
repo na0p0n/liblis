@@ -62,7 +62,7 @@ dependencies {
     runtimeOnly("org.postgresql:postgresql")
 
     // その他
-    implementation("me.paulschwarz:spring-dotenv:4.0.0")
+    implementation("me.paulschwarz:spring-dotenv:5.1.0")
     compileOnly("org.projectlombok:lombok")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     annotationProcessor("org.projectlombok:lombok")
