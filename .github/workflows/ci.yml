@@ -8,10 +8,20 @@ on:
 
 permissions:
   contents: read
-
+      
 jobs:
   build:
     runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_DB: your_db_name
+          POSTGRES_USER: your_user
+          POSTGRES_PASSWORD: your_password
+        ports:
+          - 5432:5432
 
     steps:
       - name: Checkout repository
