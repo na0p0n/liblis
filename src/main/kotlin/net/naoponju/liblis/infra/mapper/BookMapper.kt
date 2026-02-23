@@ -46,7 +46,7 @@ interface BookMapper {
         value = [
             Result(id = true, column = "id", property = "id", typeHandler = UUIDTypeHandler::class),
             Result(column = "title", property = "title"),
-            Result(column = "author", property = "author"),
+            Result(column = "author", property = "author", typeHandler = org.apache.ibatis.type.ArrayTypeHandler::class),
             Result(column = "publisher", property = "publisher"),
             Result(column = "publish_date", property = "publishDate"),
             Result(column = "pages", property = "pages"),
@@ -122,7 +122,7 @@ interface BookMapper {
     """,
     )
     @ResultMap("bookResult")
-    fun findBookByTitle(title: String): List<BookEntity>
+    fun findBookByTitle(title: String): List<BookEntity>?
 
     // 著者でLIKE検索
     @Select(
@@ -151,7 +151,7 @@ interface BookMapper {
     """,
     )
     @ResultMap("bookResult")
-    fun findBookByAuthor(author: String): List<BookEntity>
+    fun findBookByAuthor(author: String): List<BookEntity>?
 
     // すべての本をタイトル昇順で検索
     @Select(
@@ -180,7 +180,7 @@ interface BookMapper {
     """,
     )
     @ResultMap("bookResult")
-    fun fetchAllBooksOrderByTitle(): List<BookEntity>
+    fun fetchAllBooksOrderByTitle(): List<BookEntity>?
 
     // すべての本を追加された日時が新しい順で取得
     @Select(
@@ -209,7 +209,7 @@ interface BookMapper {
     """,
     )
     @ResultMap("bookResult")
-    fun fetchAllBooksOrderByCreatedAtDesc(): List<BookEntity>
+    fun fetchAllBooksOrderByCreatedAtDesc(): List<BookEntity>?
 
     // すべての本を追加された日時が古い順で取得
     @Select(
@@ -238,7 +238,7 @@ interface BookMapper {
     """,
     )
     @ResultMap("bookResult")
-    fun fetchAllBooksOrderByCreatedAtAsc(): List<BookEntity>
+    fun fetchAllBooksOrderByCreatedAtAsc(): List<BookEntity>?
 
     // 新しく追加されたlimit冊を検索
     @Select(
@@ -268,7 +268,7 @@ interface BookMapper {
     """,
     )
     @ResultMap("bookResult")
-    fun fetchRecentBooks(limit: Int): List<BookEntity>
+    fun fetchRecentBooks(limit: Int): List<BookEntity>?
 
     // 登録件数をカウント
     @Select("SELECT COUNT(*) FROM books")
@@ -284,7 +284,7 @@ interface BookMapper {
     """,
     )
     @ResultMap("bookResult")
-    fun fetchUserBooks(userId: UUID): List<BookEntity>
+    fun fetchUserBooks(userId: UUID): List<BookEntity>?
 
     @Insert(
         """
@@ -310,7 +310,7 @@ interface BookMapper {
         ) VALUES (
             #{id, jdbcType=OTHER}
             , #{title}
-            , #{author}
+            , #{author, typeHandler=org.apache.ibatis.type.ArrayTypeHandler}
             , #{publisher}
             , #{publisherDate}
             , #{pages}
@@ -318,7 +318,7 @@ interface BookMapper {
             , #{isbn}
             , #{listPrice}
             , #{category}
-            , #{thumnbnailUrl}
+            , #{thumbnailUrl}
             , #{registrationCount}
             , #{isSearchedNDL}
             , #{ndlUrl}
@@ -335,7 +335,7 @@ interface BookMapper {
         """
         UPDATE books SET
             title = #{title},
-            author = #{author},
+            author = #{author, typeHandler=org.apache.ibatis.type.ArrayTypeHandler},
             publisher = #{publisher},
             publish_date = #{publishDate},
             pages = #{pages},

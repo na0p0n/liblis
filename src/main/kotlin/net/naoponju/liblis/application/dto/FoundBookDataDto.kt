@@ -1,12 +1,9 @@
-package net.naoponju.liblis.domain.entity
+package net.naoponju.liblis.application.dto
 
 import java.time.LocalDate
-import java.time.LocalDateTime
-import java.util.UUID
 
-data class BookEntity(
-    val id: UUID?,
-    val title: String,
+data class FoundBookDataDto(
+    val title: String?,
     val author: List<String>?,
     val publisher: String?,
     val publishDate: LocalDate?,
@@ -22,6 +19,4 @@ data class BookEntity(
     val ndlUrl: String?,
     val isSearchedGoogle: Boolean = false,
     val googleUrl: String?,
-    val createdAt: LocalDateTime? = LocalDateTime.now(),
-    val updatedAt: LocalDateTime? = LocalDateTime.now(),
 )
