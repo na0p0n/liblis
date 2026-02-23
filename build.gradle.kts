@@ -58,7 +58,7 @@ dependencies {
     // DB
     implementation("org.flywaydb:flyway-core")
     implementation("org.flywaydb:flyway-database-postgresql")
-    implementation("org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.5")
+    implementation("org.mybatis.spring.boot:mybatis-spring-boot-starter:4.0.1")
     runtimeOnly("org.postgresql:postgresql")
 
     // その他
@@ -69,7 +69,7 @@ dependencies {
     testImplementation("org.springframework.security:spring-security-test")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
-    testImplementation("org.mybatis.spring.boot:mybatis-spring-boot-starter-test:3.0.5")
+    testImplementation("org.mybatis.spring.boot:mybatis-spring-boot-starter-test:4.0.1")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
