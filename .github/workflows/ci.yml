@@ -17,9 +17,9 @@ jobs:
       postgres:
         image: postgres:latest
         env:
-          POSTGRES_DB: your_db_name
-          POSTGRES_USER: your_user
-          POSTGRES_PASSWORD: your_password
+          POSTGRES_DB: liblis_db
+          POSTGRES_USER: liblis
+          POSTGRES_PASSWORD: liblis
         ports:
           - 5432:5432
 
