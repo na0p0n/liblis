@@ -6,7 +6,7 @@ import java.util.UUID
 
 data class BookEntity(
     val id: UUID?,
-    val title: String,
+    val title: String?,
     val author: List<String>?,
     val publisher: String?,
     val publishDate: LocalDate?,

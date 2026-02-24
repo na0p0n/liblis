@@ -1,11 +1,11 @@
 package net.naoponju.liblis.web.controller.api
 
-import net.naoponju.liblis.application.dto.FoundBookDataDto
 import net.naoponju.liblis.application.service.BookService
 import net.naoponju.liblis.common.config.LoggingAspect
 import net.naoponju.liblis.common.exception.ApiKeyNotFoundException
 import net.naoponju.liblis.common.exception.BookNotFoundException
 import net.naoponju.liblis.common.exception.RemoteApiServiceException
+import net.naoponju.liblis.domain.entity.BookEntity
 import org.slf4j.LoggerFactory
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
@@ -18,16 +18,22 @@ import org.springframework.web.bind.annotation.RestController
 class BookRestController(
     private val bookService: BookService,
 ) {
+    @Suppress("ReturnCount")
     @GetMapping("/find")
     fun findBookFromAPI(
         @RequestParam isbn: String,
-    ): ResponseEntity<FoundBookDataDto> {
-
+    ): ResponseEntity<BookEntity> {
         try {
-            val foundBookData = bookService.findBookByISBNFromWebApi(isbn)
-            logger.info("書籍情報Web取得API: Googleからのデータ取得に成功 (取得データ: $foundBookData)")
+            val foundBookData = bookService.findBookByISBN(isbn)
+            foundBookData?.let {
+                if (it.second) {
+                    logger.info("書籍情報Web取得API: Googleからのデータ取得に成功 (取得データ: $foundBookData)")
+                } else {
+                    logger.info("書籍情報Web取得API: DBからのデータ取得に成功 (取得データ: $foundBookData)")
+                }
+            }
 
-            return ResponseEntity.ok(foundBookData)
+            return ResponseEntity.ok(foundBookData?.first)
         } catch (e: BookNotFoundException) {
             logger.error("書籍情報Web取得API: データ取得に失敗: ${e.message}")
             return ResponseEntity.notFound().build()

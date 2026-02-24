@@ -1,5 +1,6 @@
 package net.naoponju.liblis.infra.mapper
 
+import net.naoponju.liblis.common.config.StringListTypeHandler
 import net.naoponju.liblis.common.config.UUIDTypeHandler
 import net.naoponju.liblis.domain.entity.BookEntity
 import org.apache.ibatis.annotations.Delete
@@ -26,7 +27,8 @@ interface BookMapper {
             , publish_date
             , pages
             , description
-            , isbn
+            , isbn10
+            , isbn13
             , list_price
             , category
             , thumbnail_url
@@ -38,7 +40,7 @@ interface BookMapper {
             , created_at
             , updated_at
         FROM books
-        WHERE isbn = #{isbn}
+        WHERE isbn10 = #{isbn} OR isbn13 = #{isbn};
     """,
     )
     @Results(
@@ -46,12 +48,13 @@ interface BookMapper {
         value = [
             Result(id = true, column = "id", property = "id", typeHandler = UUIDTypeHandler::class),
             Result(column = "title", property = "title"),
-            Result(column = "author", property = "author", typeHandler = org.apache.ibatis.type.ArrayTypeHandler::class),
+            Result(column = "author", property = "author", typeHandler = StringListTypeHandler::class),
             Result(column = "publisher", property = "publisher"),
             Result(column = "publish_date", property = "publishDate"),
             Result(column = "pages", property = "pages"),
             Result(column = "description", property = "description"),
-            Result(column = "isbn", property = "isbn"),
+            Result(column = "isbn10", property = "isbn10"),
+            Result(column = "isbn13", property = "isbn13"),
             Result(column = "list_price", property = "listPrice"),
             Result(column = "category", property = "category"),
             Result(column = "thumbnail_url", property = "thumbnailUrl"),
@@ -77,7 +80,8 @@ interface BookMapper {
             , publish_date
             , pages
             , description
-            , isbn
+            , isbn10
+            , isbn13
             , list_price
             , category
             , thumbnail_url
@@ -106,7 +110,8 @@ interface BookMapper {
             , publish_date
             , pages
             , description
-            , isbn
+            , isbn10
+            , isbn13
             , list_price
             , category
             , thumbnail_url
@@ -135,7 +140,8 @@ interface BookMapper {
             , publish_date
             , pages
             , description
-            , isbn
+            , isbn10
+            , isbn13
             , list_price
             , category
             , thumbnail_url
@@ -164,7 +170,8 @@ interface BookMapper {
             , publish_date
             , pages
             , description
-            , isbn
+            , isbn10
+            , isbn13
             , list_price
             , category
             , thumbnail_url
@@ -193,7 +200,8 @@ interface BookMapper {
             , publish_date
             , pages
             , description
-            , isbn
+            , isbn10
+            , isbn13
             , list_price
             , category
             , thumbnail_url
@@ -222,7 +230,8 @@ interface BookMapper {
             , publish_date
             , pages
             , description
-            , isbn
+            , isbn10
+            , isbn13
             , list_price
             , category
             , thumbnail_url
@@ -251,7 +260,8 @@ interface BookMapper {
             , publish_date
             , pages
             , description
-            , isbn
+            , isbn10
+            , isbn13
             , list_price
             , category
             , thumbnail_url
@@ -296,7 +306,8 @@ interface BookMapper {
             , publish_date
             , pages
             , description
-            , isbn
+            , isbn10
+            , isbn13
             , list_price
             , category
             , thumbnail_url
@@ -310,12 +321,13 @@ interface BookMapper {
         ) VALUES (
             #{id, jdbcType=OTHER}
             , #{title}
-            , #{author, typeHandler=org.apache.ibatis.type.ArrayTypeHandler}
+            , #{author, typeHandler=net.naoponju.liblis.common.config.StringListTypeHandler}
             , #{publisher}
-            , #{publisherDate}
+            , #{publishDate}
             , #{pages}
             , #{description}
-            , #{isbn}
+            , #{isbn10}
+            , #{isbn13}
             , #{listPrice}
             , #{category}
             , #{thumbnailUrl}
@@ -335,7 +347,7 @@ interface BookMapper {
         """
         UPDATE books SET
             title = #{title},
-            author = #{author, typeHandler=org.apache.ibatis.type.ArrayTypeHandler},
+            author = #{author, typeHandler=net.naoponju.liblis.common.config.StringListTypeHandler},
             publisher = #{publisher},
             publish_date = #{publishDate},
             pages = #{pages},

@@ -1,7 +1,7 @@
 package net.naoponju.liblis.infra.repository.impl
 
-import net.naoponju.liblis.application.dto.FoundBookDataDto
 import net.naoponju.liblis.common.config.LoggingAspect
+import net.naoponju.liblis.common.constraint.PublishDateLength
 import net.naoponju.liblis.domain.entity.BookEntity
 import net.naoponju.liblis.domain.repository.BookRepository
 import net.naoponju.liblis.infra.api.GoogleBooksApiClient
@@ -9,12 +9,13 @@ import net.naoponju.liblis.infra.mapper.BookMapper
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Repository
 import java.time.LocalDate
+import java.util.UUID
 
 @Repository
 class BookRepositoryImpl(
     private val bookMapper: BookMapper,
-    private val googleBooksApiClient: GoogleBooksApiClient
-): BookRepository {
+    private val googleBooksApiClient: GoogleBooksApiClient,
+) : BookRepository {
     override fun findBookByISBN(isbn: String): BookEntity? {
         return bookMapper.findByISBN(isbn)
     }
@@ -35,11 +36,12 @@ class BookRepositoryImpl(
         return bookMapper.fetchRecentBooks(limit)
     }
 
-    override fun findBookByISBNFromGoogle(isbn: String): FoundBookDataDto? {
+    override fun findBookByISBNFromGoogle(isbn: String): BookEntity {
         val fetchedBookData = googleBooksApiClient.fetchBookData(isbn)
         val convertedBookPublishedDate = fetchedBookData.publishedDate?.let { convertToLocalDate(it) }
 
-        return FoundBookDataDto(
+        return BookEntity(
+            id = UUID.randomUUID(),
             title = fetchedBookData.title,
             author = fetchedBookData.authors,
             publisher = fetchedBookData.publisher,
@@ -59,19 +61,24 @@ class BookRepositoryImpl(
         )
     }
 
+    override fun insert(book: BookEntity) {
+        bookMapper.insert(book)
+    }
+
+    @Suppress("TooGenericExceptionCaught", "MaxLineLength")
     fun convertToLocalDate(publishedDateStr: String): LocalDate? {
         if (publishedDateStr.isBlank()) return null
 
         return try {
             when {
                 // publishedDateが完全な日付ならそのままLocalDateにパース
-                publishedDateStr.length == 10 -> LocalDate.parse(publishedDateStr)
+                publishedDateStr.length == PublishDateLength.PUBLISH_DATE_LENGTH_FULL -> LocalDate.parse(publishedDateStr)
 
                 // publishedDateが"yyyy-MM"の形式ならあとに"-01"を付加してLocalDateにパース
-                publishedDateStr.length == 7 -> LocalDate.parse("$publishedDateStr-01")
+                publishedDateStr.length == PublishDateLength.PUBLISH_DATE_LENGTH_NON_DAY -> LocalDate.parse("$publishedDateStr-01")
 
                 // publishedDateが"yyyy-MM"の形式ならあとに"-01-01"を付加してLocalDateにパース
-                publishedDateStr.length == 4 -> LocalDate.parse("$publishedDateStr-01-01")
+                publishedDateStr.length == PublishDateLength.PUBLISH_DATE_LENGTH_NON_MONTH_DAY -> LocalDate.parse("$publishedDateStr-01-01")
 
                 else -> null
             }

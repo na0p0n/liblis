@@ -18,14 +18,15 @@ import java.net.URL
 @Component
 class GoogleBooksApiClient(
     @Value("\${google.api.key}")
-    private val apiKey: String
+    private val apiKey: String,
 ) {
-
     // Spring標準の変換機能に頼らず、自前でJacksonを構築（干渉を避けるため）
-    private val objectMapper = ObjectMapper()
-        .registerKotlinModule()
-        .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+    private val objectMapper =
+        ObjectMapper()
+            .registerKotlinModule()
+            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
 
+    @Suppress("TooGenericExceptionCaught", "ThrowsCount")
     fun fetchBookData(isbn: String): GoogleBookDataDto {
         if (apiKey == "default_key_if_needed") {
             throw ApiKeyNotFoundException("APIキーが設定されていません。")
@@ -40,8 +41,9 @@ class GoogleBooksApiClient(
             val searchResponse = objectMapper.readValue(searchJson, GoogleBookSearchResponseDto::class.java)
 
             // 該当するアイテムがない場合は例外
-            val firstItem = searchResponse?.items?.firstOrNull()
-                ?: throw BookNotFoundException("対象のISBNの本がGoogle Booksで見つかりません。 ISBN: $isbn")
+            val firstItem =
+                searchResponse?.items?.firstOrNull()
+                    ?: throw BookNotFoundException("対象のISBNの本がGoogle Booksで見つかりません。 ISBN: $isbn")
 
             // 2. 詳細データのリクエスト (selfLink)
             // selfLink にも APIキーを付与しないと制限がかかる場合があるため、URLを調整
@@ -70,9 +72,8 @@ class GoogleBooksApiClient(
                 isbn13 = isbn13,
                 pageCount = volumeInfo?.pageCount,
                 bookThumbnailURL = bookThumbnailUrl,
-                selfLink = detailResponse.selfLink
+                selfLink = detailResponse.selfLink,
             )
-
         } catch (e: BookNotFoundException) {
             throw e
         } catch (e: Exception) {

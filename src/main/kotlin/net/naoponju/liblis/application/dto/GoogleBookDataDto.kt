@@ -10,17 +10,17 @@ data class GoogleBookDataDto(
     val isbn13: String?,
     val pageCount: Int?,
     val bookThumbnailURL: String?,
-    val selfLink: String?
+    val selfLink: String?,
 )
 
 // Google Books APIでISBNでの検索結果用のDTO
 data class GoogleBookSearchResponseDto(
-    val items: List<GoogleBookSearchResponseItemsDto>
+    val items: List<GoogleBookSearchResponseItemsDto>,
 )
 
 data class GoogleBookSearchResponseItemsDto(
     val selfLink: String,
-    val volumeInfo: GoogleBookSearchResponseVolumeInfoDto?
+    val volumeInfo: GoogleBookSearchResponseVolumeInfoDto?,
 )
 
 data class GoogleBookSearchResponseVolumeInfoDto(
@@ -30,7 +30,7 @@ data class GoogleBookSearchResponseVolumeInfoDto(
 // selfLinkをAPIで叩いた結果のDto
 data class GoogleBookDetailResponseItemDto(
     val selfLink: String?,
-    val volumeInfo: GoogleBookDetailResponseVolumeInfoDto?
+    val volumeInfo: GoogleBookDetailResponseVolumeInfoDto?,
 )
 
 data class GoogleBookDetailResponseVolumeInfoDto(
@@ -42,15 +42,15 @@ data class GoogleBookDetailResponseVolumeInfoDto(
     val description: String?,
     val industryIdentifiers: List<GoogleBookDetailResponseIndustryIdentifiersDto>,
     val pageCount: Int?,
-    val imageLinks: GoogleBookDetailResponseImageLinksDto?
+    val imageLinks: GoogleBookDetailResponseImageLinksDto?,
 )
 
 data class GoogleBookDetailResponseIndustryIdentifiersDto(
     val type: String,
-    val identifier: String
+    val identifier: String,
 )
 
 data class GoogleBookDetailResponseImageLinksDto(
     val smallThumbnail: String?,
-    val thumbnail: String?
+    val thumbnail: String?,
 )
