@@ -7,7 +7,6 @@ import net.naoponju.liblis.application.dto.GoogleBookDataDto
 import net.naoponju.liblis.application.dto.GoogleBookDetailResponseItemDto
 import net.naoponju.liblis.application.dto.GoogleBookSearchResponseDto
 import net.naoponju.liblis.common.config.LoggingAspect
-import net.naoponju.liblis.common.exception.ApiKeyNotFoundException
 import net.naoponju.liblis.common.exception.BookNotFoundException
 import net.naoponju.liblis.common.exception.RemoteApiServiceException
 import org.slf4j.LoggerFactory
@@ -28,14 +27,9 @@ class GoogleBooksApiClient(
 
     @Suppress("TooGenericExceptionCaught", "ThrowsCount")
     fun fetchBookData(isbn: String): GoogleBookDataDto {
-        if (apiKey == "default_key_if_needed") {
-            throw ApiKeyNotFoundException("APIキーが設定されていません。")
-        }
-
         try {
             // 1. 最初の検索リクエスト (ISBNで検索)
             val searchUrl = "https://www.googleapis.com/books/v1/volumes?q=isbn:$isbn&key=$apiKey"
-            logger.info("Search Request URI: $searchUrl")
 
             val searchJson = URL(searchUrl).readText()
             val searchResponse = objectMapper.readValue(searchJson, GoogleBookSearchResponseDto::class.java)
@@ -48,11 +42,8 @@ class GoogleBooksApiClient(
             // 2. 詳細データのリクエスト (selfLink)
             // selfLink にも APIキーを付与しないと制限がかかる場合があるため、URLを調整
             val rawSelfLink = firstItem.selfLink
-            val detailUrl = if (rawSelfLink.contains("?")) "$rawSelfLink" else "$rawSelfLink"
 
-            logger.info("Detail Request URI: $detailUrl")
-
-            val detailJson = URL(detailUrl).readText()
+            val detailJson = URL(rawSelfLink).readText()
             val detailResponse = objectMapper.readValue(detailJson, GoogleBookDetailResponseItemDto::class.java)
 
             // 3. データの抽出

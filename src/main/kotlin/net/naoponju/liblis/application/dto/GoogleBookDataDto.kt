@@ -15,16 +15,16 @@ data class GoogleBookDataDto(
 
 // Google Books APIでISBNでの検索結果用のDTO
 data class GoogleBookSearchResponseDto(
-    val items: List<GoogleBookSearchResponseItemsDto>,
+    val items: List<GoogleBookSearchResponseItemsDto>?,
 )
 
 data class GoogleBookSearchResponseItemsDto(
-    val selfLink: String,
+    val selfLink: String?,
     val volumeInfo: GoogleBookSearchResponseVolumeInfoDto?,
 )
 
 data class GoogleBookSearchResponseVolumeInfoDto(
-    val title: String,
+    val title: String?,
 )
 
 // selfLinkをAPIで叩いた結果のDto
@@ -40,7 +40,7 @@ data class GoogleBookDetailResponseVolumeInfoDto(
     val publisher: String?,
     val publishedDate: String?,
     val description: String?,
-    val industryIdentifiers: List<GoogleBookDetailResponseIndustryIdentifiersDto>,
+    val industryIdentifiers: List<GoogleBookDetailResponseIndustryIdentifiersDto>?,
     val pageCount: Int?,
     val imageLinks: GoogleBookDetailResponseImageLinksDto?,
 )

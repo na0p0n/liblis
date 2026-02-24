@@ -3,6 +3,7 @@ package net.naoponju.liblis.application.service
 import net.naoponju.liblis.domain.entity.BookEntity
 import net.naoponju.liblis.domain.repository.BookRepository
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
 class BookService(
@@ -12,6 +13,7 @@ class BookService(
     // DBにあるか検索し、なければGoogleBooksAPIから取得
     // Input: isbn:String
     // Output: Pair<BookEntity, isFoundFromDB(Boolean)
+    @Transactional
     fun findBookByISBN(isbn: String): Pair<BookEntity, Boolean>? {
         val foundFromDB = bookRepository.findBookByISBN(isbn)
 

@@ -27,9 +27,9 @@ class BookRestController(
             val foundBookData = bookService.findBookByISBN(isbn)
             foundBookData?.let {
                 if (it.second) {
-                    logger.info("書籍情報Web取得API: Googleからのデータ取得に成功 (取得データ: $foundBookData)")
-                } else {
                     logger.info("書籍情報Web取得API: DBからのデータ取得に成功 (取得データ: $foundBookData)")
+                } else {
+                    logger.info("書籍情報Web取得API: Googleからのデータ取得に成功 (取得データ: $foundBookData)")
                 }
             }
 
@@ -42,7 +42,7 @@ class BookRestController(
             return ResponseEntity.internalServerError().build()
         } catch (e: ApiKeyNotFoundException) {
             logger.error("書籍情報Web取得API: APIエラー: ${e.message}")
-            return ResponseEntity.badRequest().build()
+            return ResponseEntity.internalServerError().build()
         }
     }
 

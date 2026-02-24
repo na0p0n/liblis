@@ -71,4 +71,4 @@ logging:
     file: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
 google:
   api:
-    key: ${GOOGLE_BOOKS_API_KEY:default_key_if_needed}
+    key: ${GOOGLE_BOOKS_API_KEY}
