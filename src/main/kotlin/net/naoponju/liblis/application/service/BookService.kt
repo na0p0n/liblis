@@ -3,6 +3,7 @@ package net.naoponju.liblis.application.service
 import net.naoponju.liblis.domain.entity.BookEntity
 import net.naoponju.liblis.domain.repository.BookRepository
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
 
 @Service
@@ -15,7 +16,7 @@ class BookService(
      *  Input: isbn(String)
      *  Output: Pair<BookEntity, isFoundFromDB>
      */
-    @Transactional
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
     fun findBookByISBN(isbn: String): Pair<BookEntity, Boolean> {
         val foundFromDB = bookRepository.findBookByISBN(isbn)
 
