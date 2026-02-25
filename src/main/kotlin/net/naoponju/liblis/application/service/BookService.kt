@@ -16,7 +16,7 @@ class BookService(
      *  Output: Pair<BookEntity, isFoundFromDB>
      */
     @Transactional
-    fun findBookByISBN(isbn: String): Pair<BookEntity, Boolean>? {
+    fun findBookByISBN(isbn: String): Pair<BookEntity, Boolean> {
         val foundFromDB = bookRepository.findBookByISBN(isbn)
 
         if (foundFromDB != null) {

@@ -1,6 +1,5 @@
 package net.naoponju.liblis.infra.repository.impl
 
-import net.naoponju.liblis.common.config.LoggingAspect
 import net.naoponju.liblis.common.constraint.PublishDateLength
 import net.naoponju.liblis.domain.entity.BookEntity
 import net.naoponju.liblis.domain.repository.BookRepository
@@ -66,7 +65,7 @@ class BookRepositoryImpl(
     }
 
     @Suppress("TooGenericExceptionCaught", "MaxLineLength")
-    fun convertToLocalDate(publishedDateStr: String): LocalDate? {
+    private fun convertToLocalDate(publishedDateStr: String): LocalDate? {
         if (publishedDateStr.isBlank()) return null
 
         return try {
@@ -77,7 +76,7 @@ class BookRepositoryImpl(
                 // publishedDateが"yyyy-MM"の形式ならあとに"-01"を付加してLocalDateにパース
                 publishedDateStr.length == PublishDateLength.NON_DAY -> LocalDate.parse("$publishedDateStr-01")
 
-                // publishedDateが"yyyy-MM"の形式ならあとに"-01-01"を付加してLocalDateにパース
+                // publishedDateが"yyyy"の形式ならあとに"-01-01"を付加してLocalDateにパース
                 publishedDateStr.length == PublishDateLength.NON_MONTH_DAY -> LocalDate.parse("$publishedDateStr-01-01")
 
                 else -> null
@@ -89,6 +88,6 @@ class BookRepositoryImpl(
     }
 
     companion object {
-        private val logger = LoggerFactory.getLogger(LoggingAspect::class.java)
+        private val logger = LoggerFactory.getLogger(BookRepositoryImpl::class.java)
     }
 }
