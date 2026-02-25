@@ -9,10 +9,12 @@ import org.springframework.transaction.annotation.Transactional
 class BookService(
     private val bookRepository: BookRepository,
 ) {
-    // ISBNから本を検索
-    // DBにあるか検索し、なければGoogleBooksAPIから取得
-    // Input: isbn:String
-    // Output: Pair<BookEntity, isFoundFromDB(Boolean)
+    /**
+     *  ISBNから本を検索
+     *  DBになければGoogleBooksAPIから取得
+     *  Input: isbn(String)
+     *  Output: Pair<BookEntity, isFoundFromDB>
+     */
     @Transactional
     fun findBookByISBN(isbn: String): Pair<BookEntity, Boolean>? {
         val foundFromDB = bookRepository.findBookByISBN(isbn)
@@ -25,9 +27,4 @@ class BookService(
             return foundFromGoogle to false
         }
     }
-
-//    fun findBookByISBNFromWebApi(isbn: String): FoundBookDataDto? {
-//        val foundBookData = bookRepository.findBookByISBNFromGoogle(isbn)
-//        return foundBookData
-//    }
 }

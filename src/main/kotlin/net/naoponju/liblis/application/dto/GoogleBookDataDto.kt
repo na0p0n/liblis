@@ -9,7 +9,7 @@ data class GoogleBookDataDto(
     val isbn10: String?,
     val isbn13: String?,
     val pageCount: Int?,
-    val bookThumbnailURL: String?,
+    val bookThumbnailUrl: String?,
     val selfLink: String?,
 )
 
@@ -46,8 +46,8 @@ data class GoogleBookDetailResponseVolumeInfoDto(
 )
 
 data class GoogleBookDetailResponseIndustryIdentifiersDto(
-    val type: String,
-    val identifier: String,
+    val type: String?,
+    val identifier: String?,
 )
 
 data class GoogleBookDetailResponseImageLinksDto(

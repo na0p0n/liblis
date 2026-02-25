@@ -1,7 +1,6 @@
 package net.naoponju.liblis.web.controller.api
 
 import net.naoponju.liblis.application.service.BookService
-import net.naoponju.liblis.common.config.LoggingAspect
 import net.naoponju.liblis.common.exception.ApiKeyNotFoundException
 import net.naoponju.liblis.common.exception.BookNotFoundException
 import net.naoponju.liblis.common.exception.RemoteApiServiceException
@@ -33,7 +32,11 @@ class BookRestController(
                 }
             }
 
-            return ResponseEntity.ok(foundBookData?.first)
+            return if (foundBookData == null) {
+                ResponseEntity.notFound().build()
+            } else {
+                ResponseEntity.ok(foundBookData.first)
+            }
         } catch (e: BookNotFoundException) {
             logger.error("書籍情報Web取得API: データ取得に失敗: ${e.message}")
             return ResponseEntity.notFound().build()
@@ -47,6 +50,6 @@ class BookRestController(
     }
 
     companion object {
-        private val logger = LoggerFactory.getLogger(LoggingAspect::class.java)
+        private val logger = LoggerFactory.getLogger(BookRestController::class.java)
     }
 }

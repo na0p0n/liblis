@@ -31,7 +31,7 @@ class GoogleBooksApiClient(
             // 1. 最初の検索リクエスト (ISBNで検索)
             val searchUrl = "https://www.googleapis.com/books/v1/volumes?q=isbn:$isbn&key=$apiKey"
 
-            val searchJson = URL(searchUrl).readText()
+            val searchJson = readTextWithTimeout(searchUrl)
             val searchResponse = objectMapper.readValue(searchJson, GoogleBookSearchResponseDto::class.java)
 
             // 該当するアイテムがない場合は例外
@@ -41,9 +41,14 @@ class GoogleBooksApiClient(
 
             // 2. 詳細データのリクエスト (selfLink)
             // selfLink にも APIキーを付与しないと制限がかかる場合があるため、URLを調整
-            val rawSelfLink = firstItem.selfLink
+            val rawSelfLink =
+                firstItem.selfLink
+                    ?: throw BookNotFoundException("selfLink が取得できませんでした。 ISBN: $isbn")
 
-            val detailJson = URL(rawSelfLink).readText()
+            val detailUrl =
+                if (rawSelfLink.contains("?")) "$rawSelfLink&key=$apiKey" else "$rawSelfLink?key=$apiKey"
+
+            val detailJson = readTextWithTimeout(detailUrl)
             val detailResponse = objectMapper.readValue(detailJson, GoogleBookDetailResponseItemDto::class.java)
 
             // 3. データの抽出
@@ -62,7 +67,7 @@ class GoogleBooksApiClient(
                 isbn10 = isbn10,
                 isbn13 = isbn13,
                 pageCount = volumeInfo?.pageCount,
-                bookThumbnailURL = bookThumbnailUrl,
+                bookThumbnailUrl = bookThumbnailUrl,
                 selfLink = detailResponse.selfLink,
             )
         } catch (e: BookNotFoundException) {
@@ -75,5 +80,13 @@ class GoogleBooksApiClient(
 
     companion object {
         private val logger = LoggerFactory.getLogger(LoggingAspect::class.java)
+
+        @Suppress("MagicNumber")
+        private fun readTextWithTimeout(url: String): String {
+            val conn = URL(url).openConnection() as java.net.HttpURLConnection
+            conn.connectTimeout = 5000
+            conn.readTimeout = 5000
+            return conn.inputStream.bufferedReader().use { it.readText() }
+        }
     }
 }

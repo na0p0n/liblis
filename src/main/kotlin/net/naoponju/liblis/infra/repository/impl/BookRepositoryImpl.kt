@@ -50,7 +50,7 @@ class BookRepositoryImpl(
             description = fetchedBookData.description,
             listPrice = null,
             category = null,
-            thumbnailUrl = fetchedBookData.bookThumbnailURL,
+            thumbnailUrl = fetchedBookData.bookThumbnailUrl,
             registrationCount = 0,
             isSearchedNDL = false,
             ndlUrl = null,
@@ -72,13 +72,13 @@ class BookRepositoryImpl(
         return try {
             when {
                 // publishedDateが完全な日付ならそのままLocalDateにパース
-                publishedDateStr.length == PublishDateLength.PUBLISH_DATE_LENGTH_FULL -> LocalDate.parse(publishedDateStr)
+                publishedDateStr.length == PublishDateLength.FULL -> LocalDate.parse(publishedDateStr)
 
                 // publishedDateが"yyyy-MM"の形式ならあとに"-01"を付加してLocalDateにパース
-                publishedDateStr.length == PublishDateLength.PUBLISH_DATE_LENGTH_NON_DAY -> LocalDate.parse("$publishedDateStr-01")
+                publishedDateStr.length == PublishDateLength.NON_DAY -> LocalDate.parse("$publishedDateStr-01")
 
                 // publishedDateが"yyyy-MM"の形式ならあとに"-01-01"を付加してLocalDateにパース
-                publishedDateStr.length == PublishDateLength.PUBLISH_DATE_LENGTH_NON_MONTH_DAY -> LocalDate.parse("$publishedDateStr-01-01")
+                publishedDateStr.length == PublishDateLength.NON_MONTH_DAY -> LocalDate.parse("$publishedDateStr-01-01")
 
                 else -> null
             }
