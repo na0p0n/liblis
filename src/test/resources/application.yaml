@@ -1,0 +1,74 @@
+spring:
+  application:
+    name: liblis
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/liblis_db?currentSchema=${DB_SCHEMA:liblis_dev}}
+    username: ${SPRING_DATASOURCE_USERNAME:liblis}
+    password: ${SPRING_DATASOURCE_PASSWORD:liblis}
+    driver-class-name: org.postgresql.Driver
+  security:
+    oauth2:
+      client:
+        registration:
+          apple:
+            client-id: ${APPLE_CLIENT_ID}
+            client-secret: ${APPLE_CLIENT_SECRET}
+            client-authentication-method: client_secret_post
+            authorization-grant-type: authorization_code
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+            scope:
+              - name
+              - email
+            client-name: Apple
+          github:
+            client-id: ${GITHUB_CLIENT_ID}
+            client-secret: ${GITHUB_CLIENT_SECRET}
+            scope:
+              - user:email
+              - read:user
+          google:
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
+            scope:
+              - email
+              - profile
+        provider:
+          apple:
+            authorization-uri: https://appleid.apple.com/auth/authorize?response_mode=form_post
+            token-uri: https://appleid.apple.com/auth/token
+            jwt-set-uri: https://appleid.apple.com/auth/keys
+            user-name-attribute: sub
+          google:
+            authorization-uri: https://accounts.google.com/o/oauth2/v2/auth
+            token-uri: https://oauth2.googleapis.com/token
+            user-info: https://www.googleapis.com/oauth2/v3/userinfo
+            user-name-attribute: sub
+
+# MyBatisの設定もここに追加していく
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true
+  type-handlers-package: net.naoponju.liblis.common.config
+flyway:
+  baseline-on-migrate: true
+logging:
+  logback:
+    rollingpolicy:
+      file-name-pattern: "${LOG_FILE}.%d{yyyy-MM-dd}.%i.gz"
+      max-file-size: 10MB
+      max-history: 30
+      total-size-cap: 1GB
+      clean-history-on-start: false
+  level:
+    root: INFO
+    net.naoponju.liblis: DEBUG
+    org.springframework.web: INFO
+    org.mybatis: DEBUG
+  file:
+    name: logs/liblis.log
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+google:
+  api:
+    key: ${GOOGLE_BOOKS_API_KEY}
