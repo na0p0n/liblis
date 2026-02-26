@@ -1,0 +1,19 @@
+version: 2
+updates:
+  # For your Spring Boot / Kotlin dependencies
+  - package-ecosystem: "gradle" # or "maven" if using pom.xml
+    directory: "/"
+    schedule:
+      interval: "daily"
+
+  # For your Docker / Docker Compose files
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "daily"
+
+  # For GitHub Actions workflows
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
