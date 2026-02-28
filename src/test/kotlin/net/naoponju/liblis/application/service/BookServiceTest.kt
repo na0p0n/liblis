@@ -1,8 +1,9 @@
 package net.naoponju.liblis.application.service
 
-import io.mockk.coEvery
+import io.mockk.every
 import io.mockk.mockk
 import io.mockk.spyk
+import io.mockk.verify
 import net.naoponju.liblis.domain.entity.BookEntity
 import net.naoponju.liblis.domain.repository.BookRepository
 import org.junit.jupiter.api.Assertions
@@ -30,11 +31,12 @@ class BookServiceTest {
                 true,
             )
 
-        coEvery {
+        every {
             bookRepository.findBookByISBN(isbn = isbn)
         } returns defaultBookEntity
 
         val actual = bookService.findBookByISBN(isbn)
+        verify(exactly = 1) { bookRepository.insert(any<BookEntity>()) }
         Assertions.assertEquals(expect, actual)
     }
 
@@ -48,15 +50,16 @@ class BookServiceTest {
                 false,
             )
 
-        coEvery {
+        every {
             bookRepository.findBookByISBN(isbn = isbn)
         } returns null
 
-        coEvery {
+        every {
             bookRepository.findBookByISBNFromGoogle(isbn = isbn)
         } returns defaultBookEntity
 
         val actual = bookService.findBookByISBN(isbn)
+        verify(exactly = 1) { bookRepository.insert(any<BookEntity>()) }
         Assertions.assertEquals(expect, actual)
     }
 
