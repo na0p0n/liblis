@@ -1,3 +1,19 @@
 package net.naoponju.liblis.domain.repository
 
-interface BookRepository
+import net.naoponju.liblis.domain.entity.BookEntity
+
+interface BookRepository {
+    fun findBookByISBN(isbn: String): BookEntity?
+
+    fun findBookByISBNFromGoogle(isbn: String): BookEntity
+
+    fun fetchAllBooks(): List<BookEntity>?
+
+    fun findBookByTitle(title: String): List<BookEntity>?
+
+    fun findBookByAuthor(author: String): List<BookEntity>?
+
+    fun fetchRecentBooks(limit: Int): List<BookEntity>?
+
+    fun insert(book: BookEntity)
+}
