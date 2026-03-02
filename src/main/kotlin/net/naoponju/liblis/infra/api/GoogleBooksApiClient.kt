@@ -12,6 +12,7 @@ import net.naoponju.liblis.common.exception.RemoteApiServiceException
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
+import java.net.HttpURLConnection
 import java.net.URL
 
 @Component
@@ -20,7 +21,7 @@ class GoogleBooksApiClient(
     private val apiKey: String,
 ) {
     // Spring標準の変換機能に頼らず、自前でJacksonを構築（干渉を避けるため）
-    private val objectMapper =
+    val objectMapper: ObjectMapper =
         ObjectMapper()
             .registerKotlinModule()
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
@@ -83,7 +84,7 @@ class GoogleBooksApiClient(
 
         @Suppress("MagicNumber")
         private fun readTextWithTimeout(url: String): String {
-            val conn = URL(url).openConnection() as java.net.HttpURLConnection
+            val conn = URL(url).openConnection() as HttpURLConnection
             conn.connectTimeout = 5000
             conn.readTimeout = 5000
             return conn.inputStream.bufferedReader().use { it.readText() }

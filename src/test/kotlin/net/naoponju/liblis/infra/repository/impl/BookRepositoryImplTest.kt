@@ -247,9 +247,35 @@ class BookRepositoryImplTest {
     @Test
     @DisplayName("Googleから書籍データ検索_異常系_該当する検索結果がない")
     fun findBookByISBNFromGoogleFailure01() {
+        val errorMessage = "対象のISBNの本がGoogleBooksで見つかりません"
+
         every {
             googleBooksApiClient.fetchBookData(DEFAULT_ISBN)
         } throws BookNotFoundException("対象のISBNの本がGoogleBooksで見つかりません")
+
+        val actual =
+            Assertions.assertThrows(BookNotFoundException::class.java) {
+                bookRepositoryImpl.findBookByISBNFromGoogle(DEFAULT_ISBN)
+            }
+
+        Assertions.assertEquals(errorMessage, actual.message)
+    }
+
+    @Test
+    @DisplayName("Googleから書籍データ検索_異常系_selfLinkが取得できない")
+    fun findBookByISBNFromGoogleFailure02() {
+        val errorMessage = "selfLink が取得できませんでした。 ISBN: $DEFAULT_ISBN"
+
+        every {
+            googleBooksApiClient.fetchBookData(DEFAULT_ISBN)
+        } throws BookNotFoundException("selfLink が取得できませんでした。 ISBN: $DEFAULT_ISBN")
+
+        val actual =
+            Assertions.assertThrows(BookNotFoundException::class.java) {
+                bookRepositoryImpl.findBookByISBNFromGoogle(DEFAULT_ISBN)
+            }
+
+        Assertions.assertEquals(errorMessage, actual.message)
     }
 
     companion object {
