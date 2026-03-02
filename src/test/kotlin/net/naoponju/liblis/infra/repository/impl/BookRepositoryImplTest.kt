@@ -4,11 +4,13 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
 import io.mockk.spyk
+import io.mockk.unmockkStatic
 import net.naoponju.liblis.application.dto.GoogleBookDataDto
 import net.naoponju.liblis.common.exception.BookNotFoundException
 import net.naoponju.liblis.domain.entity.BookEntity
 import net.naoponju.liblis.infra.api.GoogleBooksApiClient
 import net.naoponju.liblis.infra.mapper.BookMapper
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
@@ -16,6 +18,12 @@ import java.time.LocalDateTime
 import java.util.UUID
 
 class BookRepositoryImplTest {
+    @AfterEach
+    fun tearDown() {
+        unmockkStatic(UUID::class)
+        unmockkStatic(LocalDateTime::class)
+    }
+
     private val bookMapper: BookMapper = mockk()
     private val googleBooksApiClient: GoogleBooksApiClient = mockk()
 

@@ -82,12 +82,22 @@ class GoogleBooksApiClient(
     companion object {
         private val logger = LoggerFactory.getLogger(LoggingAspect::class.java)
 
-        @Suppress("MagicNumber")
+        @Suppress("MagicNumber", "UseCheckOrError")
         private fun readTextWithTimeout(url: String): String {
             val conn = URL(url).openConnection() as HttpURLConnection
             conn.connectTimeout = 5000
             conn.readTimeout = 5000
-            return conn.inputStream.bufferedReader().use { it.readText() }
+            return try {
+                val status = conn.responseCode
+                val stream = if (status in 200..299) conn.inputStream else conn.errorStream
+                val body = stream?.bufferedReader(Charsets.UTF_8)?.use { it.readText() }.orEmpty()
+                if (status !in 200..299) {
+                    throw IllegalStateException("Google Books API retuned HTTP $status: $body")
+                }
+                body
+            } finally {
+                conn.disconnect()
+            }
         }
     }
 }
