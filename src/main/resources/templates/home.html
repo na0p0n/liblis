@@ -22,7 +22,7 @@
             <h2 class="fw-bold">
                 こんにちは、<span th:text="${#authentication.principal instanceof T(org.springframework.security.oauth2.core.user.OAuth2User) ?
                               #authentication.principal.attributes['displayName'] :
-                              (#authentication.principal instanceof T(net.naoponju.liblis.security.CustomUserDetails) ?
+                              (#authentication.principal instanceof T(net.naoponju.liblis.common.security.CustomUserDetails) ?
                                #authentication.principal.displayName : #authentication.name)}">ユーザー</span>さん
             </h2>
             <p class="text-muted">今日もあなたのライブラリを充実させましょう。</p>

@@ -23,5 +23,6 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/liblis_db
       SPRING_DATASOURCE_USERNAME: liblis
       SPRING_DATASOURCE_PASSWORD: liblis
+      GOOGLE_BOOKS_API_KEY: ${GOOGLE_BOOKS_API_KEY:?GOOGLE_BOOKS_API_KEY is required}
 volumes:
   liblis-db-data:

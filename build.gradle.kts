@@ -69,8 +69,10 @@ dependencies {
     testImplementation("org.springframework.security:spring-security-test")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
+    testImplementation("io.mockk:mockk:1.14.9")
     testImplementation("org.mybatis.spring.boot:mybatis-spring-boot-starter-test:3.0.5")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
 }
 
 flyway {
