@@ -17,19 +17,19 @@
 
 <div class="filter-section py-3 mb-4 shadow-sm">
     <div class="container">
-        <form class="row g-2 align-items-center">
+        <form class="row g-2 align-items-center" th:action="@{/books}" method="get" aria-disabled="true">
             <div class="col-md-4">
-                <input type="text" class="form-control" placeholder="タイトル、著者で検索...">
+                <input type="text" class="form-control" placeholder="タイトル、著者で検索..." disabled>
             </div>
             <div class="col-md-2">
-                <select class="form-select">
+                <select class="form-select" disabled>
                     <option selected>すべてのカテゴリ</option>
                     <option>技術書</option>
                     <option>小説</option>
                 </select>
             </div>
             <div class="col-md-2">
-                <button type="submit" class="btn btn-primary w-100"><i class="bi bi-search me-2"></i>検索</button>
+                <button type="submit" class="btn btn-primary w-100" disabled><i class="bi bi-search me-2"></i>検索</button>
             </div>
         </form>
     </div>
@@ -55,21 +55,25 @@
                             <th>カバー</th>
                             <th>タイトル / 著者</th>
                             <th>カテゴリ</th>
+                            <th>出版社</th>
+                            <th>ページ数</th>
                             <th>ISBN</th>
                             <th>登録日</th>
                             <th>操作</th>
                         </tr>
                         </thead>
                         <tbody>
-                        <tr th:each="i : ${#numbers.sequence(1, 5)}">
-                            <td><img src="https://via.placeholder.com/60x85?text=Cover" class="book-thumb rounded shadow-sm"></td>
+                        <tr th:each="book : ${books}">
+                            <td><img th:src="${book.thumbnailUrl != null ? book.thumbnailUrl : 'https://dummy.kobeya.com/?width=60&height=85&bg=cccccc&color=000000&text=No%20Image&_=1772546481754'}" class="book-thumb rounded shadow-sm"></td>
                             <td>
-                                <div class="fw-bold">実践Kotlin入門</div>
-                                <div class="small text-muted">リブリス太郎</div>
+                                <div class="fw-bold" th:text="${book.title}">実践Kotlin入門</div>
+                                <div class="small text-muted" th:text="${book.author}">リブリス太郎</div>
                             </td>
                             <td><span class="badge bg-info text-dark">技術書</span></td>
-                            <td class="small text-muted">9784000000000</td>
-                            <td class="small text-muted">2026/01/19</td>
+                            <td><span class="small text-muted" th:text="${book.publisher}">リブリス出版</span></td>
+                            <td><span class="small text-muted" th:text="${book.pages}">リブリス出版</span></td>
+                            <td class="small text-muted" th:text="${book.isbn13 != null ? book.isbn13 : book.isbn10}">9784000000000</td>
+                            <td class="small text-muted" th:text="${book.publishDate.toString()}">2026/01/19</td>
                             <td>
                                 <div class="btn-group">
                                     <button class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil"></i></button>

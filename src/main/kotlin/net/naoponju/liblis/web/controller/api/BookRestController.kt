@@ -49,6 +49,17 @@ class BookRestController(
         }
     }
 
+    @GetMapping("/list")
+    fun getBookList(): ResponseEntity<List<BookEntity>> {
+        try {
+            val bookList = bookService.getBookList()
+            return ResponseEntity.ok(bookList)
+        } catch (e: BookNotFoundException) {
+            logger.error("書籍リスト取得API: エラー: ${e.message}")
+            return ResponseEntity.notFound().build()
+        }
+    }
+
     companion object {
         private val logger = LoggerFactory.getLogger(BookRestController::class.java)
     }
