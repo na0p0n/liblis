@@ -39,4 +39,10 @@ class BookService(
             throw BookNotFoundException("書籍DBに書籍がありません。")
         }
     }
+
+    fun getBookCount(): Int? {
+        val countBooks = bookRepository.fetchAllBooks()?.size
+
+        return countBooks
+    }
 }

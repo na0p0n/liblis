@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 @Suppress("FunctionOnlyReturningConstant")
 @RequestMapping("/books")
 class BookController(
-    private val bookService: BookService
+    private val bookService: BookService,
 ) {
     @GetMapping("/list")
     fun showBookList(model: Model): String {
