@@ -11,6 +11,8 @@ import net.naoponju.liblis.common.exception.RemoteApiServiceException
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
+import org.springframework.web.util.UriComponentsBuilder
+import java.io.IOException
 import java.net.HttpURLConnection
 import java.net.URL
 
@@ -29,8 +31,12 @@ class GoogleBooksApiClient(
     fun fetchBookData(isbn: String): GoogleBookDataDto {
         try {
             // 1. 最初の検索リクエスト (ISBNで検索)
-            val searchUrl = "https://www.googleapis.com/books/v1/volumes?q=isbn:$isbn&key=$apiKey"
-
+            val searchUrl =
+                UriComponentsBuilder.fromHttpUrl("https://www.googleapis.com/books/v1/volumes")
+                    .queryParam("q", "isbn:$isbn")
+                    .queryParam("key", apiKey)
+                    .build()
+                    .toUriString()
             val searchJson = readTextWithTimeout(searchUrl)
             val searchResponse = objectMapper.readValue(searchJson, GoogleBookSearchResponseDto::class.java)
 
@@ -72,7 +78,10 @@ class GoogleBooksApiClient(
             )
         } catch (e: BookNotFoundException) {
             throw e
-        } catch (e: Exception) {
+        } catch (e: IOException) {
+            logger.error("Google Books API 連携中にI/Oエラーが発生しました: ${e.message}", e)
+            throw RemoteApiServiceException("Google Books API側でエラーが発生しました")
+        } catch (e: IllegalStateException) {
             logger.error("Google Books API 連携中にエラーが発生しました: ${e.message}", e)
             throw RemoteApiServiceException("Google Books API側でエラーが発生しました")
         }
