@@ -6,6 +6,7 @@ import net.naoponju.liblis.domain.repository.BookRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
+import java.util.UUID
 
 @Service
 class BookService(
@@ -40,8 +41,14 @@ class BookService(
         }
     }
 
-    fun getBookCount(): Int? {
+    fun getAllBookCount(): Int? {
         val countBooks = bookRepository.fetchAllBooks()?.size
+
+        return countBooks
+    }
+
+    fun getHavingBookCount(userId: UUID): Int? {
+        val countBooks = bookRepository.fetchUserHavingBooks(userId)?.size
 
         return countBooks
     }

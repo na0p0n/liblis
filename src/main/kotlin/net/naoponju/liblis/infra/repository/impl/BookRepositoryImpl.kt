@@ -23,6 +23,10 @@ class BookRepositoryImpl(
         return bookMapper.fetchAllBooksOrderByTitle()
     }
 
+    override fun fetchUserHavingBooks(userId: UUID): List<BookEntity>? {
+        return bookMapper.fetchUserBooks(userId)
+    }
+
     override fun findBookByTitle(title: String): List<BookEntity>? {
         return bookMapper.findBookByTitle(title)
     }
