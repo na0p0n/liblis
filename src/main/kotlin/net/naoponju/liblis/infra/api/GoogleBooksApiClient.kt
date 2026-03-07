@@ -6,7 +6,6 @@ import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import net.naoponju.liblis.application.dto.GoogleBookDataDto
 import net.naoponju.liblis.application.dto.GoogleBookDetailResponseItemDto
 import net.naoponju.liblis.application.dto.GoogleBookSearchResponseDto
-import net.naoponju.liblis.common.config.LoggingAspect
 import net.naoponju.liblis.common.exception.BookNotFoundException
 import net.naoponju.liblis.common.exception.RemoteApiServiceException
 import org.slf4j.LoggerFactory
@@ -80,7 +79,7 @@ class GoogleBooksApiClient(
     }
 
     companion object {
-        private val logger = LoggerFactory.getLogger(LoggingAspect::class.java)
+        private val logger = LoggerFactory.getLogger(GoogleBooksApiClient::class.java)
 
         @Suppress("MagicNumber", "UseCheckOrError")
         private fun readTextWithTimeout(url: String): String {
@@ -92,7 +91,7 @@ class GoogleBooksApiClient(
                 val stream = if (status in 200..299) conn.inputStream else conn.errorStream
                 val body = stream?.bufferedReader(Charsets.UTF_8)?.use { it.readText() }.orEmpty()
                 if (status !in 200..299) {
-                    throw IllegalStateException("Google Books API retuned HTTP $status: $body")
+                    throw IllegalStateException("Google Books API returned HTTP $status: $body")
                 }
                 body
             } finally {
