@@ -8,15 +8,15 @@ interface BookRepository {
 
     fun findBookByISBNFromGoogle(isbn: String): BookEntity
 
-    fun fetchAllBooks(): List<BookEntity>?
+    fun fetchAllBooks(): List<BookEntity>
 
-    fun fetchUserHavingBooks(userId: UUID): List<BookEntity>?
+    fun fetchUserHavingBooks(userId: UUID): List<BookEntity>
 
-    fun findBookByTitle(title: String): List<BookEntity>?
+    fun findBookByTitle(title: String): List<BookEntity>
 
-    fun findBookByAuthor(author: String): List<BookEntity>?
+    fun findBookByAuthor(author: String): List<BookEntity>
 
-    fun fetchRecentBooks(limit: Int): List<BookEntity>?
+    fun fetchRecentBooks(limit: Int): List<BookEntity>
 
     fun insert(book: BookEntity)
 }

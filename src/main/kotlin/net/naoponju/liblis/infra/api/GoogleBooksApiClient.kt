@@ -57,7 +57,7 @@ class GoogleBooksApiClient(
             val isbn10 = volumeInfo?.industryIdentifiers?.find { it.type == "ISBN_10" }?.identifier
             val isbn13 = volumeInfo?.industryIdentifiers?.find { it.type == "ISBN_13" }?.identifier
             val bookThumbnailUrl = volumeInfo?.imageLinks?.thumbnail ?: volumeInfo?.imageLinks?.smallThumbnail
-            val bookTitle = firstItem.volumeInfo?.title
+            val bookTitle = volumeInfo?.title
 
             return GoogleBookDataDto(
                 title = bookTitle,

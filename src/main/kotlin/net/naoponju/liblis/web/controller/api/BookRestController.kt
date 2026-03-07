@@ -1,7 +1,6 @@
 package net.naoponju.liblis.web.controller.api
 
 import net.naoponju.liblis.application.service.BookService
-import net.naoponju.liblis.common.exception.ApiKeyNotFoundException
 import net.naoponju.liblis.common.exception.BookNotFoundException
 import net.naoponju.liblis.common.exception.RemoteApiServiceException
 import net.naoponju.liblis.domain.entity.BookEntity
@@ -24,7 +23,7 @@ class BookRestController(
     ): ResponseEntity<BookEntity> {
         try {
             val foundBookData = bookService.findBookByISBN(isbn)
-            foundBookData?.let {
+            foundBookData.let {
                 if (it.second) {
                     logger.info("書籍情報Web取得API: DBからのデータ取得に成功 (取得データ: $foundBookData)")
                 } else {
@@ -32,19 +31,12 @@ class BookRestController(
                 }
             }
 
-            return if (foundBookData == null) {
-                ResponseEntity.notFound().build()
-            } else {
-                ResponseEntity.ok(foundBookData.first)
-            }
+            return ResponseEntity.ok(foundBookData.first)
         } catch (e: BookNotFoundException) {
             logger.error("書籍情報Web取得API: データ取得に失敗: ${e.message}")
             return ResponseEntity.notFound().build()
         } catch (e: RemoteApiServiceException) {
             logger.error("書籍情報Web取得API: API実行時にエラー: ${e.message}")
-            return ResponseEntity.internalServerError().build()
-        } catch (e: ApiKeyNotFoundException) {
-            logger.error("書籍情報Web取得API: APIエラー: ${e.message}")
             return ResponseEntity.internalServerError().build()
         }
     }

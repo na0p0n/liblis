@@ -19,24 +19,24 @@ class BookRepositoryImpl(
         return bookMapper.findByISBN(isbn)
     }
 
-    override fun fetchAllBooks(): List<BookEntity>? {
-        return bookMapper.fetchAllBooksOrderByTitle()
+    override fun fetchAllBooks(): List<BookEntity> {
+        return bookMapper.fetchAllBooksOrderByTitle() ?: emptyList()
     }
 
-    override fun fetchUserHavingBooks(userId: UUID): List<BookEntity>? {
-        return bookMapper.fetchUserBooks(userId)
+    override fun fetchUserHavingBooks(userId: UUID): List<BookEntity> {
+        return bookMapper.fetchUserBooks(userId) ?: emptyList()
     }
 
-    override fun findBookByTitle(title: String): List<BookEntity>? {
-        return bookMapper.findBookByTitle(title)
+    override fun findBookByTitle(title: String): List<BookEntity> {
+        return bookMapper.findBookByTitle(title) ?: emptyList()
     }
 
-    override fun findBookByAuthor(author: String): List<BookEntity>? {
-        return bookMapper.findBookByAuthor(author)
+    override fun findBookByAuthor(author: String): List<BookEntity> {
+        return bookMapper.findBookByAuthor(author) ?: emptyList()
     }
 
-    override fun fetchRecentBooks(limit: Int): List<BookEntity>? {
-        return bookMapper.fetchRecentBooks(limit)
+    override fun fetchRecentBooks(limit: Int): List<BookEntity> {
+        return bookMapper.fetchRecentBooks(limit) ?: emptyList()
     }
 
     override fun findBookByISBNFromGoogle(isbn: String): BookEntity {

@@ -67,13 +67,19 @@
                             <td><img th:src="${book.thumbnailUrl != null ? book.thumbnailUrl : 'https://dummy.kobeya.com/?width=60&height=85&bg=cccccc&color=000000&text=No%20Image&_=1772546481754'}" class="book-thumb rounded shadow-sm"></td>
                             <td>
                                 <div class="fw-bold" th:text="${book.title}">実践Kotlin入門</div>
-                                <div class="small text-muted" th:text="${book.author}">リブリス太郎</div>
+                                <div class="small text-muted">
+                                    <span th:each="author, stat: ${book.author}"
+                                          th:text="${stat.last ? author : author + ','}">
+                                        リブリス太郎
+                                    </span>
+                                </div>
                             </td>
                             <td><span class="badge bg-info text-dark">技術書</span></td>
                             <td><span class="small text-muted" th:text="${book.publisher}">リブリス出版</span></td>
-                            <td><span class="small text-muted" th:text="${book.pages}">リブリス出版</span></td>
+                            <td><span class="small text-muted" th:text="${book.pages}">100</span></td>
                             <td class="small text-muted" th:text="${book.isbn13 != null ? book.isbn13 : book.isbn10}">9784000000000</td>
-                            <td class="small text-muted" th:text="${book.publishDate.toString()}">2026/01/19</td>
+                            <td class="small text-muted"
+                                th:text="${book.publishDate?.toString() ?: ''}">2026/01/19</td>
                             <td>
                                 <div class="btn-group">
                                     <button class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil"></i></button>

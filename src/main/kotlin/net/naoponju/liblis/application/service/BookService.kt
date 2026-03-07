@@ -1,6 +1,5 @@
 package net.naoponju.liblis.application.service
 
-import net.naoponju.liblis.common.exception.BookNotFoundException
 import net.naoponju.liblis.domain.entity.BookEntity
 import net.naoponju.liblis.domain.repository.BookRepository
 import org.springframework.stereotype.Service
@@ -34,21 +33,17 @@ class BookService(
     fun getBookList(): List<BookEntity> {
         val foundFromDB = bookRepository.fetchAllBooks()
 
-        if (foundFromDB != null) {
-            return foundFromDB
-        } else {
-            throw BookNotFoundException("書籍DBに書籍がありません。")
-        }
+        return foundFromDB
     }
 
     fun getAllBookCount(): Int? {
-        val countBooks = bookRepository.fetchAllBooks()?.size
+        val countBooks = bookRepository.fetchAllBooks().size
 
         return countBooks
     }
 
     fun getHavingBookCount(userId: UUID): Int? {
-        val countBooks = bookRepository.fetchUserHavingBooks(userId)?.size
+        val countBooks = bookRepository.fetchUserHavingBooks(userId).size
 
         return countBooks
     }
