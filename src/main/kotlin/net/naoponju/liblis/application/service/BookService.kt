@@ -42,6 +42,12 @@ class BookService(
         return countBooks
     }
 
+    fun getHavingBooks(userId: UUID): List<BookEntity>? {
+        val havingBooks = bookRepository.fetchUserHavingBooks(userId)
+
+        return havingBooks
+    }
+
     fun getHavingBookCount(userId: UUID): Int? {
         val countBooks = bookRepository.fetchUserHavingBooks(userId).size
 
