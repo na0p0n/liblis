@@ -34,28 +34,37 @@ class UserBooksRestController(
 
     @PostMapping("/add")
     fun addUserBooks(
+        @AuthenticationPrincipal userDetails: UserDetails,
         @ModelAttribute form: UserBooksForm,
-    ): ResponseEntity<UUID> {
-        val userBooksData =
-            UserBooksDto(
-                id = null,
-                userId = form.userId,
-                bookId = form.bookId,
-                status = form.status,
-                purchaseDate =
-                    LocalDate.of(
-                        form.purchaseYear!!,
-                        form.purchaseMonth!!,
-                        form.purchaseDay!!,
-                    ),
-                purchasePrice = form.purchasePrice,
-            )
-        logger.info("取得したデータ: $userBooksData")
-        val result = userBooksService.insertUserBooksData(userBooksData)
-        return if (result == null) {
-            ResponseEntity.badRequest().build()
-        } else {
-            ResponseEntity.ok(result)
+    ): ResponseEntity<UUID>? {
+        try {
+            val email = userDetails.username
+            val userId = userService.findByEmail(email = email)?.id ?: throw NoSuchFieldError("UserId Not Found.")
+
+            val userBooksData =
+                UserBooksDto(
+                    id = null,
+                    userId = userId,
+                    bookId = form.bookId,
+                    status = form.status,
+                    purchaseDate =
+                        LocalDate.of(
+                            form.purchaseYear!!,
+                            form.purchaseMonth!!,
+                            form.purchaseDay!!,
+                        ),
+                    purchasePrice = form.purchasePrice,
+                )
+            logger.info("取得したデータ: $userBooksData")
+            val result = userBooksService.insertUserBooksData(userBooksData)
+            return if (result == null) {
+                ResponseEntity.badRequest().build()
+            } else {
+                ResponseEntity.ok(result)
+            }
+        } catch (e: NoSuchFieldError) {
+            logger.warn("書庫書籍登録API: userIdが見つかりません。 ${e.message}")
+            return null
         }
     }
 

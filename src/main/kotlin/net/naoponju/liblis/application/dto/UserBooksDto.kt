@@ -13,7 +13,6 @@ data class UserBooksDto(
 )
 
 data class UserBooksForm(
-    val userId: UUID,
     val bookId: UUID,
     val status: String,
     val purchasePrice: Int?,

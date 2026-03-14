@@ -124,7 +124,6 @@
 
             <form id="registrationForm">
                 <input type="hidden" id="bookId" name="bookId">
-                <input type="hidden" id="userId" name="userId" th:value="${userId}">
                 <input type="hidden" name="status" value="OWNED">
                 <div class="modal-body">
                     <div class="row g-3">
@@ -227,7 +226,6 @@
 
         const params = new URLSearchParams({
             bookId:        document.getElementById('bookId').value,
-            userId:        document.getElementById('userId').value,
             status:        'OWNED',
             purchaseYear:  year,
             purchaseMonth: month,
