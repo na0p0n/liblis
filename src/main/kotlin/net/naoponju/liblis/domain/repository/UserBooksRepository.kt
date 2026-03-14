@@ -6,6 +6,11 @@ import java.util.UUID
 interface UserBooksRepository {
     fun getUserBooksList(userId: UUID): List<UserBooksDto>?
 
+    fun existsByUserIdAndBookId(
+        userId: UUID,
+        bookId: UUID,
+    ): Boolean
+
     fun insertUserBooksData(userBooksDto: UserBooksDto): UUID?
 
     fun editUserBooksData(userBooksDto: UserBooksDto)

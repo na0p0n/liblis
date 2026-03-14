@@ -32,8 +32,22 @@ class UserBooksRepositoryImpl(
         return userBooksDtoList
     }
 
+    override fun existsByUserIdAndBookId(
+        userId: UUID,
+        bookId: UUID,
+    ): Boolean {
+        return userBooksMapper.existsByUserIdAndBookId(
+            userId,
+            bookId,
+        )
+    }
+
     @Suppress("ReturnCount")
     override fun insertUserBooksData(userBooksDto: UserBooksDto): UUID? {
+        if (existsByUserIdAndBookId(userBooksDto.userId, userBooksDto.bookId)) {
+            logger.warn("ユーザー書庫書籍登録API: 既に登録済みのためスキップ userId=${userBooksDto.userId}, bookId=${userBooksDto.bookId}")
+            return null
+        }
         try {
             val userBook =
                 UserBooksEntity(
@@ -49,6 +63,7 @@ class UserBooksRepositoryImpl(
                 )
             userBooksMapper.insert(userBook)
             logger.info("ユーザー書庫書籍登録API: 登録成功 id=${userBook.id}")
+
             return userBook.id
         } catch (e: PersistenceException) {
             logger.error("ユーザー書庫書籍登録API: MyBatisの処理で例外発生: ${e.message}")

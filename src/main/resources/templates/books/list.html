@@ -4,6 +4,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <meta charset="UTF-8">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
     <title>書籍一覧 - Liblis</title>
     <style>
         body { background-color: #f8f9fa; }
@@ -82,14 +84,18 @@
                                 th:text="${book.publishDate?.toString() ?: ''}">2026/01/19</td>
                             <td>
                                 <div class="btn-group">
-                                    <button type="button" class="btn btn-outline-primary btn-sm"
+                                    <!-- 所持済みなら disabled バッジ、未所持なら登録ボタン -->
+                                    <span th:if="${ownedBookIds.contains(book.id)}"
+                                          class="btn btn-sm btn-success disabled">
+                                        <i class="bi bi-check-lg me-1"></i>登録済み
+                                    </span>
+                                    <button th:unless="${ownedBookIds.contains(book.id)}"
+                                            type="button" class="btn btn-outline-primary btn-sm"
                                             data-bs-toggle="modal"
                                             data-bs-target="#bookRegistrationModal"
                                             th:data-bs-book="${@jsonHelper.toJson(book)}">
                                         書庫に登録
                                     </button>
-<!--                                    <button class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil"></i></button>-->
-<!--                                    <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>-->
                                 </div>
                             </td>
                         </tr>
@@ -118,6 +124,8 @@
 
             <form id="registrationForm">
                 <input type="hidden" id="bookId" name="bookId">
+                <input type="hidden" id="userId" name="userId" th:value="${userId}">
+                <input type="hidden" name="status" value="OWNED">
                 <div class="modal-body">
                     <div class="row g-3">
                         <div class="col-12">
@@ -160,7 +168,7 @@
 
                         <div class="col-md-6">
                             <label for="purchaseDate" class="form-label">購入日</label>
-                            <input type="date" class="form-control" id="purchaseDate" disabled>
+                            <input type="date" class="form-control" id="purchaseDate" required>
                         </div>
 
                         <div class="col-md-6">
@@ -207,6 +215,49 @@
         modal.querySelector('#isbn').value = book.isbn13;
         modal.querySelector('#publishDate').value = book.publishDate;
         modal.querySelector('#publisher').value = book.publisher;
+    });
+    document.getElementById('registrationForm').addEventListener('submit', async function (e) {
+        e.preventDefault();
+        const purchaseDateVal = document.getElementById('purchaseDate').value;
+        if (!purchaseDateVal) {
+            alert('購入日を入力してください');
+            return;
+        }
+        const [year, month, day] = purchaseDateVal.split('-');
+
+        const params = new URLSearchParams({
+            bookId:        document.getElementById('bookId').value,
+            userId:        document.getElementById('userId').value,
+            status:        'OWNED',
+            purchaseYear:  year,
+            purchaseMonth: month,
+            purchaseDay:   day,
+            purchasePrice: document.getElementById('purchasePrice').value || '',
+        });
+
+        try {
+            const res = await fetch('/api/library/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    [document.querySelector('meta[name="_csrf_header"]').content]:
+                        document.querySelector('meta[name="_csrf"]').content,
+                },
+                body: params.toString(),
+            });
+            if (res.ok) {
+                bootstrap.Modal.getInstance(
+                    document.getElementById('bookRegistrationModal')
+                ).hide();
+                alert('書庫に登録しました！');
+                location.reload(); // 書籍一覧を更新
+            } else {
+                alert('登録に失敗しました。入力内容を確認してください。');
+            }
+        } catch (err) {
+            console.error(err);
+            alert('エラーが発生しました');
+        }
     });
 </script>
 </html>

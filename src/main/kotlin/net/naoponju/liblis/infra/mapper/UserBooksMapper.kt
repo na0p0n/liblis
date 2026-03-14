@@ -45,6 +45,20 @@ interface UserBooksMapper {
     )
     fun findBooksByUserId(userId: UUID): List<UserBooksEntity>?
 
+    @Select(
+        """
+        SELECT COUNT(*) > 0
+        FROM user_books
+        WHERE user_id = #{userId, jdbcType=OTHER}
+        AND book_id = #{bookId, jdbcType=OTHER}
+        AND is_deleted = false;
+    """,
+    )
+    fun existsByUserIdAndBookId(
+        userId: UUID,
+        bookId: UUID,
+    ): Boolean
+
     @Insert(
         """
         INSERT INTO user_books (

@@ -4,6 +4,7 @@ import net.naoponju.liblis.application.dto.UserBooksDto
 import net.naoponju.liblis.application.dto.UserBooksForm
 import net.naoponju.liblis.application.service.UserBooksService
 import net.naoponju.liblis.application.service.UserService
+import org.slf4j.LoggerFactory
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.security.core.userdetails.UserDetails
@@ -49,12 +50,16 @@ class UserBooksRestController(
                     ),
                 purchasePrice = form.purchasePrice,
             )
-        println(userBooksData)
+        logger.info("取得したデータ: $userBooksData")
         val result = userBooksService.insertUserBooksData(userBooksData)
         return if (result == null) {
             ResponseEntity.badRequest().build()
         } else {
             ResponseEntity.ok(result)
         }
+    }
+
+    companion object {
+        private val logger = LoggerFactory.getLogger(UserBooksRestController::class.java)
     }
 }
