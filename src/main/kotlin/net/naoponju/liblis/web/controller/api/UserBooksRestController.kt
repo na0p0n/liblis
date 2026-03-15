@@ -61,9 +61,19 @@ class UserBooksRestController(
 
         val userId =
             userService.findByEmail(email = email)?.id
-                ?: throw NoSuchFieldError("UserId Not Found.")
+                ?: return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
 
         if (form.purchaseYear == null || form.purchaseMonth == null || form.purchaseDay == null) {
+            return ResponseEntity.badRequest().build()
+        }
+
+        val purchaseDate = runCatching {
+            LocalDate.of(
+                form.purchaseYear,
+                form.purchaseMonth,
+                form.purchaseDay,
+            )
+        }.getOrElse {
             return ResponseEntity.badRequest().build()
         }
 
@@ -73,12 +83,7 @@ class UserBooksRestController(
                 userId = userId,
                 bookId = form.bookId,
                 status = form.status,
-                purchaseDate =
-                    LocalDate.of(
-                        form.purchaseYear,
-                        form.purchaseMonth,
-                        form.purchaseDay,
-                    ),
+                purchaseDate = purchaseDate,
                 purchasePrice = form.purchasePrice,
             )
         logger.info("取得したデータ: $userBooksData")
@@ -108,7 +113,7 @@ class UserBooksRestController(
             userService.findByEmail(email)?.id
                 ?: return ResponseEntity.badRequest().build()
 
-        if (!userBooksService.isOwnedByUser(userBooksId, userId)) {
+        if (!userBooksService.isOwnedByUser(userId, userBooksId)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
         }
 
@@ -140,7 +145,7 @@ class UserBooksRestController(
             userService.findByEmail(email)?.id
                 ?: return ResponseEntity.badRequest().build()
 
-        if (!userBooksService.isOwnedByUser(userBooksId, userId)) {
+        if (!userBooksService.isOwnedByUser(userId, userBooksId)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
         }
 

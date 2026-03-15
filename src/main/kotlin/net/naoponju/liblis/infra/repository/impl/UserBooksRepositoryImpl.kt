@@ -106,11 +106,11 @@ class UserBooksRepositoryImpl(
             userBooksMapper.deleteUserBooks(userBooksId)
             logger.info("ユーザー書庫書籍削除API: 削除成功 id=$userBooksId")
         } catch (e: PersistenceException) {
-            logger.error("ユーザー書庫書籍削除API: MyBatisの処理で例外発生: ${e.message}")
-            throw PersistenceException(e)
+            logger.error("ユーザー書庫書籍削除API: MyBatisの処理で例外発生:", e)
+            throw e
         } catch (e: SQLException) {
-            logger.error("ユーザー書庫書籍削除API: SQLで例外発生: ${e.message}")
-            throw SQLException(e)
+            logger.error("ユーザー書庫書籍削除API: SQLで例外発生:", e)
+            throw e
         }
     }
 
