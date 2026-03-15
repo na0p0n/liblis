@@ -207,7 +207,7 @@
     // 削除
     async function deleteBook(btn) {
         if (!confirm('この書籍を書庫から削除しますか？')) return;
-    const id = btn.dataset.ubId;
+        const id = btn.dataset.ubId;
         const res = await fetch(`/api/library/${id}`, {
             method: 'DELETE',
             headers: {
@@ -220,7 +220,7 @@
         } else {
             alert('削除に失敗しました。');
         }
-    }
+    };
 </script>
 </body>
 </html>
