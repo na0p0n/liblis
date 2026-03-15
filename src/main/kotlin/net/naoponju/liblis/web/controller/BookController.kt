@@ -10,7 +10,6 @@ import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
-import java.util.UUID
 
 @Controller
 @Suppress("FunctionOnlyReturningConstant")
@@ -44,8 +43,8 @@ class BookController(
             userId
                 ?.let { bookService.getHavingBooks(it) }
                 ?.mapNotNull { it.id }
-                ?.toSet()
-                ?: emptySet<UUID>()
+                ?.toHashSet()
+                ?: HashSet()
 
         model.addAttribute("books", books)
         model.addAttribute("ownedBookIds", ownedBookIds)
