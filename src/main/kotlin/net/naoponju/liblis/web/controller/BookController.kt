@@ -30,8 +30,7 @@ class BookController(
                 emptyList()
             }
 
-        val email = userDetails.username
-        val userId = email?.let { userService.findByEmail(it)?.id }
+        val userId = userService.findByEmail(userDetails.username)?.id
 
         val ownedBookIds =
             userId
@@ -39,7 +38,7 @@ class BookController(
                 ?.mapNotNull { it.id }
                 ?.toSet()
                 ?: emptySet<UUID>()
-        model.addAttribute("userId", userId)
+
         model.addAttribute("books", books)
         model.addAttribute("ownedBookIds", ownedBookIds)
         return "books/list"

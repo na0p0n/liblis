@@ -64,7 +64,7 @@ class UserBooksRestController(
             }
         } catch (e: NoSuchFieldError) {
             logger.warn("書庫書籍登録API: userIdが見つかりません。 ${e.message}")
-            return null
+            return ResponseEntity.badRequest().build()
         }
     }
 

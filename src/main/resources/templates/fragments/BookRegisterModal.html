@@ -1,24 +1,6 @@
 <!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Liblis - 書籍登録モーダル</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Noto Sans JP', sans-serif; background-color: #f8f9fa; }
-        .modal-header { background-color: #0d6efd; color: white; }
-        .btn-close-white { filter: invert(1) grayscale(100%) brightness(200%); }
-    </style>
-</head>
-<body>
-
-<button type="button" class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#bookRegistrationModal">
-    新刊を登録する
-</button>
-
-<div class="modal fade" id="bookRegistrationModal" tabindex="-1" aria-labelledby="modalTitle" aria-hidden="true">
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<div th:fragment="bookRegisterFields" class="modal fade" id="bookRegistrationModal" tabindex="-1" aria-labelledby="modalTitle" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
@@ -27,42 +9,59 @@
             </div>
 
             <form id="registrationForm">
+                <input type="hidden" id="bookId" name="bookId">
+                <input type="hidden" name="status" value="OWNED">
                 <div class="modal-body">
                     <div class="row g-3">
                         <div class="col-12">
                             <label for="bookTitle" class="form-label">書籍タイトル <span class="badge bg-danger">必須</span></label>
-                            <input type="text" class="form-control" id="bookTitle" placeholder="例：プログラミングの基礎" required>
+                            <input type="text" class="form-control" id="bookTitle" placeholder="例：プログラミングの基礎" disabled>
                         </div>
 
                         <div class="col-md-6">
                             <label for="author" class="form-label">著者名</label>
-                            <input type="text" class="form-control" id="author" placeholder="例：山田 太郎">
+                            <input type="text" class="form-control" id="author" placeholder="例：山田 太郎" disabled>
                         </div>
 
                         <div class="col-md-6">
                             <label for="isbn" class="form-label">ISBN</label>
-                            <input type="text" class="form-control" id="isbn" placeholder="978-4-...">
+                            <input type="text" class="form-control" id="isbn" placeholder="9784..." disabled>
                         </div>
 
                         <div class="col-md-6">
                             <label for="publisher" class="form-label">出版社</label>
-                            <input type="text" class="form-control" id="publisher" placeholder="例：リブリス出版">
+                            <input type="text" class="form-control" id="publisher" placeholder="例：リブリス出版" disabled>
                         </div>
 
                         <div class="col-md-6">
                             <label for="publishDate" class="form-label">出版日</label>
-                            <input type="date" class="form-control" id="publishDate">
+                            <input type="date" class="form-control" id="publishDate" disabled>
                         </div>
 
                         <div class="col-md-6">
                             <label for="category" class="form-label">カテゴリ</label>
-                            <select class="form-select" id="category">
+                            <select class="form-select" id="category" disabled>
                                 <option selected>選択してください...</option>
                                 <option value="1">技術書</option>
                                 <option value="2">ビジネス</option>
                                 <option value="3">小説</option>
                                 <option value="4">その他</option>
                             </select>
+                        </div>
+
+                        <div class="col-md-6"></div>
+
+                        <div class="col-md-6">
+                            <label for="purchaseDate" class="form-label">購入日</label>
+                            <input type="date" class="form-control" id="purchaseDate" required>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="purchasePrice" class="form-label small fw-bold">購入価格</label>
+                            <div class="input-group">
+                                <span class="input-group-text">¥</span>
+                                <input type="number" class="form-control" id="purchasePrice">
+                            </div>
                         </div>
 
                         <div class="col-12">
@@ -93,6 +92,4 @@
         modal.hide();
     });
 </script>
-
-</body>
 </html>
