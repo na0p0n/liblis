@@ -41,10 +41,12 @@ class UserBookViewController(
                 val userBooksMap = userBooksList.associateBy { it.bookId }
 
                 books.mapNotNull { book ->
-                    val ub = book.id?.let { userBooksMap[it] } ?: return@mapNotNull null
+                    val bookId = book.id ?: return@mapNotNull null
+                    val ub = userBooksMap[bookId] ?: return@mapNotNull null
+                    val userBooksId = ub.id ?: return@mapNotNull null
                     LibraryBookDto(
-                        userBooksId = ub.id!!,
-                        bookId = book.id,
+                        userBooksId = userBooksId,
+                        bookId = bookId,
                         title = book.title,
                         author = book.author,
                         publisher = book.publisher,

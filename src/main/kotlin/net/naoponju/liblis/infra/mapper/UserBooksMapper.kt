@@ -108,6 +108,7 @@ interface UserBooksMapper {
             UPDATE user_books SET
                 status = #{status},
                 purchase_price = #{purchasePrice},
+                purchase_date = #{purchaseDate},
                 updated_at = CURRENT_TIMESTAMP
             WHERE id = #{id, jdbcType=OTHER}
         """,

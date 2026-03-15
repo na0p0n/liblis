@@ -63,6 +63,10 @@ class UserBooksRestController(
             userService.findByEmail(email = email)?.id
                 ?: throw NoSuchFieldError("UserId Not Found.")
 
+        if (form.purchaseYear == null || form.purchaseMonth == null || form.purchaseDay == null) {
+            return ResponseEntity.badRequest().build()
+        }
+
         val userBooksData =
             UserBooksDto(
                 id = null,
@@ -71,9 +75,9 @@ class UserBooksRestController(
                 status = form.status,
                 purchaseDate =
                     LocalDate.of(
-                        form.purchaseYear!!,
-                        form.purchaseMonth!!,
-                        form.purchaseDay!!,
+                        form.purchaseYear,
+                        form.purchaseMonth,
+                        form.purchaseDay,
                     ),
                 purchasePrice = form.purchasePrice,
             )
@@ -115,7 +119,7 @@ class UserBooksRestController(
                 bookId = form.bookId,
                 status = form.status,
                 purchasePrice = form.purchasePrice,
-                purchaseDate = null,
+                purchaseDate = form.purchaseDate,
             ),
         )
         return ResponseEntity.ok().build()

@@ -9,7 +9,7 @@ data class UserBooksDto(
     val bookId: UUID,
     val status: String,
     val purchasePrice: Int?,
-    val purchaseDate: LocalDate?,
+    val purchaseDate: LocalDate,
 )
 
 data class UserBooksForm(
@@ -25,4 +25,5 @@ data class UserBooksUpdateForm(
     val bookId: UUID,
     val status: String,
     val purchasePrice: Int?,
+    val purchaseDate: LocalDate,
 )

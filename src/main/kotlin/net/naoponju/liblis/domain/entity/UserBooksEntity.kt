@@ -10,7 +10,7 @@ data class UserBooksEntity(
     val bookId: UUID,
     val status: String,
     val purchasePrice: Int?,
-    val purchaseDate: LocalDate?,
+    val purchaseDate: LocalDate,
     val isDeleted: Boolean = false,
     val createdAt: LocalDateTime,
     val updatedAt: LocalDateTime,

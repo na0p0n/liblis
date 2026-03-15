@@ -71,7 +71,11 @@ class UserBooksRepositoryImpl(
                     createdAt = LocalDateTime.now(),
                     updatedAt = LocalDateTime.now(),
                 )
-            userBooksMapper.insert(userBook)
+            val affected = userBooksMapper.insert(userBook)
+            if (affected != 1) {
+                logger.warn("ユーザー書庫書籍登録API: 反映件数が不正です affected=$affected, id=${userBook.id}")
+                return null
+            }
             logger.info("ユーザー書庫書籍登録API: 登録成功 id=${userBook.id}")
 
             return userBook.id
@@ -90,19 +94,23 @@ class UserBooksRepositoryImpl(
             logger.info("ユーザー書庫書籍情報変更API: 情報変更に成功 id=${userBooksDto.id}")
         } catch (e: PersistenceException) {
             logger.error("ユーザー書庫書籍情報変更API: MyBatisの処理で例外発生: ${e.message}")
+            throw PersistenceException(e)
         } catch (e: SQLException) {
             logger.error("ユーザー書庫書籍情報変更API: SQLで例外発生: ${e.message}")
+            throw SQLException(e)
         }
     }
 
     override fun deleteUserBooks(userBooksId: UUID) {
         try {
             userBooksMapper.deleteUserBooks(userBooksId)
-            logger.info("ユーザー書庫書籍削除API: 登録成功 id=$userBooksId")
+            logger.info("ユーザー書庫書籍削除API: 削除成功 id=$userBooksId")
         } catch (e: PersistenceException) {
             logger.error("ユーザー書庫書籍削除API: MyBatisの処理で例外発生: ${e.message}")
+            throw PersistenceException(e)
         } catch (e: SQLException) {
             logger.error("ユーザー書庫書籍削除API: SQLで例外発生: ${e.message}")
+            throw SQLException(e)
         }
     }
 

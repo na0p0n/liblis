@@ -107,7 +107,7 @@
         hideFetchError();
 
         try {
-            const res = await fetch(`/api/books/find?isbn=${isbn}`);
+            const res = await fetch(`/api/books/find?isbn=${encodeURIComponent(isbn)}`);
 
             if (res.status === 404) {
                 showFetchError('書籍が見つかりませんでした。ISBNを確認してください。');

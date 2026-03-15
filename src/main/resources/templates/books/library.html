@@ -61,6 +61,7 @@
                             <th>ページ数</th>
                             <th>ISBN</th>
                             <th>出版日</th>
+                            <th>購入日 / 購入金額</th>
                             <th>操作</th>
                         </tr>
                         </thead>
@@ -83,12 +84,19 @@
                             <td class="small text-muted"
                                 th:text="${book.publishDate?.toString() ?: ''}">2026/01/19</td>
                             <td>
+                                <div class="fw-bold" th:text="${book.purchaseDate.toString()}">9999/01/01</div>
+                                <div class="fw-bold">
+                                    <span th:text="${book.purchasePrice}">000</span>円
+                                </div>
+                            </td>
+                            <td>
                                 <div class="btn-group">
                                     <button class="btn btn-sm btn-outline-secondary"
                                             th:data-ub-id="${book.userBooksId}"
                                             th:data-book-id="${book.bookId}"
                                             th:data-status="${book.status}"
                                             th:data-purchase-price="${book.purchasePrice}"
+                                            th:data-purchase-date="${book.purchaseDate}"
                                             data-bs-toggle="modal"
                                             data-bs-target="#editModal">
                                         <i class="bi bi-pencil"></i>
@@ -134,6 +142,13 @@
                         </select>
                     </div>
                     <div class="mb-3">
+                        <label class="form-label small fw-bold">購入日</label>
+                        <div class="input-group">
+                            <span class="input-group-text">¥</span>
+                            <input type="date" id="editPurchaseDate" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
                         <label class="form-label small fw-bold">購入価格</label>
                         <div class="input-group">
                             <span class="input-group-text">¥</span>
@@ -158,6 +173,7 @@
         document.getElementById('editUserBooksId').value  = btn.dataset.ubId;
         document.getElementById('editBookId').value        = btn.dataset.bookId;
         document.getElementById('editStatus').value        = btn.dataset.status;
+        document.getElementById('editPurchaseDate').value  = btn.dataset.purchaseDate ?? '';
         document.getElementById('editPurchasePrice').value = btn.dataset.purchasePrice ?? '';
     });
 
@@ -170,6 +186,7 @@
             bookId:        document.getElementById('editBookId').value,
             status:        document.getElementById('editStatus').value,
             purchasePrice: document.getElementById('editPurchasePrice').value || '',
+            purchaseDate:  document.getElementById('editPurchaseDate').value,
         });
         const res = await fetch(`/api/library/${id}`, {
             method: 'PUT',
