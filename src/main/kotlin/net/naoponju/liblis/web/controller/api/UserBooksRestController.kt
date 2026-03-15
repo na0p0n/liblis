@@ -2,15 +2,19 @@ package net.naoponju.liblis.web.controller.api
 
 import net.naoponju.liblis.application.dto.UserBooksDto
 import net.naoponju.liblis.application.dto.UserBooksForm
+import net.naoponju.liblis.application.dto.UserBooksUpdateForm
 import net.naoponju.liblis.application.service.UserBooksService
 import net.naoponju.liblis.application.service.UserService
 import org.slf4j.LoggerFactory
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.security.core.userdetails.UserDetails
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.ModelAttribute
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import java.time.LocalDate
@@ -66,6 +70,37 @@ class UserBooksRestController(
             logger.warn("書庫書籍登録API: userIdが見つかりません。 ${e.message}")
             return ResponseEntity.badRequest().build()
         }
+    }
+
+    @PutMapping("/{userBooksId}")
+    fun updateUserBooks(
+        @AuthenticationPrincipal userDetails: UserDetails,
+        @PathVariable userBooksId: UUID,
+        @ModelAttribute form: UserBooksUpdateForm,
+    ): ResponseEntity<Unit> {
+        val userId =
+            userService.findByEmail(userDetails.username)?.id
+                ?: return ResponseEntity.badRequest().build()
+
+        userBooksService.updateUserBooksData(
+            UserBooksDto(
+                id = userBooksId,
+                userId = userId,
+                bookId = form.bookId,
+                status = form.status,
+                purchasePrice = form.purchasePrice,
+                purchaseDate = null,
+            ),
+        )
+        return ResponseEntity.ok().build()
+    }
+
+    @DeleteMapping("/{userBooksId}")
+    fun deleteUserBooks(
+        @PathVariable userBooksId: UUID,
+    ): ResponseEntity<Unit> {
+        userBooksService.deleteUserBooksData(userBooksId)
+        return ResponseEntity.noContent().build()
     }
 
     companion object {

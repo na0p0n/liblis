@@ -22,11 +22,12 @@ interface UserBooksMapper {
                 , book_id
                 , status
                 , purchase_price
+                , purchase_date
                 , is_deleted
                 , created_at
                 , updated_at
             FROM user_books
-            WHERE id = #{userId}
+            WHERE user_id = #{userId, jdbcType=OTHER}
             AND is_deleted = false
         """,
     )
@@ -38,6 +39,7 @@ interface UserBooksMapper {
             Result(column = "book_id", property = "bookId", typeHandler = UUIDTypeHandler::class),
             Result(column = "status", property = "status"),
             Result(column = "purchase_price", property = "purchasePrice"),
+            Result(column = "purchase_date", property = "purchaseDate", javaType = java.time.LocalDate::class),
             Result(column = "is_deleted", property = "isDeleted"),
             Result(column = "created_at", property = "createdAt"),
             Result(column = "updated_at", property = "updatedAt"),

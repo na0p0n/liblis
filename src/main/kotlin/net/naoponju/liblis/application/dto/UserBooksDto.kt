@@ -20,3 +20,9 @@ data class UserBooksForm(
     val purchaseMonth: Int?,
     val purchaseDay: Int?,
 )
+
+data class UserBooksUpdateForm(
+    val bookId: UUID,
+    val status: String,
+    val purchasePrice: Int?,
+)
