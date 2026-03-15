@@ -4,6 +4,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <meta charset="UTF-8">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
     <title>書籍登録 - Liblis</title>
     <style>
         body { background-color: #f8f9fa; }
@@ -26,58 +28,171 @@
                 <p class="small text-muted">ISBN番号を入力すると、タイトルや著者情報を自動で取得します。</p>
                 <div class="input-group mb-2">
                     <span class="input-group-text">ISBN</span>
-                    <input type="text" class="form-control" placeholder="9784...">
-                    <button class="btn btn-primary" type="button">情報を取得</button>
+                    <input type="text" id="isbnInput" class="form-control" placeholder="9784...">
+                    <button id="fetchBtn" type="button" class="btn btn-primary">
+                        <span id="fetchBtnText">情報を取得</span>
+                        <span id="fetchSpinner" class="spinner-border spinner-border-sm ms-1 d-none" role="status"></span>
+                    </button>
                 </div>
+                <div id="fetchError" class="text-danger small d-none"></div>
             </section>
 
             <hr class="my-4">
 
-            <form>
+            <form id="registerForm">
+                <input type="hidden" id="bookId">
+                <input type="hidden" name="status" value="OWNED">
+
                 <h6 class="fw-bold mb-3">書籍情報</h6>
-                <div class="row g-3">
+                <div class="row g-3 mb-4">
                     <div class="col-12">
                         <label class="form-label small fw-bold">タイトル</label>
-                        <input type="text" class="form-control" placeholder="書籍のフルネーム">
+                        <input type="text" id="title" class="form-control" disabled>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label small fw-bold">著者</label>
-                        <input type="text" class="form-control" placeholder="著者名">
+                        <input type="text" id="author" class="form-control" disabled>
                     </div>
                     <div class="col-md-6">
-                        <label class="form-label small fw-bold">カテゴリ</label>
-                        <select class="form-select">
-                            <option selected>選択してください</option>
-                            <option>技術書</option>
-                            <option>小説</option>
-                            <option>ビジネス</option>
-                            <option>その他</option>
-                        </select>
+                        <label class="form-label small fw-bold">出版社</label>
+                        <input type="text" id="publisher" class="form-control" disabled>
                     </div>
+                </div>
+
+                <h6 class="fw-bold mb-3">購入情報</h6>
+                <div class="row g-3">
                     <div class="col-md-6">
-                        <label class="form-label small fw-bold">定価</label>
-                        <div class="input-group">
-                            <span class="input-group-text">¥</span>
-                            <input type="number" class="form-control">
-                        </div>
+                        <label class="form-label small fw-bold">
+                            購入日 <span class="badge bg-danger">必須</span>
+                        </label>
+                        <input type="date" id="purchaseDate" class="form-control" required>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label small fw-bold">購入価格</label>
                         <div class="input-group">
                             <span class="input-group-text">¥</span>
-                            <input type="number" class="form-control">
+                            <input type="number" id="purchasePrice" class="form-control">
                         </div>
                     </div>
                 </div>
 
                 <div class="mt-4 d-grid">
-                    <button type="submit" class="btn btn-success fw-bold">この内容で登録する</button>
+                    <button type="submit" id="registerBtn" class="btn btn-success fw-bold" disabled>
+                        この内容で登録する
+                    </button>
                 </div>
             </form>
+
+            <div class="alert alert-info">
+                手入力で書籍を登録する機能は、今後実装予定です。
+            </div>
         </div>
     </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
+<script>
+    document.getElementById('fetchBtn').addEventListener('click', async function() {
+        const isbn = document.getElementById('isbnInput').value.trim();
+        if (!isbn) {
+            showFetchError('ISBNを入力してください');
+            return;
+        }
+
+        document.getElementById('fetchBtnText').textContent = '取得中...';
+        document.getElementById('fetchSpinner').classList.remove('d-none');
+        document.getElementById('fetchBtn').disabled = true;
+        hideFetchError();
+
+        try {
+            const res = await fetch(`/api/books/find?isbn=${encodeURIComponent(isbn)}`);
+
+            if (res.status === 404) {
+                showFetchError('書籍が見つかりませんでした。ISBNを確認してください。');
+                return;
+            }
+
+            if (!res.ok) {
+                showFetchError('取得に失敗しました。しばらく経ってからお試しください。');
+                return;
+            }
+
+            const book= await res.json();
+
+            document.getElementById('bookId').value = book.id ?? '';
+            document.getElementById('title').value = book.title ?? '';
+            document.getElementById('author').value = book.author?.join(', ') ?? '';
+            document.getElementById('publisher').value = book.publisher ?? '';
+
+            document.getElementById('registerBtn').disabled = false;
+        } catch (err) {
+            console.error(err);
+            showFetchError('通信エラーが発生しました。');
+        } finally {
+            document.getElementById('fetchBtnText').textContent = '情報を取得';
+            document.getElementById('fetchSpinner').classList.add('d-none');
+            document.getElementById('fetchBtn').disabled = false;
+        }
+    });
+
+    // 登録フォームsubmit
+    document.getElementById('registerForm').addEventListener('submit', async function (e) {
+        e.preventDefault();
+
+        const bookId = document.getElementById('bookId').value;
+        if (!bookId) {
+            alert('先にISBNで書籍を取得してください');
+            return;
+        }
+
+        const purchaseDateVal = document.getElementById('purchaseDate').value;
+        if (!purchaseDateVal) {
+            alert('購入日を入力してください');
+            return;
+        }
+        const [year, month, day] = purchaseDateVal.split('-');
+
+        const params = new URLSearchParams({
+            bookId,
+            status:        'OWNED',
+            purchaseYear:  year,
+            purchaseMonth: month,
+            purchaseDay:   day,
+            purchasePrice: document.getElementById('purchasePrice').value || '',
+        });
+
+        try {
+            const res = await fetch('/api/library/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    [document.querySelector('meta[name="_csrf_header"]').content]:
+                        document.querySelector('meta[name="_csrf"]').content,
+                },
+                body: params.toString(),
+            });
+
+            if (res.ok) {
+                window.location.href = '/library';
+            } else {
+                alert('登録に失敗しました。入力内容を確認してください。');
+            }
+        } catch (err) {
+            console.error(err);
+            alert('通信エラーが発生しました。');
+        }
+    });
+
+    function showFetchError(msg) {
+        const el = document.getElementById('fetchError');
+        el.textContent = msg;
+        el.classList.remove('d-none');
+    }
+
+    function hideFetchError() {
+        document.getElementById('fetchError').classList.add('d-none');
+    }
+</script>
 </html>

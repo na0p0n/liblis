@@ -2,6 +2,8 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <meta charset="UTF-8">
@@ -42,21 +44,10 @@
                 <div class="h3 mb-0"><span th:text="${haveBookCount}">***</span> <small class="fs-6">冊</small></div>
             </div>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-4" hidden>
             <div class="card shadow-sm stats-card h-100 p-3" style="border-left-color: #ffc107;">
                 <div class="small text-muted fw-bold">気になる本</div>
                 <div class="h3 mb-0">12 <small class="fs-6">冊</small></div>
-            </div>
-        </div>
-    </div>
-    <div class="row g-3 mb-5">
-        <div class="col-md-6">
-            <div class="card shadow-sm h-100 p-3">
-                <label class="small text-muted fw-bold mb-2">ISBNでクイック登録</label>
-                <form class="d-flex gap-2">
-                    <input type="text" class="form-control form-control-sm" placeholder="ISBN (例: 9784...)">
-                    <button type="button" class="btn btn-primary btn-sm px-3">取得</button>
-                </form>
             </div>
         </div>
     </div>
@@ -80,7 +71,7 @@
             </div>
         </div>
 
-        <div class="col-lg-4 mt-4 mt-lg-0">
+        <div class="col-lg-4 mt-4 mt-lg-0" hidden>
             <h5 class="mb-3 fw-bold"><i class="bi bi-star me-2"></i>気になる本</h5>
             <div class="list-group shadow-sm">
                 <div class="list-group-item list-group-item-action d-flex align-items-center p-2">
@@ -98,4 +89,107 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
+<script>
+    document.getElementById('fetchBtn').addEventListener('click', async function() {
+        const isbn = document.getElementById('isbnInput').value.trim();
+        if (!isbn) {
+            showFetchError('ISBNを入力してください');
+            return;
+        }
+
+        document.getElementById('fetchBtnText').textContent = '取得中...';
+        document.getElementById('fetchSpinner').classList.remove('d-none');
+        document.getElementById('fetchBtn').disabled = true;
+        hideFetchError();
+
+        try {
+            const res = await fetch(`/api/books/find?isbn=${encodeURIComponent(isbn)}`);
+
+            if (res.status === 404) {
+                showFetchError('書籍が見つかりませんでした。ISBNを確認してください。');
+                return;
+            }
+
+            if (!res.ok) {
+                showFetchError('取得に失敗しました。しばらく経ってからお試しください。');
+                return;
+            }
+
+            const book= await res.json();
+
+            document.getElementById('bookId').value = book.id ?? '';
+            document.getElementById('title').value = book.title ?? '';
+            document.getElementById('author').value = book.author?.join(', ') ?? '';
+            document.getElementById('publisher').value = book.publisher ?? '';
+
+            document.getElementById('registerBtn').disabled = false;
+        } catch (err) {
+            console.error(err);
+            showFetchError('通信エラーが発生しました。');
+        } finally {
+            document.getElementById('fetchBtnText').textContent = '情報を取得';
+            document.getElementById('fetchSpinner').classList.add('d-none');
+            document.getElementById('fetchBtn').disabled = false;
+        }
+    });
+
+    // 登録フォームsubmit
+    document.getElementById('registerForm').addEventListener('submit', async function (e) {
+        e.preventDefault();
+
+        const bookId = document.getElementById('bookId').value;
+        if (!bookId) {
+            alert('先にISBNで書籍を取得してください');
+            return;
+        }
+
+        const purchaseDateVal = document.getElementById('purchaseDate').value;
+        if (!purchaseDateVal) {
+            alert('購入日を入力してください');
+            return;
+        }
+        const [year, month, day] = purchaseDateVal.split('-');
+
+        const params = new URLSearchParams({
+            bookId,
+            status:        'OWNED',
+            purchaseYear:  year,
+            purchaseMonth: month,
+            purchaseDay:   day,
+            purchasePrice: document.getElementById('purchasePrice').value || '',
+        });
+
+        try {
+            const res = await fetch('/api/library/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    [document.querySelector('meta[name="_csrf_header"]').content]:
+                        document.querySelector('meta[name="_csrf"]').content,
+                },
+                body: params.toString(),
+            });
+
+            if (res.ok) {
+                window.location.href = '/library';
+            } else {
+                alert('登録に失敗しました。入力内容を確認してください。');
+            }
+        } catch (err) {
+            console.error(err);
+            alert('通信エラーが発生しました。');
+        }
+    });
+
+    function showFetchError(msg) {
+        const el = document.getElementById('fetchError');
+        el.textContent = msg;
+        el.classList.remove('d-none');
+    }
+
+    function hideFetchError() {
+        document.getElementById('fetchError').classList.add('d-none');
+    }
+</script>
 </html>
