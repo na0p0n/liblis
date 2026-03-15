@@ -11,6 +11,11 @@ interface UserBooksRepository {
         bookId: UUID,
     ): Boolean
 
+    fun existsByUserIdAndUserBooksId(
+        userId: UUID,
+        userBooksId: UUID,
+    ): Boolean
+
     fun insertUserBooksData(userBooksDto: UserBooksDto): UUID?
 
     fun editUserBooksData(userBooksDto: UserBooksDto)

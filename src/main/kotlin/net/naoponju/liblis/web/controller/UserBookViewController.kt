@@ -6,6 +6,7 @@ import net.naoponju.liblis.application.service.UserBooksService
 import net.naoponju.liblis.application.service.UserService
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.security.core.userdetails.UserDetails
+import org.springframework.security.oauth2.core.user.OAuth2User
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.GetMapping
@@ -21,10 +22,17 @@ class UserBookViewController(
 ) {
     @GetMapping("")
     fun showUserBooks(
-        @AuthenticationPrincipal userDetails: UserDetails,
+        @AuthenticationPrincipal userDetails: Any?,
         model: Model,
     ): String {
-        val userId = userService.findByEmail(userDetails.username)?.id
+        val email =
+            when (userDetails) {
+                is UserDetails -> userDetails.username
+                is OAuth2User -> userDetails.attributes["email"]?.toString()
+                else -> null
+            } ?: return "redirect:/login"
+
+        val userId = userService.findByEmail(email)?.id
 
         val myBooks =
             if (userId != null) {

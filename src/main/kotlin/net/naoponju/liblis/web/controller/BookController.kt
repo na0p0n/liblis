@@ -5,6 +5,7 @@ import net.naoponju.liblis.application.service.UserService
 import net.naoponju.liblis.common.exception.BookNotFoundException
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.security.core.userdetails.UserDetails
+import org.springframework.security.oauth2.core.user.OAuth2User
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.GetMapping
@@ -20,9 +21,16 @@ class BookController(
 ) {
     @GetMapping("/list")
     fun showBookList(
-        @AuthenticationPrincipal userDetails: UserDetails,
+        @AuthenticationPrincipal userDetails: Any?,
         model: Model,
     ): String {
+        val email =
+            when (userDetails) {
+                is UserDetails -> userDetails.username
+                is OAuth2User -> userDetails.attributes["email"]?.toString()
+                else -> null
+            } ?: return "redirect:/login"
+
         val books =
             try {
                 bookService.getBookList()
@@ -30,7 +38,7 @@ class BookController(
                 emptyList()
             }
 
-        val userId = userService.findByEmail(userDetails.username)?.id
+        val userId = userService.findByEmail(email)?.id
 
         val ownedBookIds =
             userId

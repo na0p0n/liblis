@@ -42,6 +42,16 @@ class UserBooksRepositoryImpl(
         )
     }
 
+    override fun existsByUserIdAndUserBooksId(
+        userId: UUID,
+        userBooksId: UUID,
+    ): Boolean {
+        return userBooksMapper.existsByUserIdAndUserBooksId(
+            userId,
+            userBooksId,
+        )
+    }
+
     @Suppress("ReturnCount")
     override fun insertUserBooksData(userBooksDto: UserBooksDto): UUID? {
         if (existsByUserIdAndBookId(userBooksDto.userId, userBooksDto.bookId)) {

@@ -26,4 +26,14 @@ class UserBooksService(
     fun deleteUserBooksData(userBooksId: UUID) {
         userBooksRepository.deleteUserBooks(userBooksId)
     }
+
+    fun isOwnedByUser(
+        userId: UUID,
+        userBooksId: UUID,
+    ): Boolean {
+        return userBooksRepository.existsByUserIdAndUserBooksId(
+            userId,
+            userBooksId,
+        )
+    }
 }

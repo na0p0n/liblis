@@ -61,6 +61,21 @@ interface UserBooksMapper {
         bookId: UUID,
     ): Boolean
 
+    @Select(
+        """
+        SELECT
+            COUNT(*) > 0
+        FROM user_books
+        WHERE id = #{userBooksId, jdbcType=OTHER}
+        AND user_id = #{userId, jdbcType=OTHER}
+        AND is_deleted = false;
+    """,
+    )
+    fun existsByUserIdAndUserBooksId(
+        userId: UUID,
+        userBooksId: UUID,
+    ): Boolean
+
     @Insert(
         """
         INSERT INTO user_books (

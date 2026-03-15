@@ -6,9 +6,11 @@ import net.naoponju.liblis.application.dto.UserBooksUpdateForm
 import net.naoponju.liblis.application.service.UserBooksService
 import net.naoponju.liblis.application.service.UserService
 import org.slf4j.LoggerFactory
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.security.core.userdetails.UserDetails
+import org.springframework.security.oauth2.core.user.OAuth2User
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.ModelAttribute
@@ -28,59 +30,83 @@ class UserBooksRestController(
 ) {
     @GetMapping("/list")
     fun getUserBookList(
-        @AuthenticationPrincipal userDetails: UserDetails,
-    ): List<UserBooksDto>? {
-        val email = userDetails.username
-        val userId = userService.findByEmail(email = email)?.id
-        val result = userId?.let { userBooksService.getUserHavingBooks(it) }
-        return result
+        @AuthenticationPrincipal userDetails: Any?,
+    ): ResponseEntity<List<UserBooksDto>?> {
+        val email =
+            when (userDetails) {
+                is UserDetails -> userDetails.username
+                is OAuth2User -> userDetails.attributes["email"]?.toString()
+                else -> null
+            } ?: return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
+
+        val userId =
+            userService.findByEmail(email)?.id
+                ?: return ResponseEntity.badRequest().build()
+
+        val result = userBooksService.getUserHavingBooks(userId)
+        return ResponseEntity.ok(result)
     }
 
     @PostMapping("/add")
     fun addUserBooks(
-        @AuthenticationPrincipal userDetails: UserDetails,
+        @AuthenticationPrincipal userDetails: Any?,
         @ModelAttribute form: UserBooksForm,
     ): ResponseEntity<UUID>? {
-        try {
-            val email = userDetails.username
-            val userId = userService.findByEmail(email = email)?.id ?: throw NoSuchFieldError("UserId Not Found.")
+        val email =
+            when (userDetails) {
+                is UserDetails -> userDetails.username
+                is OAuth2User -> userDetails.attributes["email"]?.toString()
+                else -> null
+            } ?: return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
 
-            val userBooksData =
-                UserBooksDto(
-                    id = null,
-                    userId = userId,
-                    bookId = form.bookId,
-                    status = form.status,
-                    purchaseDate =
-                        LocalDate.of(
-                            form.purchaseYear!!,
-                            form.purchaseMonth!!,
-                            form.purchaseDay!!,
-                        ),
-                    purchasePrice = form.purchasePrice,
-                )
-            logger.info("取得したデータ: $userBooksData")
-            val result = userBooksService.insertUserBooksData(userBooksData)
-            return if (result == null) {
-                ResponseEntity.badRequest().build()
-            } else {
-                ResponseEntity.ok(result)
-            }
-        } catch (e: NoSuchFieldError) {
-            logger.warn("書庫書籍登録API: userIdが見つかりません。 ${e.message}")
-            return ResponseEntity.badRequest().build()
+        val userId =
+            userService.findByEmail(email = email)?.id
+                ?: throw NoSuchFieldError("UserId Not Found.")
+
+        val userBooksData =
+            UserBooksDto(
+                id = null,
+                userId = userId,
+                bookId = form.bookId,
+                status = form.status,
+                purchaseDate =
+                    LocalDate.of(
+                        form.purchaseYear!!,
+                        form.purchaseMonth!!,
+                        form.purchaseDay!!,
+                    ),
+                purchasePrice = form.purchasePrice,
+            )
+        logger.info("取得したデータ: $userBooksData")
+        val result = userBooksService.insertUserBooksData(userBooksData)
+
+        return if (result == null) {
+            ResponseEntity.badRequest().build()
+        } else {
+            ResponseEntity.ok(result)
         }
     }
 
     @PutMapping("/{userBooksId}")
     fun updateUserBooks(
-        @AuthenticationPrincipal userDetails: UserDetails,
+        @AuthenticationPrincipal userDetails: Any?,
         @PathVariable userBooksId: UUID,
         @ModelAttribute form: UserBooksUpdateForm,
     ): ResponseEntity<Unit> {
+        val email =
+            when (userDetails) {
+                is UserDetails -> userDetails.username
+                is OAuth2User -> userDetails.attributes["email"]?.toString()
+                else -> null
+            } ?: return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
+
         val userId =
-            userService.findByEmail(userDetails.username)?.id
+            userService.findByEmail(email)?.id
                 ?: return ResponseEntity.badRequest().build()
+
+        if (!userBooksService.isOwnedByUser(userBooksId, userId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
+        }
 
         userBooksService.updateUserBooksData(
             UserBooksDto(
@@ -97,8 +123,23 @@ class UserBooksRestController(
 
     @DeleteMapping("/{userBooksId}")
     fun deleteUserBooks(
+        @AuthenticationPrincipal userDetails: Any?,
         @PathVariable userBooksId: UUID,
     ): ResponseEntity<Unit> {
+        val email =
+            when (userDetails) {
+                is UserDetails -> userDetails.username
+                is OAuth2User -> userDetails.attributes["email"]?.toString()
+                else -> null
+            } ?: return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
+        val userId =
+            userService.findByEmail(email)?.id
+                ?: return ResponseEntity.badRequest().build()
+
+        if (!userBooksService.isOwnedByUser(userBooksId, userId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
+        }
+
         userBooksService.deleteUserBooksData(userBooksId)
         return ResponseEntity.noContent().build()
     }
