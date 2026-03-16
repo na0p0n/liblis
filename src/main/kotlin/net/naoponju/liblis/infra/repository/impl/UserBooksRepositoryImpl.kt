@@ -88,6 +88,7 @@ class UserBooksRepositoryImpl(
         }
     }
 
+    @Suppress("ThrowingNewInstanceOfSameException")
     override fun editUserBooksData(userBooksDto: UserBooksDto) {
         try {
             userBooksMapper.updateUserBooksData(userBooksDto)

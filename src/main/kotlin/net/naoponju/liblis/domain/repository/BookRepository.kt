@@ -18,5 +18,10 @@ interface BookRepository {
 
     fun fetchRecentBooks(limit: Int): List<BookEntity>
 
+    fun findAllPaged(
+        offset: Int,
+        limit: Int,
+    ): List<BookEntity>
+
     fun insert(book: BookEntity)
 }

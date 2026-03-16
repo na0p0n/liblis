@@ -29,6 +29,7 @@ class UserBooksRestController(
     private val userService: UserService,
 ) {
     @GetMapping("/list")
+    @Suppress("ReturnCount")
     fun getUserBookList(
         @AuthenticationPrincipal userDetails: Any?,
     ): ResponseEntity<List<UserBooksDto>?> {
@@ -48,6 +49,7 @@ class UserBooksRestController(
     }
 
     @PostMapping("/add")
+    @Suppress("ReturnCount")
     fun addUserBooks(
         @AuthenticationPrincipal userDetails: Any?,
         @ModelAttribute form: UserBooksForm,
@@ -67,15 +69,16 @@ class UserBooksRestController(
             return ResponseEntity.badRequest().build()
         }
 
-        val purchaseDate = runCatching {
-            LocalDate.of(
-                form.purchaseYear,
-                form.purchaseMonth,
-                form.purchaseDay,
-            )
-        }.getOrElse {
-            return ResponseEntity.badRequest().build()
-        }
+        val purchaseDate =
+            runCatching {
+                LocalDate.of(
+                    form.purchaseYear,
+                    form.purchaseMonth,
+                    form.purchaseDay,
+                )
+            }.getOrElse {
+                return ResponseEntity.badRequest().build()
+            }
 
         val userBooksData =
             UserBooksDto(
@@ -96,6 +99,7 @@ class UserBooksRestController(
         }
     }
 
+    @Suppress("ReturnCount")
     @PutMapping("/{userBooksId}")
     fun updateUserBooks(
         @AuthenticationPrincipal userDetails: Any?,
@@ -130,6 +134,7 @@ class UserBooksRestController(
         return ResponseEntity.ok().build()
     }
 
+    @Suppress("ReturnCount")
     @DeleteMapping("/{userBooksId}")
     fun deleteUserBooks(
         @AuthenticationPrincipal userDetails: Any?,

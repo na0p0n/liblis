@@ -6,6 +6,7 @@ import net.naoponju.liblis.domain.entity.BookEntity
 import org.apache.ibatis.annotations.Delete
 import org.apache.ibatis.annotations.Insert
 import org.apache.ibatis.annotations.Mapper
+import org.apache.ibatis.annotations.Param
 import org.apache.ibatis.annotations.Result
 import org.apache.ibatis.annotations.ResultMap
 import org.apache.ibatis.annotations.Results
@@ -279,6 +280,40 @@ interface BookMapper {
     )
     @ResultMap("bookResult")
     fun fetchRecentBooks(limit: Int): List<BookEntity>?
+
+    // 本一覧取得のページャー
+    @Select(
+        """
+        SELECT
+            id
+            , title
+            , author
+            , publisher
+            , publish_date
+            , pages
+            , description
+            , isbn10
+            , isbn13
+            , list_price
+            , category
+            , thumbnail_url
+            , registration_count
+            , is_searched_ndl
+            , ndl_url
+            , is_searched_google
+            , google_url
+            , created_at
+            , updated_at
+        FROM books
+        ORDER BY title
+        LIMIT #{limit} OFFSET #{offset}
+    """,
+    )
+    @ResultMap("bookResult")
+    fun findAllPaged(
+        @Param("offset") offset: Int,
+        @Param("limit") limit: Int,
+    ): List<BookEntity>
 
     // 登録件数をカウント
     @Select("SELECT COUNT(*) FROM books")

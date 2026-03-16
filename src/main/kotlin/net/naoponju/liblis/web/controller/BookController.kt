@@ -10,6 +10,8 @@ import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
+import kotlin.math.ceil
 
 @Controller
 @Suppress("FunctionOnlyReturningConstant")
@@ -18,8 +20,11 @@ class BookController(
     private val bookService: BookService,
     private val userService: UserService,
 ) {
+    @Suppress("ReturnCount")
     @GetMapping("/list")
     fun showBookList(
+        @RequestParam(defaultValue = "1") page: Int,
+        @RequestParam(defaultValue = "20") pageSize: Int,
         @AuthenticationPrincipal userDetails: Any?,
         model: Model,
     ): String {
@@ -30,9 +35,17 @@ class BookController(
                 else -> null
             } ?: return "redirect:/login"
 
+        val totalCount = bookService.getAllBookCount()
+        val totalPages = ceil(totalCount.toDouble() / pageSize).toInt().coerceAtLeast(1)
+
+        if (page < 1 || page > totalPages) {
+            return "redirect:/books/list?page=1"
+        }
+
+        val offset = (page - 1) * pageSize
         val books =
             try {
-                bookService.getBookList()
+                bookService.getBookListPaged(offset, pageSize)
             } catch (_: BookNotFoundException) {
                 emptyList()
             }
@@ -48,6 +61,9 @@ class BookController(
 
         model.addAttribute("books", books)
         model.addAttribute("ownedBookIds", ownedBookIds)
+        model.addAttribute("currentPage", page)
+        model.addAttribute("totalPages", totalPages)
+        model.addAttribute("totalCount", totalCount)
         return "books/list"
     }
 

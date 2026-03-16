@@ -39,6 +39,13 @@ class BookRepositoryImpl(
         return bookMapper.fetchRecentBooks(limit) ?: emptyList()
     }
 
+    override fun findAllPaged(
+        offset: Int,
+        limit: Int,
+    ): List<BookEntity> {
+        return bookMapper.findAllPaged(offset, limit)
+    }
+
     override fun findBookByISBNFromGoogle(isbn: String): BookEntity {
         val fetchedBookData = googleBooksApiClient.fetchBookData(isbn)
         val convertedBookPublishedDate = fetchedBookData.publishedDate?.let { convertToLocalDate(it) }
