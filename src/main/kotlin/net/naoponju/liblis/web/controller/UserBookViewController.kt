@@ -51,7 +51,7 @@ class UserBookViewController(
         val totalPages = ceil(totalCount.toDouble() / pageSize).toInt().coerceAtLeast(1)
 
         if (page < 1 || page > totalPages) {
-            return "redirect:/books/list?page=1"
+            return "redirect:/library?page=1"
         }
 
         val myBooks =
