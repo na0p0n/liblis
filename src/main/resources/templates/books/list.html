@@ -241,11 +241,6 @@
                                 <input type="number" class="form-control" id="purchasePrice">
                             </div>
                         </div>
-
-                        <div class="col-12">
-                            <label for="description" class="form-label">書籍の概要</label>
-                            <textarea class="form-control" id="description" rows="3" placeholder="本の内容や保管場所など"></textarea>
-                        </div>
                     </div>
                 </div>
 
@@ -302,7 +297,6 @@
             purchaseMonth: month,
             purchaseDay:   day,
             purchasePrice: document.getElementById('purchasePrice').value || '',
-            description: document.getElementById('description').value || '',
         });
 
         try {
