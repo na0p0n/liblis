@@ -12,6 +12,23 @@ CREATE TABLE books (
   , CONSTRAINT BOOKS_UK_ISBN UNIQUE (isbn)
 );
 
+CREATE TABLE books (
+  id UUID NOT NULL
+  , title VARCHAR(255) NOT NULL
+  , title_kana VARCHAR(255) NOT NULL
+  , sub_title VARCHAR(255)
+  , sub_title_kana VARCHAR(255)
+  , author VARCHAR(255)
+  , isbn VARCHAR(13)
+  , list_price INTEGER
+  , category VARCHAR(100)
+  , registration_count INTEGER DEFAULT 0
+  , created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  , updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  , CONSTRAINT BOOKS_PK PRIMARY KEY (id)
+  , CONSTRAINT BOOKS_UK_ISBN UNIQUE (isbn)
+);
+
 CREATE TABLE user_books (
   id UUID NOT NULL
   , user_id UUID NOT NULL

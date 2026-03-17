@@ -11,6 +11,7 @@ import java.time.LocalDate
 import java.util.UUID
 
 @Repository
+@Suppress("TooManyFunctions")
 class BookRepositoryImpl(
     private val bookMapper: BookMapper,
     private val googleBooksApiClient: GoogleBooksApiClient,
@@ -39,6 +40,13 @@ class BookRepositoryImpl(
         return bookMapper.fetchRecentBooks(limit) ?: emptyList()
     }
 
+    override fun findAllPaged(
+        offset: Int,
+        limit: Int,
+    ): List<BookEntity> {
+        return bookMapper.findAllPaged(offset, limit)
+    }
+
     override fun findBookByISBNFromGoogle(isbn: String): BookEntity {
         val fetchedBookData = googleBooksApiClient.fetchBookData(isbn)
         val convertedBookPublishedDate = fetchedBookData.publishedDate?.let { convertToLocalDate(it) }
@@ -62,6 +70,10 @@ class BookRepositoryImpl(
             isbn10 = fetchedBookData.isbn10,
             isbn13 = fetchedBookData.isbn13,
         )
+    }
+
+    override fun countAllBooks(): Int {
+        return bookMapper.countAllBooks()
     }
 
     override fun insert(book: BookEntity) {

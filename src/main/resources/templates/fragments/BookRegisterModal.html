@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<div th:fragment="bookRegisterFields" class="modal fade" id="bookRegistrationModal" tabindex="-1" aria-labelledby="modalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalTitle">新規書籍登録</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <form id="registrationForm">
+                <input type="hidden" id="bookId" name="bookId">
+                <input type="hidden" name="status" value="OWNED">
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label for="bookTitle" class="form-label">書籍タイトル <span class="badge bg-danger">必須</span></label>
+                            <input type="text" class="form-control" id="bookTitle" placeholder="例：プログラミングの基礎" disabled>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="author" class="form-label">著者名</label>
+                            <input type="text" class="form-control" id="author" placeholder="例：山田 太郎" disabled>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="isbn" class="form-label">ISBN</label>
+                            <input type="text" class="form-control" id="isbn" placeholder="9784..." disabled>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="publisher" class="form-label">出版社</label>
+                            <input type="text" class="form-control" id="publisher" placeholder="例：リブリス出版" disabled>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="publishDate" class="form-label">出版日</label>
+                            <input type="date" class="form-control" id="publishDate" disabled>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="category" class="form-label">カテゴリ</label>
+                            <select class="form-select" id="category" disabled>
+                                <option selected>選択してください...</option>
+                                <option value="1">技術書</option>
+                                <option value="2">ビジネス</option>
+                                <option value="3">小説</option>
+                                <option value="4">その他</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6"></div>
+
+                        <div class="col-md-6">
+                            <label for="purchaseDate" class="form-label">購入日</label>
+                            <input type="date" class="form-control" id="purchaseDate" required>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="purchasePrice" class="form-label small fw-bold">購入価格</label>
+                            <div class="input-group">
+                                <span class="input-group-text">¥</span>
+                                <input type="number" class="form-control" id="purchasePrice">
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <label for="description" class="form-label">書籍の概要</label>
+                            <textarea class="form-control" id="description" rows="3" placeholder="本の内容や保管場所など"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">キャンセル</button>
+                    <button type="submit" class="btn btn-primary">登録する</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    // フォーム送信時の処理（デモ用）
+    document.getElementById('registrationForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        alert('書籍を登録しました！');
+        // ここにサーバーサイドへの送信処理（fetchなど）を記述します。
+        const modal = bootstrap.Modal.getInstance(document.getElementById('bookRegistrationModal'));
+        modal.hide();
+    });
+</script>
+</html>
