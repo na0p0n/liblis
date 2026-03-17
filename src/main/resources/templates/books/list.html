@@ -271,12 +271,7 @@
         const bookJson = button.getAttribute('data-bs-book');
         const book = JSON.parse(bookJson);
         const modal = this;
-        console.log("bookId:" + book.id + "\n"
-            + "bookTitle:" + book.title + "\n"
-            + "bookAuthor:" + book.author + "\n"
-            + "bookPublisher:" + book.publisher + "\n"
-            + "bookPublishDate:" + book.publishDate + "\n"
-            + "bookISBN:" + book.isbn13);
+
         modal.querySelector('#bookId').value = book.id;
         modal.querySelector('#bookTitle').value = book.title;
         modal.querySelector('#author').value = book.author;
