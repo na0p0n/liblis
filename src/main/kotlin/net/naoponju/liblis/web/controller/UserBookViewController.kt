@@ -4,6 +4,7 @@ import net.naoponju.liblis.application.dto.LibraryBookDto
 import net.naoponju.liblis.application.service.BookService
 import net.naoponju.liblis.application.service.UserBooksService
 import net.naoponju.liblis.application.service.UserService
+import net.naoponju.liblis.common.constraint.PagingConstants
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.oauth2.core.user.OAuth2User
@@ -23,13 +24,20 @@ class UserBookViewController(
     private val bookService: BookService,
 ) {
     @GetMapping("")
-    @Suppress("ReturnCount")
+    @Suppress("ReturnCount", "CyclomaticComplexMethod")
     fun showUserBooks(
         @RequestParam(defaultValue = "1") page: Int,
-        @RequestParam(defaultValue = "20") pageSize: Int,
+        @RequestParam(defaultValue = "20") size: Int,
         @AuthenticationPrincipal userDetails: Any?,
         model: Model,
     ): String {
+        val pageSize =
+            if (size in PagingConstants.ALLOWED_PAGE_SIZES) {
+                size
+            } else {
+                PagingConstants.DEFAULT_PAGE_SIZE
+            }
+
         val email =
             when (userDetails) {
                 is UserDetails -> userDetails.username
@@ -75,6 +83,7 @@ class UserBookViewController(
             }
 
         model.addAttribute("myBooks", myBooks)
+        model.addAttribute("pageSize", pageSize)
         model.addAttribute("currentPage", page)
         model.addAttribute("totalPages", totalPages)
         model.addAttribute("totalCount", totalCount)

@@ -50,6 +50,22 @@
     <div class="tab-content" id="bookTabContent">
         <div class="tab-pane fade show active" id="mybooks" role="tabpanel">
             <div class="card shadow-sm">
+                <div class="d-flex justify-content-end align-items-center px-3 pt-3 pb-2">
+                    <span class="me-2 small text-muted fw-bold">表示件数</span>
+                    <div class="btn-group btn-group-sm" role="group" aria-label="Basic radio toggle button group">
+                        <input type="radio" class="btn-check" name="btnradio" id="pageSize20" autocomplete="off"
+                               th:checked="${pageSize == 20}" onchange="changePageSize(20)" checked>
+                        <label class="btn btn-outline-primary" for="pageSize20">20</label>
+
+                        <input type="radio" class="btn-check" name="btnradio" id="pageSize50" autocomplete="off"
+                               th:checked="${pageSize == 50}" onchange="changePageSize(50)">
+                        <label class="btn btn-outline-primary" for="pageSize50">50</label>
+
+                        <input type="radio" class="btn-check" name="btnradio" id="pageSize100" autocomplete="off"
+                               th:checked="${pageSize == 100}" onchange="changePageSize(100)">
+                        <label class="btn btn-outline-primary" for="pageSize100">100</label>
+                    </div>
+                </div>
                 <div class="table-responsive">
                     <table class="table table-hover align-middle mb-0">
                         <thead class="table-light">
@@ -108,7 +124,7 @@
                             <!-- 前ページ -->
                             <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled'">
                                 <a class="page-link"
-                                   th:href="@{/books/list(page=${currentPage - 1})}"
+                                   th:href="@{/books/list(page=${currentPage - 1}, size=${pageSize})}"
                                    aria-label="前へ">&laquo;</a>
                             </li>
 
@@ -124,7 +140,7 @@
                                     th:if="${p == 1 || p == totalPages || (p >= currentPage - 2 && p <= currentPage + 2)}"
                                     th:classappend="${p == currentPage} ? 'active'">
                                     <a class="page-link"
-                                       th:href="@{/books/list(page=${p})}"
+                                       th:href="@{/books/list(page=${p}, size=${pageSize})}"
                                        th:text="${p}">1</a>
                                 </li>
                                 <!-- 省略記号（末尾寄り） -->
@@ -137,7 +153,7 @@
                             <!-- 次ページ -->
                             <li class="page-item" th:classappend="${currentPage == totalPages} ? 'disabled'">
                                 <a class="page-link"
-                                   th:href="@{/books/list(page=${currentPage + 1})}"
+                                   th:href="@{/books/list(page=${currentPage + 1}, size=${pageSize})}"
                                    aria-label="次へ">&raquo;</a>
                             </li>
                         </ul>
@@ -146,8 +162,8 @@
                     <!-- 件数表示 -->
                     <p class="text-center text-muted small">
                         全 <span th:text="${totalCount}">0</span> 件中
-                        <span th:text="${(currentPage - 1) * 20 + 1}">1</span> 〜
-                        <span th:text="${T(java.lang.Math).min(currentPage * 20, totalCount)}">20</span> 件を表示
+                        <span th:text="${(currentPage - 1) * pageSize + 1}">1</span> 〜
+                        <span th:text="${T(java.lang.Math).min(currentPage * pageSize, totalCount)}">20</span> 件を表示
                     </p>
                 </div>
             </div>
@@ -243,6 +259,13 @@
 </div>
 </body>
 <script>
+    function changePageSize(size) {
+        const url = new URL(window.location.href);
+        url.searchParams.set('size', size);
+        url.searchParams.set('page', 1);
+        window.location.href = url.toString();
+    };
+
     const bookModal = document.getElementById('bookRegistrationModal');
     bookModal.addEventListener('show.bs.modal', function (event) {
         const button = event.relatedTarget;
