@@ -125,4 +125,11 @@ interface UserBooksMapper {
     """,
     )
     fun deleteUserBooks(id: UUID)
+
+    @Select(
+        """
+            SELECT COUNT(*) FROM user_books WHERE user_id = #{userId, jdbcType=OTHER} AND is_deleted = false;
+        """,
+    )
+    fun countUserBooks(userId: UUID): Int
 }

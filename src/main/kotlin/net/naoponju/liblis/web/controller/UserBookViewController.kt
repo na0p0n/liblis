@@ -11,6 +11,8 @@ import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
+import kotlin.math.ceil
 
 @Controller
 @Suppress("FunctionOnlyReturningConstant")
@@ -21,7 +23,10 @@ class UserBookViewController(
     private val bookService: BookService,
 ) {
     @GetMapping("")
+    @Suppress("ReturnCount")
     fun showUserBooks(
+        @RequestParam(defaultValue = "1") page: Int,
+        @RequestParam(defaultValue = "20") pageSize: Int,
         @AuthenticationPrincipal userDetails: Any?,
         model: Model,
     ): String {
@@ -32,10 +37,17 @@ class UserBookViewController(
                 else -> null
             } ?: return "redirect:/login"
 
-        val userId = userService.findByEmail(email)?.id
+        val userId = userService.findByEmail(email)?.id ?: return "redirect:/login"
+
+        val totalCount = userBooksService.countUserBooks(userId)
+        val totalPages = ceil(totalCount.toDouble() / pageSize).toInt().coerceAtLeast(1)
+
+        if (page < 1 || page > totalPages) {
+            return "redirect:/books/list?page=1"
+        }
 
         val myBooks =
-            if (userId != null) {
+            run {
                 val books = bookService.getHavingBooks(userId) ?: emptyList()
                 val userBooksList = userBooksService.getUserHavingBooks(userId) ?: emptyList()
                 val userBooksMap = userBooksList.associateBy { it.bookId }
@@ -60,11 +72,12 @@ class UserBookViewController(
                         purchaseDate = ub.purchaseDate,
                     )
                 }
-            } else {
-                emptyList()
             }
 
         model.addAttribute("myBooks", myBooks)
+        model.addAttribute("currentPage", page)
+        model.addAttribute("totalPages", totalPages)
+        model.addAttribute("totalCount", totalCount)
         return "books/library"
     }
 }

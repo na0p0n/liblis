@@ -21,4 +21,6 @@ interface UserBooksRepository {
     fun editUserBooksData(userBooksDto: UserBooksDto)
 
     fun deleteUserBooks(userBooksId: UUID)
+
+    fun countUserBooks(userId: UUID): Int
 }

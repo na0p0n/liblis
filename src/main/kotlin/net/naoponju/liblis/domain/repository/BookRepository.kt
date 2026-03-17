@@ -23,5 +23,7 @@ interface BookRepository {
         limit: Int,
     ): List<BookEntity>
 
+    fun countAllBooks(): Int
+
     fun insert(book: BookEntity)
 }

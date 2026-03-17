@@ -37,7 +37,7 @@ class BookService(
     }
 
     fun getAllBookCount(): Int {
-        val countBooks = bookRepository.fetchAllBooks().size
+        val countBooks = bookRepository.countAllBooks()
 
         return countBooks
     }

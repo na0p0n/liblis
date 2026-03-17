@@ -140,7 +140,6 @@
                                    th:href="@{/books/list(page=${currentPage + 1})}"
                                    aria-label="次へ">&raquo;</a>
                             </li>
-
                         </ul>
                     </nav>
 
@@ -280,6 +279,7 @@
             purchaseMonth: month,
             purchaseDay:   day,
             purchasePrice: document.getElementById('purchasePrice').value || '',
+            description: document.getElementById('description').value || '',
         });
 
         try {

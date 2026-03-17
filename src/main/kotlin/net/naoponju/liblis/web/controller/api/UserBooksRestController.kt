@@ -42,7 +42,7 @@ class UserBooksRestController(
 
         val userId =
             userService.findByEmail(email)?.id
-                ?: return ResponseEntity.badRequest().build()
+                ?: return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
 
         val result = userBooksService.getUserHavingBooks(userId)
         return ResponseEntity.ok(result)
@@ -89,7 +89,11 @@ class UserBooksRestController(
                 purchaseDate = purchaseDate,
                 purchasePrice = form.purchasePrice,
             )
-        logger.info("取得したデータ: $userBooksData")
+        logger.debug(
+            "取得したデータ: bookId={}, status={}",
+            form.bookId,
+            form.status,
+        )
         val result = userBooksService.insertUserBooksData(userBooksData)
 
         return if (result == null) {
@@ -115,7 +119,7 @@ class UserBooksRestController(
 
         val userId =
             userService.findByEmail(email)?.id
-                ?: return ResponseEntity.badRequest().build()
+                ?: return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
 
         if (!userBooksService.isOwnedByUser(userId, userBooksId)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
@@ -148,7 +152,7 @@ class UserBooksRestController(
             } ?: return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
         val userId =
             userService.findByEmail(email)?.id
-                ?: return ResponseEntity.badRequest().build()
+                ?: return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
 
         if (!userBooksService.isOwnedByUser(userId, userBooksId)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build()

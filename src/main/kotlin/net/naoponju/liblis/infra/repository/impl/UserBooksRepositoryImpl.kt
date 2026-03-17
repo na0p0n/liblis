@@ -115,6 +115,10 @@ class UserBooksRepositoryImpl(
         }
     }
 
+    override fun countUserBooks(userId: UUID): Int {
+        return userBooksMapper.countUserBooks(userId)
+    }
+
     companion object {
         private val logger = LoggerFactory.getLogger(UserBooksRepositoryImpl::class.java)
     }

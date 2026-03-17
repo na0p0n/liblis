@@ -27,6 +27,10 @@ class UserBooksService(
         userBooksRepository.deleteUserBooks(userBooksId)
     }
 
+    fun countUserBooks(userId: UUID): Int {
+        return userBooksRepository.countUserBooks(userId)
+    }
+
     fun isOwnedByUser(
         userId: UUID,
         userBooksId: UUID,

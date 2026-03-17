@@ -111,6 +111,54 @@
                         </tr>
                         </tbody>
                     </table>
+                    <!-- ページャー -->
+                    <nav aria-label="My書庫ページネーション" th:if="${totalPages > 1}">
+                        <ul class="pagination justify-content-center mt-4">
+
+                            <!-- 前ページ -->
+                            <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled'">
+                                <a class="page-link"
+                                   th:href="@{/books/list(page=${currentPage - 1})}"
+                                   aria-label="前へ">&laquo;</a>
+                            </li>
+
+                            <!-- ページ番号（前後2ページ + 先頭/末尾） -->
+                            <th:block th:each="p : ${#numbers.sequence(1, totalPages)}">
+                                <!-- 省略記号（先頭寄り） -->
+                                <li class="page-item disabled"
+                                    th:if="${p == 2 && currentPage > 4}">
+                                    <span class="page-link">…</span>
+                                </li>
+                                <!-- ページ番号表示条件: 先頭/末尾/現在±2 -->
+                                <li class="page-item"
+                                    th:if="${p == 1 || p == totalPages || (p >= currentPage - 2 && p <= currentPage + 2)}"
+                                    th:classappend="${p == currentPage} ? 'active'">
+                                    <a class="page-link"
+                                       th:href="@{/books/list(page=${p})}"
+                                       th:text="${p}">1</a>
+                                </li>
+                                <!-- 省略記号（末尾寄り） -->
+                                <li class="page-item disabled"
+                                    th:if="${p == totalPages - 1 && currentPage < totalPages - 3}">
+                                    <span class="page-link">…</span>
+                                </li>
+                            </th:block>
+
+                            <!-- 次ページ -->
+                            <li class="page-item" th:classappend="${currentPage == totalPages} ? 'disabled'">
+                                <a class="page-link"
+                                   th:href="@{/books/list(page=${currentPage + 1})}"
+                                   aria-label="次へ">&raquo;</a>
+                            </li>
+                        </ul>
+                    </nav>
+
+                    <!-- 件数表示 -->
+                    <p class="text-center text-muted small">
+                        全 <span th:text="${totalCount}">0</span> 件中
+                        <span th:text="${(currentPage - 1) * 20 + 1}">1</span> 〜
+                        <span th:text="${T(java.lang.Math).min(currentPage * 20, totalCount)}">20</span> 件を表示
+                    </p>
                 </div>
             </div>
         </div>

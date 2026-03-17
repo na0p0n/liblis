@@ -11,6 +11,7 @@ import java.time.LocalDate
 import java.util.UUID
 
 @Repository
+@Suppress("TooManyFunctions")
 class BookRepositoryImpl(
     private val bookMapper: BookMapper,
     private val googleBooksApiClient: GoogleBooksApiClient,
@@ -69,6 +70,10 @@ class BookRepositoryImpl(
             isbn10 = fetchedBookData.isbn10,
             isbn13 = fetchedBookData.isbn13,
         )
+    }
+
+    override fun countAllBooks(): Int {
+        return bookMapper.countAllBooks()
     }
 
     override fun insert(book: BookEntity) {
