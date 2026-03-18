@@ -20,7 +20,7 @@ class SecurityConfig(
                     .anyRequest().authenticated()
             }
             .sessionManagement { session ->
-                session.sessionFixation().migrateSession()
+                session.sessionFixation().none()
             }
             .formLogin { form ->
                 form.loginPage("/login")
