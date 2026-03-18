@@ -1,7 +1,6 @@
-package net.naoponju.liblis.application.service
-
+import net.naoponju.liblis.application.service.UserService
 import org.springframework.security.core.authority.SimpleGrantedAuthority
-import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.security.core.context.SecurityContext
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest
@@ -9,6 +8,8 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User
 import org.springframework.security.oauth2.core.user.OAuth2User
 import org.springframework.stereotype.Service
+import org.springframework.web.context.request.RequestContextHolder
+import org.springframework.web.context.request.ServletRequestAttributes
 
 @Service
 @Suppress("CyclomaticComplexMethod", "NestedBlockDepth", "LongMethod")
@@ -17,9 +18,7 @@ class CustomOAuth2UserService(
 ) : DefaultOAuth2UserService() {
     override fun loadUser(userRequest: OAuth2UserRequest): OAuth2User {
         val oAuth2User = super.loadUser(userRequest)
-
         val registrationId = userRequest.clientRegistration.registrationId
-
         val attributes = oAuth2User.attributes
 
         val providerId =
@@ -30,7 +29,11 @@ class CustomOAuth2UserService(
                 else -> throw OAuth2AuthenticationException("サポートされていない認証プロバイダです。")
             }
 
-        val authentication = SecurityContextHolder.getContext().authentication
+        // ★ SecurityContextHolder の代わりに Session から直接取得
+        val request = (RequestContextHolder.getRequestAttributes() as? ServletRequestAttributes)?.request
+        val session = request?.getSession(false)
+        val securityContext = session?.getAttribute("SPRING_SECURITY_CONTEXT") as? SecurityContext
+        val authentication = securityContext?.authentication
 
         if (authentication != null && authentication.isAuthenticated && authentication.principal !is String) {
             val email =
@@ -54,7 +57,7 @@ class CustomOAuth2UserService(
                         attributes +
                             mapOf(
                                 "displayName" to currentUser.displayName,
-                                "email" to currentUser.mailAddress, // DBのemailを確実に含める
+                                "email" to currentUser.mailAddress,
                             ),
                         userRequest.clientRegistration.providerDetails
                             .userInfoEndpoint.userNameAttributeName,
@@ -80,7 +83,7 @@ class CustomOAuth2UserService(
             attributes +
                 mapOf(
                     "displayName" to user.displayName,
-                    "email" to user.mailAddress, // ← DBから確実に補完
+                    "email" to user.mailAddress,
                 ),
             userRequest.clientRegistration.providerDetails.userInfoEndpoint.userNameAttributeName,
         )
