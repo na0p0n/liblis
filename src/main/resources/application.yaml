@@ -73,5 +73,6 @@ google:
   api:
     key: ${GOOGLE_BOOKS_API_KEY}
 server:
+  forward-headers-strategy: native
   error:
     path: /error
