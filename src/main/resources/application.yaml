@@ -72,3 +72,6 @@ logging:
 google:
   api:
     key: ${GOOGLE_BOOKS_API_KEY}
+server:
+  error:
+    path: /error
