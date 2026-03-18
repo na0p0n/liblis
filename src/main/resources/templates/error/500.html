@@ -13,7 +13,7 @@
 <body class="d-flex flex-column min-vh-100">
 
 <!-- 共通ヘッダー -->
-<div th:replace="~{fragments/header :: header}"></div>
+<div th:replace="~{common/navbar :: navbar}"></div>
 
 <!-- メインコンテンツ -->
 <main class="flex-grow-1 d-flex align-items-center bg-light">
@@ -44,9 +44,8 @@
     </div>
 </main>
 
-<!-- 共通フッター -->
-<div th:replace="~{fragments/footer :: footer}"></div>
-
 <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
 </body>
+<!-- 共通フッター -->
+<div th:replace="~{common/footer :: footer}"></div>
 </html>
