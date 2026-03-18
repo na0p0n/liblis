@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<footer th:fragment="footer" class="footer mt-auto bg-dark text-white">
+
+    <div class="container py-4">
+        <div class="row gy-3 align-items-center">
+
+            <!-- ブランド -->
+            <div class="col-md-4">
+                <a th:href="@{/}" class="text-white text-decoration-none fw-bold fs-5">Liblis</a>
+                <p class="text-white-50 small mb-0 mt-1">あなたの書庫をスマートに管理</p>
+            </div>
+
+            <!-- リンク -->
+            <div class="col-md-4 text-md-center">
+                <ul class="list-inline mb-0 small">
+                    <li class="list-inline-item">
+                        <a th:href="@{/terms}" class="text-white-50 text-decoration-none link-hover">利用規約</a>
+                    </li>
+                    <li class="list-inline-item text-white-50 mx-1">|</li>
+                    <li class="list-inline-item">
+                        <a th:href="@{/privacy}" class="text-white-50 text-decoration-none link-hover">プライバシーポリシー</a>
+                    </li>
+                    <li class="list-inline-item text-white-50 mx-1">|</li>
+                    <li class="list-inline-item">
+                        <a th:href="@{/contact}" class="text-white-50 text-decoration-none link-hover">お問い合わせ</a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- コピーライト -->
+            <div class="col-md-4 text-md-end">
+                <p class="text-white-50 small mb-0">
+                    &copy; <span th:text="${#dates.format(#dates.createNow(), 'yyyy')}">2026</span> Liblis. All rights reserved.
+                </p>
+            </div>
+
+        </div>
+    </div>
+
+    <style>
+        .footer .link-hover:hover {
+            color: #ffffff !important;
+            transition: color 0.15s ease;
+        }
+    </style>
+</footer>
+</html>
