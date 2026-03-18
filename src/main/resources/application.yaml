@@ -76,3 +76,8 @@ server:
   forward-headers-strategy: native
   error:
     path: /error
+  servlet:
+    session:
+      cookie:
+        secure: false
+        same-site: none
