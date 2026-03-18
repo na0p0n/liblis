@@ -11,7 +11,7 @@ import org.springframework.security.oauth2.core.user.OAuth2User
 import org.springframework.stereotype.Service
 
 @Service
-@Suppress("CyclomaticComplexMethod", "NestedBlockDepth")
+@Suppress("CyclomaticComplexMethod", "NestedBlockDepth", "LongMethod")
 class CustomOAuth2UserService(
     private val userService: UserService,
 ) : DefaultOAuth2UserService() {
@@ -49,7 +49,16 @@ class CustomOAuth2UserService(
                         "apple" -> userService.linkAppleAccount(currentUser.id, providerId)
                     }
 
-                    return oAuth2User
+                    return DefaultOAuth2User(
+                        listOf(SimpleGrantedAuthority(currentUser.role)),
+                        attributes +
+                            mapOf(
+                                "displayName" to currentUser.displayName,
+                                "email" to currentUser.mailAddress, // DBのemailを確実に含める
+                            ),
+                        userRequest.clientRegistration.providerDetails
+                            .userInfoEndpoint.userNameAttributeName,
+                    )
                 }
             }
         }
@@ -68,7 +77,11 @@ class CustomOAuth2UserService(
 
         return DefaultOAuth2User(
             listOf(SimpleGrantedAuthority(user.role)),
-            attributes + ("displayName" to user.displayName),
+            attributes +
+                mapOf(
+                    "displayName" to user.displayName,
+                    "email" to user.mailAddress, // ← DBから確実に補完
+                ),
             userRequest.clientRegistration.providerDetails.userInfoEndpoint.userNameAttributeName,
         )
     }

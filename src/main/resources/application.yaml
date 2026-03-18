@@ -23,6 +23,7 @@ spring:
           github:
             client-id: ${GITHUB_CLIENT_ID}
             client-secret: ${GITHUB_CLIENT_SECRET}
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
             scope:
               - user:email
               - read:user
@@ -79,5 +80,6 @@ server:
   servlet:
     session:
       cookie:
-        secure: false
+        secure: true
         same-site: none
+        http-only: true
