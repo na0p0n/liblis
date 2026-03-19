@@ -70,7 +70,7 @@ CREATE TABLE books (
 CREATE UNIQUE INDEX IDX_BOOKS_ISBN10
     ON books (isbn10) WHERE (isbn10 IS NOT NULL);
 CREATE UNIQUE INDEX IDX_BOOKS_ISBN13
-    ON books (isbn13) WHERE (isbn13 IS NOT NULL)
+    ON books (isbn13) WHERE (isbn13 IS NOT NULL);
 
 
 COMMENT ON COLUMN books.author IS '著者名（複数名対応のため配列型）';
