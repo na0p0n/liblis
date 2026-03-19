@@ -6,6 +6,8 @@ import java.util.UUID
 interface UserBooksRepository {
     fun getUserBooksList(userId: UUID): List<UserBooksDto>?
 
+    fun getRecentAddedBooks(): List<UUID>
+
     fun existsByUserIdAndBookId(
         userId: UUID,
         bookId: UUID,

@@ -49,6 +49,22 @@ interface UserBooksMapper {
 
     @Select(
         """
+            SELECT book_id
+            FROM (
+                SELECT DISTINCT ON(book_id)
+                    book_id,
+                    created_at
+                FROM user_books
+                ORDER BY book_id, created_at DESC
+            ) sub
+            ORDER BY created_at DESC
+            LIMIT 4;
+        """,
+    )
+    fun fetchRecentAddedBooks(): List<UUID>
+
+    @Select(
+        """
         SELECT COUNT(*) > 0
         FROM user_books
         WHERE user_id = #{userId, jdbcType=OTHER}

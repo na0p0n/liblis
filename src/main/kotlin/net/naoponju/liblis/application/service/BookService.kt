@@ -30,6 +30,12 @@ class BookService(
         }
     }
 
+    fun findBookListByBookIds(bookIds: List<UUID>): List<BookEntity> {
+        val bookList = bookRepository.findBookListByBookIdList(bookIds)
+
+        return bookList
+    }
+
     fun getBookList(): List<BookEntity> {
         val foundFromDB = bookRepository.fetchAllBooks()
 

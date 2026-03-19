@@ -34,9 +34,12 @@ class HomeController(
 
         val allBookCount = bookService.getAllBookCount()
         val haveBookCount = userBooksService.countUserBooks(userId)
+        val recentAddedBookIds = userBooksService.getRecentAddedBooks()
+        val recentAddedBooks = bookService.findBookListByBookIds(recentAddedBookIds)
 
         model.addAttribute("allBookCount", allBookCount)
         model.addAttribute("haveBookCount", haveBookCount)
+        model.addAttribute("recentAddedBooks", recentAddedBooks)
 
         return "home"
     }

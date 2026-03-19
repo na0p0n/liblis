@@ -70,6 +70,41 @@ interface BookMapper {
     )
     fun findByISBN(isbn: String): BookEntity?
 
+    // 複数のBookIDのBookEntityを取得
+    @Select(
+        """
+            <script>
+                SELECT
+                    id
+                    , title
+                    , author
+                    , publisher
+                    , publish_date
+                    , pages
+                    , description
+                    , isbn10
+                    , isbn13
+                    , list_price
+                    , category
+                    , thumbnail_url
+                    , registration_count
+                    , is_searched_ndl
+                    , ndl_url
+                    , is_searched_google
+                    , google_url
+                    , created_at
+                    , updated_at
+                FROM books
+                WHERE id IN
+                <foreach item="id" collection="bookIds" open="(" separator="," close=")">
+                    #{id}
+                </foreach>
+            </script>
+        """,
+    )
+    @ResultMap("bookResult")
+    fun fetchBookList(bookIds: List<UUID>): List<BookEntity>
+
     // IDから検索
     @Select(
         """

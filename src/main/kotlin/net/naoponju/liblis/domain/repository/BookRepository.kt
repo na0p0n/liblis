@@ -3,8 +3,11 @@ package net.naoponju.liblis.domain.repository
 import net.naoponju.liblis.domain.entity.BookEntity
 import java.util.UUID
 
+@Suppress("TooManyFunctions")
 interface BookRepository {
     fun findBookByISBN(isbn: String): BookEntity?
+
+    fun findBookListByBookIdList(bookIds: List<UUID>): List<BookEntity>
 
     fun findBookByISBNFromGoogle(isbn: String): BookEntity
 
