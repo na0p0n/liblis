@@ -80,6 +80,6 @@ server:
   servlet:
     session:
       cookie:
-        secure: true
-        same-site: none
+        secure: ${SESSION_COOKIE_SECURE:true}
+        same-site: ${SESSION_COOKIE_SAMESITE:none}
         http-only: true

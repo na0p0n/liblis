@@ -255,6 +255,8 @@
         </div>
     </div>
 </div>
+<!-- 共通フッター -->
+<div th:replace="~{common/footer :: footer}"></div>
 </body>
 <script>
     function changePageSize(size) {
@@ -322,7 +324,4 @@
         }
     });
 </script>
-
-<!-- 共通フッター -->
-<div th:replace="~{common/footer :: footer}"></div>
 </html>
