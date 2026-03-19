@@ -24,8 +24,26 @@ class BookRepositoryImpl(
         return bookMapper.fetchAllBooksOrderByTitle() ?: emptyList()
     }
 
-    override fun fetchUserHavingBooks(userId: UUID): List<BookEntity> {
-        return bookMapper.fetchUserBooks(userId) ?: emptyList()
+    override fun fetchUserHavingBookIdsInBookIdList(
+        userId: UUID,
+        bookIds: List<UUID>,
+    ): List<BookEntity>? {
+        return bookMapper.fetchUserHavingBookIdsInBookIdList(
+            userId,
+            bookIds,
+        )
+    }
+
+    override fun fetchUserHavingBooksPaged(
+        userId: UUID,
+        offset: Int,
+        limit: Int,
+    ): List<BookEntity> {
+        return bookMapper.fetchUserBooksPaged(
+            userId,
+            offset,
+            limit,
+        ) ?: emptyList()
     }
 
     override fun findBookByTitle(title: String): List<BookEntity> {

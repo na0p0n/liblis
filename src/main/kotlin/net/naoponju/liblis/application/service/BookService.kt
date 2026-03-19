@@ -42,8 +42,27 @@ class BookService(
         return countBooks
     }
 
-    fun getHavingBooks(userId: UUID): List<BookEntity>? {
-        val havingBooks = bookRepository.fetchUserHavingBooks(userId)
+    fun fetchUserHavingBookIdsInBookIdList(
+        userId: UUID,
+        bookIds: List<UUID>,
+    ): List<BookEntity>? {
+        return bookRepository.fetchUserHavingBookIdsInBookIdList(
+            userId,
+            bookIds,
+        )
+    }
+
+    fun getHavingBooksPaged(
+        userId: UUID,
+        offset: Int,
+        limit: Int,
+    ): List<BookEntity>? {
+        val havingBooks =
+            bookRepository.fetchUserHavingBooksPaged(
+                userId,
+                offset,
+                limit,
+            )
 
         return havingBooks
     }
@@ -53,11 +72,5 @@ class BookService(
         limit: Int,
     ): List<BookEntity> {
         return bookRepository.findAllPaged(offset, limit)
-    }
-
-    fun getHavingBookCount(userId: UUID): Int? {
-        val countBooks = bookRepository.fetchUserHavingBooks(userId).size
-
-        return countBooks
     }
 }

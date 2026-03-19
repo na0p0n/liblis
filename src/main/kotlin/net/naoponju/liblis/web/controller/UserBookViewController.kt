@@ -56,7 +56,13 @@ class UserBookViewController(
 
         val myBooks =
             run {
-                val books = bookService.getHavingBooks(userId) ?: emptyList()
+                val offset = (page - 1) * pageSize
+                val books =
+                    bookService.getHavingBooksPaged(
+                        userId,
+                        offset,
+                        pageSize,
+                    ) ?: emptyList()
                 val userBooksList = userBooksService.getUserHavingBooks(userId) ?: emptyList()
                 val userBooksMap = userBooksList.associateBy { it.bookId }
 

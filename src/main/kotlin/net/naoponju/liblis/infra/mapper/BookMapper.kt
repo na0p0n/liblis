@@ -321,6 +321,48 @@ interface BookMapper {
 
     @Select(
         """
+            <script>
+                SELECT 
+                    b.id
+                    , b.title
+                    , b.author
+                    , b.publisher
+                    , b.publish_date
+                    , b.pages
+                    , b.description
+                    , b.isbn10
+                    , b.isbn13
+                    , b.list_price
+                    , b.category
+                    , b.thumbnail_url
+                    , b.registration_count
+                    , b.is_searched_ndl
+                    , b.ndl_url
+                    , b.is_searched_google
+                    , b.google_url
+                    , b.created_at
+                    , b.updated_at
+                FROM books b
+                WHERE b.id IN
+                <foreach item="id" collection="bookIds" open="(" separator="," close=")">
+                    #{id}
+                </foreach>
+                INNER JOIN user_books ub ON b.id = ub.book_id
+                WHERE ub.user_id = #{userId, jdbcType=OTHER}
+                AND ub.status = 'OWNED'
+                AND ub.is_deleted = false
+                ORDER BY ub.created_at DESC
+            </script>
+        """,
+    )
+    @ResultMap("bookResult")
+    fun fetchUserHavingBookIdsInBookIdList(
+        userId: UUID,
+        bookIds: List<UUID>,
+    ): List<BookEntity>?
+
+    @Select(
+        """
             SELECT 
                 b.id
                 , b.title
@@ -345,11 +387,17 @@ interface BookMapper {
             INNER JOIN user_books ub ON b.id = ub.book_id
             WHERE ub.user_id = #{userId, jdbcType=OTHER}
             AND ub.status = 'OWNED'
+            AND ub.is_deleted = false
             ORDER BY ub.created_at DESC
+            LIMIT #{limit} OFFSET #{offset}
         """,
     )
     @ResultMap("bookResult")
-    fun fetchUserBooks(userId: UUID): List<BookEntity>?
+    fun fetchUserBooksPaged(
+        userId: UUID,
+        offset: Int,
+        limit: Int,
+    ): List<BookEntity>?
 
     @Insert(
         """

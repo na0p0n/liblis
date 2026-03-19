@@ -3,6 +3,7 @@ package net.naoponju.liblis.domain.repository
 import net.naoponju.liblis.domain.entity.BookEntity
 import java.util.UUID
 
+@Suppress("TooManyFunctions")
 interface BookRepository {
     fun findBookByISBN(isbn: String): BookEntity?
 
@@ -10,7 +11,16 @@ interface BookRepository {
 
     fun fetchAllBooks(): List<BookEntity>
 
-    fun fetchUserHavingBooks(userId: UUID): List<BookEntity>
+    fun fetchUserHavingBookIdsInBookIdList(
+        userId: UUID,
+        bookIds: List<UUID>,
+    ): List<BookEntity>?
+
+    fun fetchUserHavingBooksPaged(
+        userId: UUID,
+        offset: Int,
+        limit: Int,
+    ): List<BookEntity>
 
     fun findBookByTitle(title: String): List<BookEntity>
 

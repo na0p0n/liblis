@@ -58,11 +58,16 @@ class BookController(
                 emptyList()
             }
 
+        val bookIds =
+            books.map { book ->
+                book.id!!
+            }.toList()
+
         val userId = userService.findByEmail(email)?.id
 
         val ownedBookIds =
             userId
-                ?.let { bookService.getHavingBooks(it) }
+                ?.let { bookService.fetchUserHavingBookIdsInBookIdList(it, bookIds) }
                 ?.mapNotNull { it.id }
                 ?.toHashSet()
                 ?: HashSet()
