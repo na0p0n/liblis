@@ -32,6 +32,10 @@ class UserBooksRepositoryImpl(
         return userBooksDtoList
     }
 
+    override fun getRecentAddedBooks(): List<UUID> {
+        return userBooksMapper.fetchRecentAddedBooks()
+    }
+
     override fun existsByUserIdAndBookId(
         userId: UUID,
         bookId: UUID,

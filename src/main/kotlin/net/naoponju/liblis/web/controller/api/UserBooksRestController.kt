@@ -48,6 +48,12 @@ class UserBooksRestController(
         return ResponseEntity.ok(result)
     }
 
+    @GetMapping("/recent")
+    fun getRecentAddedBookList(): ResponseEntity<List<UUID>> {
+        val bookIdList = userBooksService.getRecentAddedBooks()
+        return ResponseEntity.ok(bookIdList)
+    }
+
     @PostMapping("/add")
     @Suppress("ReturnCount")
     fun addUserBooks(

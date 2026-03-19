@@ -59,12 +59,17 @@
                 <a th:href="@{/}" class="small text-decoration-none text-primary">すべて見る</a>
             </div>
             <div class="row row-cols-2 row-cols-md-4 g-3">
-                <div class="col" th:each="i : ${#numbers.sequence(1, 4)}">
+                <div class="col" th:each="book : ${recentAddedBooks}">
                     <div class="card h-100 shadow-sm book-card">
-                        <img src="https://via.placeholder.com/150x200?text=Book+Cover" class="card-img-top" alt="カバー画像">
+                        <img th:src="${book.thumbnailUrl != null ? book.thumbnailUrl : 'https://dummy.kobeya.com/?width=60&height=85&bg=cccccc&color=000000&text=No%20Image&_=1772546481754'}" class="book-thumb rounded shadow-sm">
                         <div class="card-body p-2">
-                            <div class="small fw-bold text-truncate">書籍のタイトルが入ります</div>
-                            <div class="text-muted" style="font-size: 0.75rem;">著者名</div>
+                            <div class="small fw-bold text-truncate" th:text="${book.title}">書籍のタイトルが入ります</div>
+                            <div class="text-muted" style="font-size: 0.75rem;">
+                                <span th:each="author, stat: ${book.author}"
+                                      th:text="${stat.last ? author : author + ','}">
+                                    リブリス太郎
+                                </span>
+                            </div>
                         </div>
                     </div>
                 </div>

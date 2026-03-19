@@ -7,6 +7,8 @@ import java.util.UUID
 interface BookRepository {
     fun findBookByISBN(isbn: String): BookEntity?
 
+    fun findBookListByBookIdList(bookIds: List<UUID>): List<BookEntity>
+
     fun findBookByISBNFromGoogle(isbn: String): BookEntity
 
     fun fetchAllBooks(): List<BookEntity>

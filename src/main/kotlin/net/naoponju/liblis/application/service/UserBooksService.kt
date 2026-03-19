@@ -14,6 +14,10 @@ class UserBooksService(
         return result
     }
 
+    fun getRecentAddedBooks(): List<UUID> {
+        return userBooksRepository.getRecentAddedBooks()
+    }
+
     fun insertUserBooksData(userBooksDto: UserBooksDto): UUID? {
         val resultUUID = userBooksRepository.insertUserBooksData(userBooksDto)
         return resultUUID

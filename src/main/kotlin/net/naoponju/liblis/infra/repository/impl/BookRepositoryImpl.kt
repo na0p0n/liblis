@@ -20,6 +20,10 @@ class BookRepositoryImpl(
         return bookMapper.findByISBN(isbn)
     }
 
+    override fun findBookListByBookIdList(bookIds: List<UUID>): List<BookEntity> {
+        return bookMapper.fetchBookList(bookIds)
+    }
+
     override fun fetchAllBooks(): List<BookEntity> {
         return bookMapper.fetchAllBooksOrderByTitle() ?: emptyList()
     }

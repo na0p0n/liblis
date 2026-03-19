@@ -30,6 +30,15 @@ class BookService(
         }
     }
 
+    fun findBookListByBookIds(bookIds: List<UUID>): List<BookEntity> {
+        if (bookIds.isEmpty()) {
+            return emptyList()
+        }
+        val bookList = bookRepository.findBookListByBookIdList(bookIds)
+
+        return bookList
+    }
+
     fun getBookList(): List<BookEntity> {
         val foundFromDB = bookRepository.fetchAllBooks()
 
