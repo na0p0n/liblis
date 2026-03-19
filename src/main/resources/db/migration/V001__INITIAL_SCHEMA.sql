@@ -67,6 +67,12 @@ CREATE TABLE books (
 , CONSTRAINT BOOKS_PK PRIMARY KEY (id)
 );
 
+CREATE UNIQUE INDEX IDX_BOOKS_ISBN10
+    ON books (isbn10) WHERE (isbn10 IS NOT NULL);
+CREATE UNIQUE INDEX IDX_BOOKS_ISBN13
+    ON books (isbn13) WHERE (isbn13 IS NOT NULL)
+
+
 COMMENT ON COLUMN books.author IS '著者名（複数名対応のため配列型）';
 COMMENT ON COLUMN books.rakuten_item_url IS '楽天ブックス商品URL。利用規約上リンク表示が必須';
 
