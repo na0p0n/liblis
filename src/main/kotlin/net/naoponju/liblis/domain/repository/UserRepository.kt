@@ -9,8 +9,6 @@ interface UserRepository {
 
     fun findByGoogleCredential(googleId: String): UserEntity?
 
-    fun findByAppleCredential(appleId: String): UserEntity?
-
     fun findByGitHubCredential(githubId: String): UserEntity?
 
     fun save(user: UserEntity)
@@ -25,16 +23,9 @@ interface UserRepository {
         githubId: String,
     )
 
-    fun addAppleCredentialById(
-        id: UUID,
-        appleId: String,
-    )
-
     fun clearGoogleCredentialByMailAddress(email: String)
 
     fun clearGithubCredentialByMailAddress(email: String)
-
-    fun clearAppleCredentialByMailAddress(email: String)
 
     fun deleteUser(userId: UUID)
 }
