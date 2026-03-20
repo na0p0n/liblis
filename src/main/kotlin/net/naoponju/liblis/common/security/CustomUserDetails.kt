@@ -10,6 +10,7 @@ class CustomUserDetails(
     val user: UserEntity,
 ) : UserDetails {
     val displayName: String = user.displayName
+    val hasPassword: Boolean get() = user.passwordHash != null
 
     override fun getAuthorities(): Collection<GrantedAuthority> = listOf(SimpleGrantedAuthority(user.role))
 
