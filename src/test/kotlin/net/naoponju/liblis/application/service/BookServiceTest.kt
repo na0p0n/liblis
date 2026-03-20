@@ -107,10 +107,10 @@ class BookServiceTest {
 
         every {
             bookRepository.fetchUserHavingBookIdsInBookIdList(userId, bookIds)
-        } returns null
+        } returns emptyList()
 
         val actual = bookService.fetchUserHavingBookIdsInBookIdList(userId, bookIds)
-        Assertions.assertNull(actual)
+        Assertions.assertEquals(emptyList<BookEntity>(), actual)
     }
 
     @Test
