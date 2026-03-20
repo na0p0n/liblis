@@ -40,5 +40,8 @@ interface UserRepository {
 
     fun deleteUser(userId: UUID)
 
-    fun updatePassword(userId: UUID, hashedPassword: String)
+    fun updatePassword(
+        userId: UUID,
+        hashedPassword: String,
+    )
 }

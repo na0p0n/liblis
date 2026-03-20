@@ -46,7 +46,10 @@ class UserRepositoryImpl(private val userMapper: UserMapper) : UserRepository {
         userMapper.deleteUserById(userId)
     }
 
-    override fun updatePassword(userId: UUID, hashedPassword: String) {
+    override fun updatePassword(
+        userId: UUID,
+        hashedPassword: String,
+    ) {
         userMapper.updatePassword(userId, hashedPassword)
     }
 }

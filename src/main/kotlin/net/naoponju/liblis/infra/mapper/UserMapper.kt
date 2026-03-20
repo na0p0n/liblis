@@ -112,7 +112,8 @@ interface UserMapper {
     @ResultMap("userResult")
     fun findByAppleCredential(appleCredential: String): UserEntity?
 
-    @Select("""
+    @Select(
+        """
         SELECT
             id
             , display_name
@@ -126,7 +127,8 @@ interface UserMapper {
         FROM users
         WHERE id = #{userId, jdbcType=OTHER}
         AND is_deleted = false
-    """,)
+    """,
+    )
     @ResultMap("userResult")
     fun findById(userId: UUID): UserEntity?
 

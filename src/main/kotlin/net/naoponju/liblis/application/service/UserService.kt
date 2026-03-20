@@ -7,7 +7,6 @@ import net.naoponju.liblis.common.exception.InvalidPasswordException
 import net.naoponju.liblis.common.exception.UserAlreadyExistsException
 import net.naoponju.liblis.domain.entity.UserEntity
 import net.naoponju.liblis.domain.repository.UserRepository
-import net.naoponju.liblis.infra.repository.impl.BookRepositoryImpl
 import org.slf4j.LoggerFactory
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
@@ -15,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
 
 @Service
-@Suppress("TooManyFunctions")
+@Suppress("TooManyFunctions", "ReturnCount")
 class UserService(
     private val userRepository: UserRepository,
     private val passwordEncoder: PasswordEncoder,
