@@ -35,4 +35,6 @@ interface UserRepository {
     fun clearGithubCredentialByMailAddress(email: String)
 
     fun clearAppleCredentialByMailAddress(email: String)
+
+    fun deleteUser(userId: UUID)
 }

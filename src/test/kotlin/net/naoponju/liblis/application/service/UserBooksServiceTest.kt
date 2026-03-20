@@ -159,6 +159,43 @@ class UserBooksServiceTest {
         Assertions.assertFalse(actual)
     }
 
+    @Test
+    @DisplayName("ユーザー書庫書籍更新_正常系_editUserBooksDataに正確なdtoが渡される")
+    fun updateUserBooksDataPassesCorrectDto() {
+        val dto = defaultUserBooksDto
+        justRun { userBooksRepository.editUserBooksData(dto) }
+
+        userBooksService.updateUserBooksData(dto)
+
+        verify(exactly = 1) { userBooksRepository.editUserBooksData(dto) }
+        verify(exactly = 0) { userBooksRepository.editUserBooksData(neq(dto)) }
+    }
+
+    @Test
+    @DisplayName("ユーザー書庫書籍削除_正常系_deleteUserBooksに正確なIDが渡される")
+    fun deleteUserBooksDataPassesCorrectId() {
+        val userBooksId = DEFAULT_USER_BOOKS_ID
+        val otherId = UUID.fromString("00000000-0000-0000-0000-000000000099")
+        justRun { userBooksRepository.deleteUserBooks(userBooksId) }
+
+        userBooksService.deleteUserBooksData(userBooksId)
+
+        verify(exactly = 1) { userBooksRepository.deleteUserBooks(userBooksId) }
+        verify(exactly = 0) { userBooksRepository.deleteUserBooks(otherId) }
+    }
+
+    @Test
+    @DisplayName("ユーザー所持書籍一覧取得_正常系_空リストを返す")
+    fun getUserHavingBooksReturnsEmptyList() {
+        val userId = DEFAULT_USER_ID
+
+        every { userBooksRepository.getUserBooksList(userId) } returns emptyList()
+
+        val actual = userBooksService.getUserHavingBooks(userId)
+        Assertions.assertNotNull(actual)
+        Assertions.assertEquals(emptyList<UserBooksDto>(), actual)
+    }
+
     companion object {
         private val DEFAULT_USER_ID = UUID.fromString("00000000-0000-0000-0000-000000000001")
         private val DEFAULT_BOOK_ID = UUID.fromString("00000000-0000-0000-0000-000000000002")

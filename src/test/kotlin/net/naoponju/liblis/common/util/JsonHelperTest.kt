@@ -51,4 +51,25 @@ class JsonHelperTest {
         val actual = jsonHelper.toJson(obj)
         Assertions.assertEquals("""{"inner":{"x":42}}""", actual)
     }
+
+    @Test
+    @DisplayName("JSON変換_正常系_文字列値")
+    fun toJsonSuccess06() {
+        val actual = jsonHelper.toJson("hello world")
+        Assertions.assertEquals(""""hello world"""", actual)
+    }
+
+    @Test
+    @DisplayName("JSON変換_正常系_数値")
+    fun toJsonSuccess07() {
+        val actual = jsonHelper.toJson(42)
+        Assertions.assertEquals("42", actual)
+    }
+
+    @Test
+    @DisplayName("JSON変換_正常系_booleanのtrue")
+    fun toJsonSuccess08() {
+        val actual = jsonHelper.toJson(true)
+        Assertions.assertEquals("true", actual)
+    }
 }
