@@ -140,6 +140,7 @@ interface UserBooksMapper {
                 status = #{status},
                 purchase_price = #{purchasePrice},
                 purchase_date = #{purchaseDate},
+                is_deleted = false,
                 updated_at = CURRENT_TIMESTAMP
             WHERE id = #{id, jdbcType=OTHER}
         """,
