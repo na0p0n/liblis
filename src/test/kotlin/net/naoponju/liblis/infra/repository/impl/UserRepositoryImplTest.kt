@@ -2,7 +2,6 @@ package net.naoponju.liblis.infra.repository.impl
 
 import io.mockk.justRun
 import io.mockk.mockk
-import io.mockk.neq
 import io.mockk.spyk
 import io.mockk.verify
 import net.naoponju.liblis.infra.mapper.UserMapper

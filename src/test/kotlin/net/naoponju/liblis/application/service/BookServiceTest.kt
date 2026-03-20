@@ -211,10 +211,10 @@ class BookServiceTest {
 
         every {
             bookRepository.fetchUserHavingBooksPaged(userId, offset, limit)
-        } returns null
+        } returns emptyList()
 
         val actual = bookService.getHavingBooksPaged(userId, offset, limit)
-        Assertions.assertNull(actual)
+        Assertions.assertEquals(emptyList<BookEntity>(), actual)
     }
 
     @Test

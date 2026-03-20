@@ -3,7 +3,6 @@ package net.naoponju.liblis.application.service
 import io.mockk.every
 import io.mockk.justRun
 import io.mockk.mockk
-import io.mockk.neq
 import io.mockk.spyk
 import io.mockk.verify
 import net.naoponju.liblis.application.dto.UserBooksDto
