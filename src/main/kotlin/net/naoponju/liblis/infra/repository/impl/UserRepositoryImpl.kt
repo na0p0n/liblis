@@ -39,4 +39,8 @@ class UserRepositoryImpl(private val userMapper: UserMapper) : UserRepository {
     override fun clearGithubCredentialByMailAddress(email: String) = userMapper.clearGithubCredential(email)
 
     override fun clearAppleCredentialByMailAddress(email: String) = userMapper.clearAppleCredential(email)
+
+    override fun deleteUser(userId: UUID) {
+        userMapper.deleteUserById(userId)
+    }
 }

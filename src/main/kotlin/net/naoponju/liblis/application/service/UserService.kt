@@ -95,6 +95,11 @@ class UserService(
         userRepository.clearAppleCredentialByMailAddress(email)
     }
 
+    @Transactional
+    fun deleteAccount(userId: UUID) {
+        userRepository.deleteUser(userId) // user_books は CASCADE DELETE により自動削除される
+    }
+
     private fun toDto(entity: UserEntity): UserDto {
         return UserDto(
             id = entity.id,

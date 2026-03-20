@@ -30,7 +30,7 @@
             </div>
 
             <div th:if="${param.error}" class="alert alert-danger p-2 small">
-                <span th:if="${param.error[0] == 'true'}">メールアドレスまたはパスワードが正しくありません。</span>
+                <span th:if="${param.error[0] == ''}">メールアドレスまたはパスワードが正しくないか、該当のアカウントは登録されていません。</span>
                 <span th:if="${param.error[0] == 'oauth2_failure'}">
                     このSNSアカウントは連携されていません。先にログインして設定画面から連携してください。
                 </span>
