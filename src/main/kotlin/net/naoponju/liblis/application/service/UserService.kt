@@ -2,17 +2,19 @@ package net.naoponju.liblis.application.service
 
 import net.naoponju.liblis.application.dto.UserDto
 import net.naoponju.liblis.application.dto.UserRegistrationDto
+import net.naoponju.liblis.common.constraint.ChangePasswordResult
 import net.naoponju.liblis.common.exception.InvalidPasswordException
 import net.naoponju.liblis.common.exception.UserAlreadyExistsException
 import net.naoponju.liblis.domain.entity.UserEntity
 import net.naoponju.liblis.domain.repository.UserRepository
+import org.slf4j.LoggerFactory
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
 
 @Service
-@Suppress("TooManyFunctions")
+@Suppress("TooManyFunctions", "ReturnCount")
 class UserService(
     private val userRepository: UserRepository,
     private val passwordEncoder: PasswordEncoder,
@@ -54,8 +56,6 @@ class UserService(
 
     fun findEntityByGithubId(githubId: String): UserEntity? = userRepository.findByGitHubCredential(githubId)
 
-    fun findEntityByAppleId(appleId: String): UserEntity? = userRepository.findByAppleCredential(appleId)
-
     @Transactional
     fun linkGoogleAccount(
         userId: UUID,
@@ -73,14 +73,6 @@ class UserService(
     }
 
     @Transactional
-    fun linkAppleAccount(
-        userId: UUID,
-        appleId: String,
-    ) {
-        userRepository.addAppleCredentialById(userId, appleId)
-    }
-
-    @Transactional
     fun unLinkGoogleAccount(email: String) {
         userRepository.clearGoogleCredentialByMailAddress(email)
     }
@@ -91,13 +83,33 @@ class UserService(
     }
 
     @Transactional
-    fun unLinkAppleAccount(email: String) {
-        userRepository.clearAppleCredentialByMailAddress(email)
+    fun deleteAccount(userId: UUID) {
+        userRepository.deleteUser(userId) // user_books は CASCADE DELETE により自動削除される
     }
 
     @Transactional
-    fun deleteAccount(userId: UUID) {
-        userRepository.deleteUser(userId) // user_books は CASCADE DELETE により自動削除される
+    fun changePassword(
+        userId: UUID,
+        currentPassword: String,
+        newPassword: String,
+    ): ChangePasswordResult {
+        val user = userRepository.findById(userId) ?: return ChangePasswordResult.NOT_SUPPORTED
+
+        user.passwordHash ?: return ChangePasswordResult.NOT_SUPPORTED
+
+        if (!passwordEncoder.matches(currentPassword, user.passwordHash)) return ChangePasswordResult.WRONG_CURRENT
+
+        try {
+            validatePassword(newPassword)
+        } catch (e: InvalidPasswordException) {
+            logger.info("パスワード変更API: バリデーションエラー {}", e.message)
+            return ChangePasswordResult.VALIDATION_ERROR
+        }
+
+        val newHashedPassword = passwordEncoder.encode(newPassword)
+
+        userRepository.updatePassword(userId, newHashedPassword)
+        return ChangePasswordResult.SUCCESS
     }
 
     private fun toDto(entity: UserEntity): UserDto {
@@ -121,5 +133,9 @@ class UserService(
         if (!regex.matches(password)) {
             throw InvalidPasswordException("パスワードは英字、数字、記号を含めてください。")
         }
+    }
+
+    companion object {
+        private val logger = LoggerFactory.getLogger(UserService::class.java)
     }
 }

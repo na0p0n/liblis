@@ -3,6 +3,7 @@ package net.naoponju.liblis.web.controller
 import jakarta.servlet.http.HttpServletRequest
 import net.naoponju.liblis.application.service.UserBooksService
 import net.naoponju.liblis.application.service.UserService
+import net.naoponju.liblis.common.constraint.ChangePasswordResult
 import org.slf4j.LoggerFactory
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.security.core.context.SecurityContextHolder
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.servlet.mvc.support.RedirectAttributes
 
 @Controller
@@ -26,10 +28,10 @@ class UserController(
 ) {
     @GetMapping("/info")
     fun showAccountSettings(
-        @AuthenticationPrincipal principal: Any?,
+        @AuthenticationPrincipal userDetails: Any?,
         model: Model,
     ): String {
-        val email = getEmailFromPrincipal(principal)
+        val email = getEmailFromPrincipal(userDetails)
 
         if (email == null) {
             return "redirect:/login"
@@ -37,6 +39,7 @@ class UserController(
 
         val userDto = userService.findByEmail(email) ?: "redirect:/login"
         model.addAttribute("user", userDto)
+        model.addAttribute("userDetails", userDetails)
 
         return "/user/info"
     }
@@ -64,6 +67,53 @@ class UserController(
         }
 
         return "redirect:/user/info"
+    }
+
+    @PostMapping("/change-password")
+    fun changeUserPassword(
+        @RequestParam currentPassword: String,
+        @RequestParam newPassword: String,
+        @RequestParam confirmPassword: String,
+        @AuthenticationPrincipal userDetails: Any?,
+        redirectAttributes: RedirectAttributes,
+    ): String {
+        val email = getEmailFromPrincipal(userDetails)
+            ?: run {
+                // 認証情報が取得できない場合（通常は Spring Security が弾くため到達しないはず）
+                redirectAttributes.addFlashAttribute("error", "認証情報が確認できませんでした。再度ログインしてください。")
+                return "redirect:/login"
+            }
+
+        val userId =
+            userService.findByEmail(email)?.id
+                ?: run {
+                    // email に対応するユーザーが DB に存在しない場合
+                    redirectAttributes.addFlashAttribute("error", "ユーザーが見つかりませんでした。")
+                    return "redirect:/login"
+                }
+
+        if (newPassword != confirmPassword) {
+            redirectAttributes.addAttribute("passwordError", "mismatch")
+            return "redirect:/user/info"
+        }
+        return when (userService.changePassword(userId, currentPassword, newPassword)) {
+            ChangePasswordResult.SUCCESS -> {
+                redirectAttributes.addAttribute("passwordChanged", true)
+                "redirect:/user/info"
+            }
+            ChangePasswordResult.WRONG_CURRENT -> {
+                redirectAttributes.addAttribute("passwordError", "wrongCurrent")
+                "redirect:/user/info"
+            }
+            ChangePasswordResult.VALIDATION_ERROR -> {
+                redirectAttributes.addAttribute("passwordError", "validation")
+                "redirect:/user/info"
+            }
+            ChangePasswordResult.NOT_SUPPORTED -> {
+                redirectAttributes.addAttribute("passwordError", "notSupported")
+                "redirect:/user/info"
+            }
+        }
     }
 
     @DeleteMapping("/delete")
