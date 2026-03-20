@@ -55,6 +55,7 @@ class BookService(
         userId: UUID,
         bookIds: List<UUID>,
     ): List<BookEntity>? {
+        if (bookIds.isEmpty()) return emptyList()
         return bookRepository.fetchUserHavingBookIdsInBookIdList(
             userId,
             bookIds,
