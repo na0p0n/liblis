@@ -77,6 +77,21 @@ interface UserBooksMapper {
         bookId: UUID,
     ): Boolean
 
+    // ユーザーが本を再登録した時用
+    @Select(
+        """
+            SELECT
+                id
+            FROM user_books
+            WHERE user_id = #{userId, jdbcType=OTHER}
+            AND book_id = #{bookId, jdbcType=OTHER};
+        """,
+    )
+    fun fetchUserBooksIdFromUserIdAndBookId(
+        userId: UUID,
+        bookId: UUID,
+    ): UUID?
+
     @Select(
         """
         SELECT

@@ -13,6 +13,11 @@ interface UserBooksRepository {
         bookId: UUID,
     ): Boolean
 
+    fun fetchUserBooksIdFromUserIdAndBookId(
+        userId: UUID,
+        bookId: UUID,
+    ): UUID?
+
     fun existsByUserIdAndUserBooksId(
         userId: UUID,
         userBooksId: UUID,

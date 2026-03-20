@@ -102,11 +102,14 @@ class UserBooksRestControllerTest {
 
         every { userService.findByEmail(DEFAULT_EMAIL) } returns defaultUserDto
         every { userBooksService.insertUserBooksData(any()) } returns DEFAULT_USER_BOOKS_ID
+        every { userBooksService.getUserBooksIdFromUserIdAndBookId(defaultUserDto.id!!, DEFAULT_BOOK_ID) } returns null
 
         val response = controller.addUserBooks(userDetails, form)
         Assertions.assertNotNull(response)
-        Assertions.assertEquals(HttpStatus.OK, response!!.statusCode)
-        Assertions.assertEquals(DEFAULT_USER_BOOKS_ID, response.body)
+        verify(exactly = 1) { userBooksService.getUserBooksIdFromUserIdAndBookId(any(), any()) }
+        verify(exactly = 1) { userBooksService.insertUserBooksData(any()) }
+        verify(exactly = 0) { userBooksService.updateUserBooksData(any()) }
+        Assertions.assertEquals(HttpStatus.OK, response.statusCode)
     }
 
     @Test
@@ -188,10 +191,13 @@ class UserBooksRestControllerTest {
 
         every { userService.findByEmail(DEFAULT_EMAIL) } returns defaultUserDto
         every { userBooksService.insertUserBooksData(any()) } returns null
+        every { userBooksService.updateUserBooksData(any()) }
 
         val response = controller.addUserBooks(userDetails, form)
         Assertions.assertNotNull(response)
-        Assertions.assertEquals(HttpStatus.BAD_REQUEST, response!!.statusCode)
+        verify(exactly = 0) { userBooksService.insertUserBooksData(any()) }
+        verify(exactly = 1) { userBooksService.updateUserBooksData(any()) }
+        Assertions.assertEquals(HttpStatus.BAD_REQUEST, response.statusCode)
     }
 
     // ===== updateUserBooks =====

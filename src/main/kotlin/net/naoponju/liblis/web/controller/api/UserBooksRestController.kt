@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController
 import java.time.LocalDate
 import java.util.UUID
 
+@Suppress("LongMethod", "TooGenericExceptionCaught")
 @RestController
 @RequestMapping("/api/library")
 class UserBooksRestController(
@@ -59,7 +60,7 @@ class UserBooksRestController(
     fun addUserBooks(
         @AuthenticationPrincipal userDetails: Any?,
         @ModelAttribute form: UserBooksForm,
-    ): ResponseEntity<UUID>? {
+    ): ResponseEntity<Any> {
         val email =
             when (userDetails) {
                 is UserDetails -> userDetails.username
@@ -86,26 +87,53 @@ class UserBooksRestController(
                 return ResponseEntity.badRequest().build()
             }
 
-        val userBooksData =
-            UserBooksDto(
-                id = null,
-                userId = userId,
-                bookId = form.bookId,
-                status = form.status,
-                purchaseDate = purchaseDate,
-                purchasePrice = form.purchasePrice,
+        // 過去にuser_booksに登録された本かチェック
+        val userBooksIdCreated =
+            userBooksService.getUserBooksIdFromUserIdAndBookId(
+                userId,
+                form.bookId,
             )
-        logger.debug(
-            "取得したデータ: bookId={}, status={}",
-            form.bookId,
-            form.status,
-        )
-        val result = userBooksService.insertUserBooksData(userBooksData)
 
-        return if (result == null) {
-            ResponseEntity.badRequest().build()
+        if (userBooksIdCreated != null) {
+            val userBooksData =
+                UserBooksDto(
+                    id = userBooksIdCreated,
+                    userId = userId,
+                    bookId = form.bookId,
+                    status = form.status,
+                    purchaseDate = purchaseDate,
+                    purchasePrice = form.purchasePrice,
+                )
+            try {
+                userBooksService.updateUserBooksData(userBooksData)
+                return ResponseEntity.ok().build()
+            } catch (e: Exception) {
+                logger.warn("ユーザー書庫書籍登録API: ユーザーの書庫に過去登録あり・書庫情報アップデートに失敗: {}", e.message)
+                return ResponseEntity.badRequest().build()
+            }
         } else {
-            ResponseEntity.ok(result)
+            val userBooksData =
+                UserBooksDto(
+                    id = null,
+                    userId = userId,
+                    bookId = form.bookId,
+                    status = form.status,
+                    purchaseDate = purchaseDate,
+                    purchasePrice = form.purchasePrice,
+                )
+            logger.debug(
+                "取得したデータ: bookId={}, status={}",
+                form.bookId,
+                form.status,
+            )
+            try {
+                val result = userBooksService.insertUserBooksData(userBooksData)
+                logger.info("ユーザー書庫書籍登録API: 書庫情報登録に成功: ID=$result")
+                return ResponseEntity.ok().build()
+            } catch (e: Exception) {
+                logger.warn("ユーザー書庫書籍登録API: 書庫情報登録に失敗: {}", e.message)
+                return ResponseEntity.badRequest().build()
+            }
         }
     }
 
