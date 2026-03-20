@@ -26,7 +26,6 @@ class CustomOAuth2UserService(
             when (registrationId) {
                 "google" -> attributes["sub"] as String
                 "github" -> attributes["id"].toString()
-                "apple" -> attributes["sub"] as String
                 else -> throw OAuth2AuthenticationException("サポートされていない認証プロバイダです。")
             }
 
@@ -50,7 +49,6 @@ class CustomOAuth2UserService(
                     when (registrationId) {
                         "google" -> userService.linkGoogleAccount(currentUser.id, providerId)
                         "github" -> userService.linkGithubAccount(currentUser.id, providerId)
-                        "apple" -> userService.linkAppleAccount(currentUser.id, providerId)
                     }
 
                     return DefaultOAuth2User(
@@ -71,7 +69,6 @@ class CustomOAuth2UserService(
             when (registrationId) {
                 "google" -> userService.findEntityByGoogleId(providerId)
                 "github" -> userService.findEntityByGithubId(providerId)
-                "apple" -> userService.findEntityByAppleId(providerId)
                 else -> null
             }
 
