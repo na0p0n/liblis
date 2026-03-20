@@ -42,4 +42,17 @@ class PagingConstantsTest {
     fun defaultPageSizeIsInAllowedPageSizes() {
         Assertions.assertTrue(PagingConstants.ALLOWED_PAGE_SIZES.contains(PagingConstants.DEFAULT_PAGE_SIZE))
     }
+
+    @Test
+    @DisplayName("許可ページサイズは3種類のみ")
+    fun allowedPageSizesHasExactlyThreeElements() {
+        Assertions.assertEquals(3, PagingConstants.ALLOWED_PAGE_SIZES.size)
+    }
+
+    @Test
+    @DisplayName("許可ページサイズはソート順で20, 50, 100を含む")
+    fun allowedPageSizesAreSorted() {
+        val sorted = PagingConstants.ALLOWED_PAGE_SIZES.sorted()
+        Assertions.assertEquals(listOf(20, 50, 100), sorted)
+    }
 }

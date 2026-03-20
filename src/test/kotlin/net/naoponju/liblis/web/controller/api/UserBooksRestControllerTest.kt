@@ -302,6 +302,38 @@ class UserBooksRestControllerTest {
         Assertions.assertEquals(HttpStatus.UNAUTHORIZED, response.statusCode)
     }
 
+    @Test
+    @DisplayName("最近追加された書籍一覧取得API_正常系_認証なしでも取得可能")
+    fun getRecentAddedBookListSuccess01() {
+        val bookId1 = UUID.fromString("00000000-0000-0000-0000-000000000010")
+        val bookId2 = UUID.fromString("00000000-0000-0000-0000-000000000011")
+        val bookIds = listOf(bookId1, bookId2)
+
+        every { userBooksService.getRecentAddedBooks() } returns bookIds
+
+        val response = controller.getRecentAddedBookList()
+        Assertions.assertEquals(HttpStatus.OK, response.statusCode)
+        Assertions.assertEquals(bookIds, response.body)
+    }
+
+    @Test
+    @DisplayName("最近追加された書籍一覧取得API_正常系_書籍なしは空リストを返す")
+    fun getRecentAddedBookListSuccess02() {
+        every { userBooksService.getRecentAddedBooks() } returns emptyList()
+
+        val response = controller.getRecentAddedBookList()
+        Assertions.assertEquals(HttpStatus.OK, response.statusCode)
+        Assertions.assertEquals(emptyList<UUID>(), response.body)
+    }
+
+    @Test
+    @DisplayName("ユーザー書庫書籍削除API_異常系_未認証は401")
+    fun deleteUserBooksUnauth() {
+        val response = controller.deleteUserBooks(null, DEFAULT_USER_BOOKS_ID)
+        Assertions.assertEquals(HttpStatus.UNAUTHORIZED, response.statusCode)
+        verify(exactly = 0) { userBooksService.deleteUserBooksData(any()) }
+    }
+
     companion object {
         private const val DEFAULT_EMAIL = "test@example.com"
         private val DEFAULT_USER_ID = UUID.fromString("00000000-0000-0000-0000-000000000001")
