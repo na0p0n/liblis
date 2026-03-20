@@ -202,6 +202,46 @@ class BookServiceTest {
         Assertions.assertEquals(emptyList<BookEntity>(), actual)
     }
 
+    @Test
+    @DisplayName("ユーザー所持書籍ページング取得_正常系_nullを返すリポジトリはnullを返す")
+    fun getHavingBooksPagedNullFromRepo() {
+        val userId = DEFAULT_USER_ID
+        val offset = 0
+        val limit = 20
+
+        every {
+            bookRepository.fetchUserHavingBooksPaged(userId, offset, limit)
+        } returns null
+
+        val actual = bookService.getHavingBooksPaged(userId, offset, limit)
+        Assertions.assertNull(actual)
+    }
+
+    @Test
+    @DisplayName("全書籍件数取得_正常系_大きな件数")
+    fun getAllBookCountLargeCount() {
+        val expect = 999_999
+
+        every { bookRepository.countAllBooks() } returns 999_999
+
+        val actual = bookService.getAllBookCount()
+        Assertions.assertEquals(expect, actual)
+    }
+
+    @Test
+    @DisplayName("書籍一覧ページング取得_正常系_ページ2の場合オフセットが正しい")
+    fun getBookListPagedPage2() {
+        val offset = 20
+        val limit = 20
+        val expect = listOf(defaultBookEntity)
+
+        every { bookRepository.findAllPaged(offset, limit) } returns listOf(defaultBookEntity)
+
+        val actual = bookService.getBookListPaged(offset, limit)
+        Assertions.assertEquals(expect, actual)
+        verify(exactly = 1) { bookRepository.findAllPaged(offset, limit) }
+    }
+
     companion object {
         private const val DEFAULT_ISBN = "1111222233334"
         private val DEFAULT_USER_ID = UUID.fromString("00000000-0000-0000-0000-000000000099")

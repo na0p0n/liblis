@@ -344,6 +344,61 @@ class UserBooksRepositoryImplTest {
         Assertions.assertEquals(0, actual)
     }
 
+    @Test
+    @DisplayName("ユーザー所持書籍一覧取得_正常系_複数件のEntityがDTOにマッピングされる")
+    fun getUserBooksListMapsMultipleEntities() {
+        val bookId2 = UUID.fromString("00000000-0000-0000-0000-000000000020")
+        val userBooksId2 = UUID.fromString("00000000-0000-0000-0000-000000000030")
+        val entity2 =
+            UserBooksEntity(
+                id = userBooksId2,
+                userId = DEFAULT_USER_ID,
+                bookId = bookId2,
+                status = "READING",
+                purchasePrice = null,
+                purchaseDate = LocalDate.of(2025, 6, 1),
+                isDeleted = false,
+                createdAt = LocalDateTime.of(2025, 6, 1, 0, 0),
+                updatedAt = LocalDateTime.of(2025, 6, 1, 0, 0),
+            )
+
+        every {
+            userBooksMapper.findBooksByUserId(DEFAULT_USER_ID)
+        } returns listOf(defaultUserBooksEntity, entity2)
+
+        val actual = userBooksRepositoryImpl.getUserBooksList(DEFAULT_USER_ID)
+
+        Assertions.assertNotNull(actual)
+        Assertions.assertEquals(2, actual!!.size)
+        Assertions.assertEquals(userBooksId2, actual[1].id)
+        Assertions.assertEquals("READING", actual[1].status)
+        Assertions.assertNull(actual[1].purchasePrice)
+    }
+
+    @Test
+    @DisplayName("ユーザー書庫書籍登録_正常系_purchasePriceがnullの場合も登録できる")
+    fun insertUserBooksDataNullPurchasePrice() {
+        val fixedUuid = UUID.fromString("00000000-0000-0000-0000-000000000099")
+        mockkStatic(UUID::class)
+        every { UUID.randomUUID() } returns fixedUuid
+
+        mockkStatic(LocalDateTime::class)
+        every { LocalDateTime.now() } returns LocalDateTime.of(2024, 1, 1, 0, 0)
+
+        every {
+            userBooksMapper.existsByUserIdAndBookId(DEFAULT_USER_ID, DEFAULT_BOOK_ID)
+        } returns false
+
+        every {
+            userBooksMapper.insert(any<UserBooksEntity>())
+        } returns 1
+
+        val dto = defaultUserBooksDto.copy(id = null, purchasePrice = null)
+        val actual = userBooksRepositoryImpl.insertUserBooksData(dto)
+
+        Assertions.assertEquals(fixedUuid, actual)
+    }
+
     companion object {
         private val DEFAULT_USER_ID = UUID.fromString("00000000-0000-0000-0000-000000000001")
         private val DEFAULT_BOOK_ID = UUID.fromString("00000000-0000-0000-0000-000000000002")
