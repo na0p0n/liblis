@@ -43,6 +43,7 @@
                     <div>
                         <a th:if="${!user.isGoogleLinked}" th:href="@{/oauth2/authorization/google}" class="btn btn-outline-primary btn-sm">連携する</a>
                         <form th:action="@{/user/unlink/google}" method="post" onsubmit="return confirm('Google連携を解除しますか？');">
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
                             <button th:if="${user.isGoogleLinked}" type="submit" class="btn btn-outline-danger btn-sm">連携解除</button>
                         </form>
                     </div>
@@ -56,6 +57,7 @@
                     <div>
                         <a th:if="${!user.isGithubLinked}" th:href="@{/oauth2/authorization/github}" class="btn btn-outline-dark btn-sm">連携する</a>
                         <form th:action="@{/user/unlink/github}" method="post" onsubmit="return confirm('Github連携を解除しますか？');">
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
                             <button th:if="${user.isGithubLinked}" type="submit" class="btn btn-outline-danger btn-sm">連携解除</button>
                         </form>
                     </div>

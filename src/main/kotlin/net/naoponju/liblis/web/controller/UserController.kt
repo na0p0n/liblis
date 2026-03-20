@@ -35,7 +35,7 @@ class UserController(
             return "redirect:/login"
         }
 
-        val userDto = userService.findByEmail(email)
+        val userDto = userService.findByEmail(email) ?: "redirect:/login"
         model.addAttribute("user", userDto)
 
         return "/user/info"
@@ -53,8 +53,10 @@ class UserController(
             when (provider) {
                 "google" -> userService.unLinkGoogleAccount(email)
                 "github" -> userService.unLinkGithubAccount(email)
-                "apple" -> userService.unLinkAppleAccount(email)
-                else -> redirectAttributes.addFlashAttribute("errorMessage", "不明なプロバイダーです。")
+                else -> {
+                    redirectAttributes.addFlashAttribute("errorMessage", "不明なプロバイダーです。")
+                    return "redirect:/user/info"
+                }
             }
             redirectAttributes.addFlashAttribute("successMessage", "${provider.capitalize()} の連携を解除しました。")
         } catch (e: Exception) {
