@@ -17,6 +17,8 @@ class UserRepositoryImpl(private val userMapper: UserMapper) : UserRepository {
 
     override fun findByAppleCredential(appleId: String) = userMapper.findByAppleCredential(appleId)
 
+    override fun findById(userId: UUID) = userMapper.findById(userId)
+
     override fun save(user: UserEntity) = userMapper.insert(user)
 
     override fun addGoogleCredentialById(
@@ -42,5 +44,9 @@ class UserRepositoryImpl(private val userMapper: UserMapper) : UserRepository {
 
     override fun deleteUser(userId: UUID) {
         userMapper.deleteUserById(userId)
+    }
+
+    override fun updatePassword(userId: UUID, hashedPassword: String) {
+        userMapper.updatePassword(userId, hashedPassword)
     }
 }

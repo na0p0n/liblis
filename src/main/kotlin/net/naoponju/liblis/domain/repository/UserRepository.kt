@@ -13,6 +13,8 @@ interface UserRepository {
 
     fun findByGitHubCredential(githubId: String): UserEntity?
 
+    fun findById(userId: UUID): UserEntity?
+
     fun save(user: UserEntity)
 
     fun addGoogleCredentialById(
@@ -37,4 +39,6 @@ interface UserRepository {
     fun clearAppleCredentialByMailAddress(email: String)
 
     fun deleteUser(userId: UUID)
+
+    fun updatePassword(userId: UUID, hashedPassword: String)
 }
