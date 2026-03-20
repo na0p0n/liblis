@@ -36,7 +36,7 @@ class HomeController(
         val haveBookCount = userBooksService.countUserBooks(userId)
         val recentAddedBookIds = userBooksService.getRecentAddedBooks()
         val recentAddedBooks =
-            if (recentAddedBookIds.isEmpty()) {
+            if (!recentAddedBookIds.isEmpty()) {
                 bookService.findBookListByBookIds(recentAddedBookIds)
             } else {
                 emptyList()

@@ -165,7 +165,7 @@
                         <span th:text="${(currentPage - 1) * pageSize + 1}">1</span> 〜
                         <span th:text="${T(java.lang.Math).min(currentPage * pageSize, totalCount)}">20</span> 件を表示
                     </p>
-                    <p class="text-center text-muted small" th:if="${totalCount > 0}">
+                    <p class="text-center text-muted small" th:if="${totalCount <= 0}">
                         書籍が登録されていません。
                     </p>
                 </div>
