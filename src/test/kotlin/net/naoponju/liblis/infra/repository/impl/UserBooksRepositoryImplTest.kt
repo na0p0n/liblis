@@ -81,6 +81,28 @@ class UserBooksRepositoryImplTest {
     }
 
     @Test
+    @DisplayName("最近追加された書籍ID一覧取得_正常系_書籍あり")
+    fun getRecentAddedBooksSuccess01() {
+        val bookId1 = UUID.fromString("00000000-0000-0000-0000-000000000010")
+        val bookId2 = UUID.fromString("00000000-0000-0000-0000-000000000011")
+        val expect = listOf(bookId1, bookId2)
+
+        every { userBooksMapper.fetchRecentAddedBooks() } returns listOf(bookId1, bookId2)
+
+        val actual = userBooksRepositoryImpl.getRecentAddedBooks()
+        Assertions.assertEquals(expect, actual)
+    }
+
+    @Test
+    @DisplayName("最近追加された書籍ID一覧取得_正常系_書籍なし")
+    fun getRecentAddedBooksSuccess02() {
+        every { userBooksMapper.fetchRecentAddedBooks() } returns emptyList()
+
+        val actual = userBooksRepositoryImpl.getRecentAddedBooks()
+        Assertions.assertEquals(emptyList<UUID>(), actual)
+    }
+
+    @Test
     @DisplayName("書籍所有確認(userId×bookId)_正常系_所有している")
     fun existsByUserIdAndBookIdSuccess01() {
         every {
@@ -203,6 +225,30 @@ class UserBooksRepositoryImplTest {
         every {
             userBooksMapper.insert(any<UserBooksEntity>())
         } throws PersistenceException("DB error")
+
+        val dto = defaultUserBooksDto.copy(id = null)
+        val actual = userBooksRepositoryImpl.insertUserBooksData(dto)
+
+        Assertions.assertNull(actual)
+    }
+
+    @Test
+    @DisplayName("ユーザー書庫書籍登録_異常系_SQLExceptionはnullを返す")
+    fun insertUserBooksDataFailure02() {
+        val fixedUuid = UUID.fromString("00000000-0000-0000-0000-000000000099")
+        mockkStatic(UUID::class)
+        every { UUID.randomUUID() } returns fixedUuid
+
+        mockkStatic(LocalDateTime::class)
+        every { LocalDateTime.now() } returns LocalDateTime.of(2024, 1, 1, 0, 0)
+
+        every {
+            userBooksMapper.existsByUserIdAndBookId(DEFAULT_USER_ID, DEFAULT_BOOK_ID)
+        } returns false
+
+        every {
+            userBooksMapper.insert(any<UserBooksEntity>())
+        } throws SQLException("SQL error")
 
         val dto = defaultUserBooksDto.copy(id = null)
         val actual = userBooksRepositoryImpl.insertUserBooksData(dto)

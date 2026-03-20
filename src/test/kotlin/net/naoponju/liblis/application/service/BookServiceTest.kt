@@ -170,6 +170,38 @@ class BookServiceTest {
         Assertions.assertEquals(emptyList<BookEntity>(), actual)
     }
 
+    @Test
+    @DisplayName("BookIDリストから書籍取得_正常系_書籍あり")
+    fun findBookListByBookIdsSuccess01() {
+        val bookIds = listOf(UUID.fromString("00000000-0000-0000-0000-000000000001"))
+        val expect = listOf(defaultBookEntity)
+
+        every { bookRepository.findBookListByBookIdList(bookIds) } returns listOf(defaultBookEntity)
+
+        val actual = bookService.findBookListByBookIds(bookIds)
+        Assertions.assertEquals(expect, actual)
+        verify(exactly = 1) { bookRepository.findBookListByBookIdList(bookIds) }
+    }
+
+    @Test
+    @DisplayName("BookIDリストから書籍取得_正常系_空リストを渡すとリポジトリを呼ばず空リストを返す")
+    fun findBookListByBookIdsSuccess02() {
+        val actual = bookService.findBookListByBookIds(emptyList())
+        Assertions.assertEquals(emptyList<BookEntity>(), actual)
+        verify(exactly = 0) { bookRepository.findBookListByBookIdList(any()) }
+    }
+
+    @Test
+    @DisplayName("BookIDリストから書籍取得_正常系_リポジトリが空リストを返す")
+    fun findBookListByBookIdsSuccess03() {
+        val bookIds = listOf(UUID.fromString("00000000-0000-0000-0000-000000000001"))
+
+        every { bookRepository.findBookListByBookIdList(bookIds) } returns emptyList()
+
+        val actual = bookService.findBookListByBookIds(bookIds)
+        Assertions.assertEquals(emptyList<BookEntity>(), actual)
+    }
+
     companion object {
         private const val DEFAULT_ISBN = "1111222233334"
         private val DEFAULT_USER_ID = UUID.fromString("00000000-0000-0000-0000-000000000099")

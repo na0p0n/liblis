@@ -65,6 +65,29 @@ class BookRepositoryImplTest {
     }
 
     @Test
+    @DisplayName("BookIDリストから書籍一覧取得_正常系_書籍あり")
+    fun findBookListByBookIdListSuccess01() {
+        val bookIds = listOf(UUID.fromString("00000000-0000-0000-0000-000000000001"))
+        val expect = listOf(defaultBookEntity)
+
+        every { bookMapper.fetchBookList(bookIds) } returns listOf(defaultBookEntity)
+
+        val actual = bookRepositoryImpl.findBookListByBookIdList(bookIds)
+        Assertions.assertEquals(expect, actual)
+    }
+
+    @Test
+    @DisplayName("BookIDリストから書籍一覧取得_正常系_空リスト")
+    fun findBookListByBookIdListSuccess02() {
+        val bookIds = emptyList<UUID>()
+
+        every { bookMapper.fetchBookList(bookIds) } returns emptyList()
+
+        val actual = bookRepositoryImpl.findBookListByBookIdList(bookIds)
+        Assertions.assertEquals(emptyList<BookEntity>(), actual)
+    }
+
+    @Test
     @DisplayName("全書籍取得_正常系")
     fun fetchAllBooksSuccess01() {
         val expect =

@@ -48,6 +48,28 @@ class UserBooksServiceTest {
     }
 
     @Test
+    @DisplayName("最近追加された書籍ID一覧取得_正常系_書籍あり")
+    fun getRecentAddedBooksSuccess01() {
+        val bookId1 = UUID.fromString("00000000-0000-0000-0000-000000000010")
+        val bookId2 = UUID.fromString("00000000-0000-0000-0000-000000000011")
+        val expect = listOf(bookId1, bookId2)
+
+        every { userBooksRepository.getRecentAddedBooks() } returns listOf(bookId1, bookId2)
+
+        val actual = userBooksService.getRecentAddedBooks()
+        Assertions.assertEquals(expect, actual)
+    }
+
+    @Test
+    @DisplayName("最近追加された書籍ID一覧取得_正常系_書籍なし")
+    fun getRecentAddedBooksSuccess02() {
+        every { userBooksRepository.getRecentAddedBooks() } returns emptyList()
+
+        val actual = userBooksService.getRecentAddedBooks()
+        Assertions.assertEquals(emptyList<UUID>(), actual)
+    }
+
+    @Test
     @DisplayName("ユーザー書庫書籍登録_正常系")
     fun insertUserBooksDataSuccess01() {
         val dto = defaultUserBooksDto
