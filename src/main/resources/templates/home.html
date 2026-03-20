@@ -11,7 +11,10 @@
     <title>ダッシュボード - Liblis</title>
     <style>
         body { background-color: #f8f9fa; }
-        .book-card img { height: 180px; object-fit: cover; }
+        .book-card img { height: 140px; object-fit: cover; }
+        @media (min-width: 768px) {
+            .book-card img { height: 180px; }
+        }
         .stats-card { border-left: 4px solid #0d6efd; }
     </style>
 </head>
@@ -22,7 +25,7 @@
 <div class="container py-4">
     <div class="row mb-4">
         <div class="col">
-            <h2 class="fw-bold">
+            <h2 class="fw-bold fs-4">
                 こんにちは、<span th:text="${#authentication.principal instanceof T(org.springframework.security.oauth2.core.user.OAuth2User) ?
                               #authentication.principal.attributes['displayName'] :
                               (#authentication.principal instanceof T(net.naoponju.liblis.common.security.CustomUserDetails) ?
@@ -33,19 +36,19 @@
     </div>
 
     <div class="row g-3 mb-5">
-        <div class="col-md-4">
+        <div class="col-6 col-md-4">
             <div class="card shadow-sm stats-card h-100 p-3" style="border-left-color: #00fa9a;">
                 <div class="small text-muted fw-bold">DBに登録されている書籍</div>
                 <div class="h3 mb-0"><span th:text="${allBookCount}">***</span> <small class="fs-6">冊</small></div>
             </div>
         </div>
-        <div class="col-md-4">
+        <div class="col-6 col-md-4">
             <div class="card shadow-sm stats-card h-100 p-3">
                 <div class="small text-muted fw-bold">所持中の書籍</div>
                 <div class="h3 mb-0"><span th:text="${haveBookCount}">***</span> <small class="fs-6">冊</small></div>
             </div>
         </div>
-        <div class="col-md-4" hidden>
+        <div class="col-6 col-md-4" hidden>
             <div class="card shadow-sm stats-card h-100 p-3" style="border-left-color: #ffc107;">
                 <div class="small text-muted fw-bold">気になる本</div>
                 <div class="h3 mb-0">12 <small class="fs-6">冊</small></div>
