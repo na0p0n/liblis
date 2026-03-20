@@ -8,9 +8,9 @@ import io.mockk.verify
 import net.naoponju.liblis.application.dto.UserBooksDto
 import net.naoponju.liblis.application.dto.UserBooksForm
 import net.naoponju.liblis.application.dto.UserBooksUpdateForm
+import net.naoponju.liblis.application.dto.UserDto
 import net.naoponju.liblis.application.service.UserBooksService
 import net.naoponju.liblis.application.service.UserService
-import net.naoponju.liblis.application.dto.UserDto
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test

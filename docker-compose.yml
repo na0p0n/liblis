@@ -4,9 +4,9 @@ services:
     container_name: liblis-db
     restart: always
     environment:
-      POSTGRES_DB: liblis_db
-      POSTGRES_USER: liblis
-      POSTGRES_PASSWORD: liblis
+      POSTGRES_DB: ${DB_NAME:-liblis_db}
+      POSTGRES_USER: ${DB_USERNAME:-liblis}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-liblis}
     ports:
       - "5432:5432"
     volumes:
@@ -19,10 +19,23 @@ services:
       - db
     ports:
       - "8080:8080"
+    env_file:
+      - .env                                              # ← 追加：.env をそのまま読み込む
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/liblis_db
-      SPRING_DATASOURCE_USERNAME: liblis
-      SPRING_DATASOURCE_PASSWORD: liblis
+      # DB接続（currentSchema を明示し、直接起動と統一）
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/${DB_NAME:-liblis_db}?currentSchema=${DB_SCHEMA:-liblis_dev}
+      SPRING_DATASOURCE_USERNAME: ${DB_USERNAME:-liblis}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD:-liblis}
+      # Google Books API
       GOOGLE_BOOKS_API_KEY: ${GOOGLE_BOOKS_API_KEY:?GOOGLE_BOOKS_API_KEY is required}
+      # Flyway
+      SPRING_FLYWAY_SCHEMAS: ${DB_SCHEMA:-liblis_dev}
+      SPRING_FLYWAY_CREATE_SCHEMAS: true
+      # OAuth（env_file から上書き渡し。明示することで意図を明確にする）
+      GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID}
+      GITHUB_CLIENT_SECRET: ${GITHUB_CLIENT_SECRET}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
+
 volumes:
   liblis-db-data:

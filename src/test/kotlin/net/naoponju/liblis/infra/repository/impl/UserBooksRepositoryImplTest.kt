@@ -165,8 +165,9 @@ class UserBooksRepositoryImplTest {
     @Test
     @DisplayName("ユーザー書庫書籍登録_正常系_影響件数0はnullを返す")
     fun insertUserBooksDataSuccess03() {
+        val fixedUuid = UUID.fromString("00000000-0000-0000-0000-000000000099")
         mockkStatic(UUID::class)
-        every { UUID.randomUUID() } returns UUID.fromString("00000000-0000-0000-0000-000000000099")
+        every { UUID.randomUUID() } returns fixedUuid
 
         mockkStatic(LocalDateTime::class)
         every { LocalDateTime.now() } returns LocalDateTime.of(2024, 1, 1, 0, 0)
@@ -188,8 +189,9 @@ class UserBooksRepositoryImplTest {
     @Test
     @DisplayName("ユーザー書庫書籍登録_異常系_PersistenceExceptionはnullを返す")
     fun insertUserBooksDataFailure01() {
+        val fixedUuid = UUID.fromString("00000000-0000-0000-0000-000000000099")
         mockkStatic(UUID::class)
-        every { UUID.randomUUID() } returns UUID.fromString("00000000-0000-0000-0000-000000000099")
+        every { UUID.randomUUID() } returns fixedUuid
 
         mockkStatic(LocalDateTime::class)
         every { LocalDateTime.now() } returns LocalDateTime.of(2024, 1, 1, 0, 0)

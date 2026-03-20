@@ -44,6 +44,7 @@ class JsonHelperTest {
     @DisplayName("JSON変換_正常系_ネストされたオブジェクト")
     fun toJsonSuccess05() {
         data class Inner(val x: Int)
+
         data class Outer(val inner: Inner)
 
         val obj = Outer(Inner(42))
