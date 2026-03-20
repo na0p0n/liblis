@@ -95,7 +95,7 @@ class UserService(
     ): ChangePasswordResult {
         val user = userRepository.findById(userId) ?: return ChangePasswordResult.NOT_SUPPORTED
 
-        if (user.passwordHash == null) return ChangePasswordResult.NOT_SUPPORTED
+        user.passwordHash ?: return ChangePasswordResult.NOT_SUPPORTED
 
         if (!passwordEncoder.matches(currentPassword, user.passwordHash)) return ChangePasswordResult.WRONG_CURRENT
 
