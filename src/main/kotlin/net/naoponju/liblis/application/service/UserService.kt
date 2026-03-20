@@ -87,6 +87,7 @@ class UserService(
         userRepository.deleteUser(userId) // user_books は CASCADE DELETE により自動削除される
     }
 
+    @Transactional
     fun changePassword(
         userId: UUID,
         currentPassword: String,
@@ -101,7 +102,7 @@ class UserService(
         try {
             validatePassword(newPassword)
         } catch (e: InvalidPasswordException) {
-            logger.info("パスワード変更API: バリデーションエラー ${e.message}")
+            logger.info("パスワード変更API: バリデーションエラー {}", e.message)
             return ChangePasswordResult.VALIDATION_ERROR
         }
 

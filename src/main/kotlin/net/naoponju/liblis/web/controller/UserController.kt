@@ -77,12 +77,8 @@ class UserController(
         @AuthenticationPrincipal userDetails: Any?,
         redirectAttributes: RedirectAttributes,
     ): String {
-        val email =
-            when (userDetails) {
-                is UserDetails -> userDetails.username
-                is OAuth2User -> userDetails.attributes["email"]?.toString()
-                else -> null
-            } ?: run {
+        val email = getEmailFromPrincipal(userDetails)
+            ?: run {
                 // 認証情報が取得できない場合（通常は Spring Security が弾くため到達しないはず）
                 redirectAttributes.addFlashAttribute("error", "認証情報が確認できませんでした。再度ログインしてください。")
                 return "redirect:/login"
