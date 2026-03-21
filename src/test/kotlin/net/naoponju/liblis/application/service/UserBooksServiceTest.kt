@@ -196,6 +196,64 @@ class UserBooksServiceTest {
         Assertions.assertEquals(emptyList<UserBooksDto>(), actual)
     }
 
+    @Test
+    @DisplayName("ユーザー書庫書籍ID取得_正常系_IDが存在する場合はUUIDを返す")
+    fun getUserBooksIdFromUserIdAndBookIdSuccess01() {
+        val userId = DEFAULT_USER_ID
+        val bookId = DEFAULT_BOOK_ID
+        val expect = DEFAULT_USER_BOOKS_ID
+
+        every {
+            userBooksRepository.fetchUserBooksIdFromUserIdAndBookId(userId, bookId)
+        } returns DEFAULT_USER_BOOKS_ID
+
+        val actual = userBooksService.getUserBooksIdFromUserIdAndBookId(userId, bookId)
+        Assertions.assertEquals(expect, actual)
+    }
+
+    @Test
+    @DisplayName("ユーザー書庫書籍ID取得_正常系_IDが存在しない場合はnullを返す")
+    fun getUserBooksIdFromUserIdAndBookIdSuccess02() {
+        val userId = DEFAULT_USER_ID
+        val bookId = DEFAULT_BOOK_ID
+
+        every {
+            userBooksRepository.fetchUserBooksIdFromUserIdAndBookId(userId, bookId)
+        } returns null
+
+        val actual = userBooksService.getUserBooksIdFromUserIdAndBookId(userId, bookId)
+        Assertions.assertNull(actual)
+    }
+
+    @Test
+    @DisplayName("ユーザー書庫書籍ID取得_正常系_fetchUserBooksIdFromUserIdAndBookIdに正確な引数が渡される")
+    fun getUserBooksIdFromUserIdAndBookIdPassesCorrectArgs() {
+        val userId = DEFAULT_USER_ID
+        val bookId = DEFAULT_BOOK_ID
+
+        every {
+            userBooksRepository.fetchUserBooksIdFromUserIdAndBookId(userId, bookId)
+        } returns DEFAULT_USER_BOOKS_ID
+
+        userBooksService.getUserBooksIdFromUserIdAndBookId(userId, bookId)
+
+        verify(exactly = 1) {
+            userBooksRepository.fetchUserBooksIdFromUserIdAndBookId(userId, bookId)
+        }
+    }
+
+    @Test
+    @DisplayName("ユーザー書庫書籍件数取得_正常系_大きな件数")
+    fun countUserBooksLargeCount() {
+        val userId = DEFAULT_USER_ID
+        val expect = 9999
+
+        every { userBooksRepository.countUserBooks(userId) } returns 9999
+
+        val actual = userBooksService.countUserBooks(userId)
+        Assertions.assertEquals(expect, actual)
+    }
+
     companion object {
         private val DEFAULT_USER_ID = UUID.fromString("00000000-0000-0000-0000-000000000001")
         private val DEFAULT_BOOK_ID = UUID.fromString("00000000-0000-0000-0000-000000000002")

@@ -167,10 +167,30 @@ class UserServiceTest {
         every { passwordEncoder.encode(newPassword) } returns hashedNew
         justRun { userRepository.updatePassword(userId, hashedNew) }
 
-        userService.changePassword(userId, currentPassword, newPassword)
+        val actual = userService.changePassword(userId, currentPassword, newPassword)
+
+        Assertions.assertEquals(ChangePasswordResult.SUCCESS, actual)
 
         verify(exactly = 1) { userRepository.updatePassword(userId, hashedNew) }
         verify(exactly = 0) { userRepository.updatePassword(userId, neq(hashedNew)) }
+    }
+
+    @Test
+    @DisplayName("パスワード変更_回帰_SUCCESSの後findByIdは1回しか呼ばれない")
+    fun changePasswordCallsFindByIdExactlyOnce() {
+        val userId = DEFAULT_USER_ID
+        val currentPassword = "OldPass1!"
+        val newPassword = "NewPass1!"
+
+        every { userRepository.findById(userId) } returns defaultUserEntity
+        every { passwordEncoder.matches(currentPassword, defaultUserEntity.passwordHash) } returns true
+        every { passwordEncoder.encode(newPassword) } returns "hashed_new"
+        justRun { userRepository.updatePassword(userId, "hashed_new") }
+
+        val actual = userService.changePassword(userId, currentPassword, newPassword)
+
+        Assertions.assertEquals(ChangePasswordResult.SUCCESS, actual)
+        verify(exactly = 1) { userRepository.findById(userId) }
     }
 
     companion object {

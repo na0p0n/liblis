@@ -35,6 +35,16 @@ class UserBooksService(
         return userBooksRepository.countUserBooks(userId)
     }
 
+    fun getUserBooksIdFromUserIdAndBookId(
+        userId: UUID,
+        bookId: UUID,
+    ): UUID? {
+        return userBooksRepository.fetchUserBooksIdFromUserIdAndBookId(
+            userId,
+            bookId,
+        )
+    }
+
     fun isOwnedByUser(
         userId: UUID,
         userBooksId: UUID,

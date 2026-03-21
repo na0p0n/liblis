@@ -46,6 +46,16 @@ class UserBooksRepositoryImpl(
         )
     }
 
+    override fun fetchUserBooksIdFromUserIdAndBookId(
+        userId: UUID,
+        bookId: UUID,
+    ): UUID? {
+        return userBooksMapper.fetchUserBooksIdFromUserIdAndBookId(
+            userId,
+            bookId,
+        )
+    }
+
     override fun existsByUserIdAndUserBooksId(
         userId: UUID,
         userBooksId: UUID,

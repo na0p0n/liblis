@@ -89,6 +89,27 @@ class CustomUserDetailsTest {
         Assertions.assertFalse(detailsWithoutPassword.hasPassword)
     }
 
+    @Test
+    @DisplayName("getPassword_異常系_passwordHashがnullの場合はIllegalStateExceptionをスロー")
+    fun getPasswordThrowsWhenPasswordHashNull() {
+        val user = defaultUserEntity.copy(passwordHash = null)
+        val userDetails = CustomUserDetails(user)
+
+        Assertions.assertThrows(IllegalStateException::class.java) {
+            userDetails.password
+        }
+    }
+
+    @Test
+    @DisplayName("getPassword_正常系_passwordHashが存在する場合は値を返す")
+    fun getPasswordReturnsHashWhenPresent() {
+        val hash = "some_hash_value"
+        val user = defaultUserEntity.copy(passwordHash = hash)
+        val userDetails = CustomUserDetails(user)
+
+        Assertions.assertEquals(hash, userDetails.password)
+    }
+
     companion object {
         private val DEFAULT_USER_ID = UUID.fromString("00000000-0000-0000-0000-000000000001")
         private val defaultUserEntity =

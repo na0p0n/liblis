@@ -77,12 +77,13 @@ class UserController(
         @AuthenticationPrincipal userDetails: Any?,
         redirectAttributes: RedirectAttributes,
     ): String {
-        val email = getEmailFromPrincipal(userDetails)
-            ?: run {
-                // 認証情報が取得できない場合（通常は Spring Security が弾くため到達しないはず）
-                redirectAttributes.addFlashAttribute("error", "認証情報が確認できませんでした。再度ログインしてください。")
-                return "redirect:/login"
-            }
+        val email =
+            getEmailFromPrincipal(userDetails)
+                ?: run {
+                    // 認証情報が取得できない場合（通常は Spring Security が弾くため到達しないはず）
+                    redirectAttributes.addFlashAttribute("error", "認証情報が確認できませんでした。再度ログインしてください。")
+                    return "redirect:/login"
+                }
 
         val userId =
             userService.findByEmail(email)?.id
