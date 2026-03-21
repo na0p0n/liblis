@@ -12,7 +12,7 @@
             </div>
 
             <!-- リンク -->
-            <div class="col-md-4 text-md-center">
+            <div class="col-md-4 text-md-center mt-2 mt-md-0">
                 <ul class="list-inline mb-0 small">
                     <li class="list-inline-item">
                         <a th:href="@{/terms}" class="text-white-50 text-decoration-none link-hover">利用規約</a>
@@ -30,6 +30,7 @@
 
             <!-- コピーライト -->
             <div class="col-md-4 text-md-end">
+                <a href="https://developers.rakuten.com/" target="_blank" rel="noopener noreferrer" class="text-white-50 text-decoration-none link-hover">Supported by Rakuten Developers</a>
                 <p class="text-white-50 small mb-0">
                     &copy; <span th:text="${#dates.format(#dates.createNow(), 'yyyy')}">2026</span> Liblis. All rights reserved.
                 </p>

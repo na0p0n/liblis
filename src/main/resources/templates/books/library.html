@@ -6,6 +6,7 @@
     <meta charset="UTF-8">
     <meta name="_csrf" th:content="${_csrf.token}"/>
     <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>My書庫 - Liblis</title>
     <style>
         body { background-color: #f8f9fa; }
@@ -20,17 +21,17 @@
 <div class="filter-section py-3 mb-4 shadow-sm">
     <div class="container">
         <form class="row g-2 align-items-center" th:action="@{/books}" method="get" aria-disabled="true">
-            <div class="col-md-4">
+            <div class="col-12 col-md-4">
                 <input type="text" class="form-control" placeholder="タイトル、著者で検索..." disabled>
             </div>
-            <div class="col-md-2">
+            <div class="col-12 col-md-2">
                 <select class="form-select" disabled>
                     <option selected>すべてのカテゴリ</option>
                     <option>技術書</option>
                     <option>小説</option>
                 </select>
             </div>
-            <div class="col-md-2">
+            <div class="col-12 col-md-2">
                 <button type="submit" class="btn btn-primary w-100" disabled><i class="bi bi-search me-2"></i>検索</button>
             </div>
         </form>
@@ -72,12 +73,12 @@
                         <tr>
                             <th>カバー</th>
                             <th>タイトル / 著者</th>
-                            <th>カテゴリ</th>
-                            <th>出版社</th>
-                            <th>ページ数</th>
-                            <th>ISBN</th>
-                            <th>出版日</th>
-                            <th>購入日 / 購入金額</th>
+                            <th class="d-none d-lg-table-cell">カテゴリ</th>
+                            <th class="d-none d-lg-table-cell">出版社</th>
+                            <th class="d-none d-lg-table-cell">ページ数</th>
+                            <th class="d-none d-lg-table-cell">ISBN</th>
+                            <th class="d-none d-lg-table-cell">出版日</th>
+                            <th class="d-none d-lg-table-cell">購入日 / 購入金額</th>
                             <th>操作</th>
                         </tr>
                         </thead>
@@ -93,13 +94,13 @@
                                     </span>
                                 </div>
                             </td>
-                            <td><span class="badge bg-info text-dark">技術書</span></td>
-                            <td><span class="small text-muted" th:text="${book.publisher}">リブリス出版</span></td>
-                            <td><span class="small text-muted" th:text="${book.pages}">100</span></td>
-                            <td class="small text-muted" th:text="${book.isbn13 != null ? book.isbn13 : book.isbn10}">9784000000000</td>
-                            <td class="small text-muted"
+                            <td class="d-none d-lg-table-cell"><span class="badge bg-info text-dark">技術書</span></td>
+                            <td class="d-none d-lg-table-cell"><span class="small text-muted" th:text="${book.publisher}">リブリス出版</span></td>
+                            <td class="d-none d-lg-table-cell"><span class="small text-muted" th:text="${book.pages}">100</span></td>
+                            <td class="d-none d-lg-table-cell small text-muted" th:text="${book.isbn13 != null ? book.isbn13 : book.isbn10}">9784000000000</td>
+                            <td class="d-none d-lg-table-cell small text-muted"
                                 th:text="${book.publishDate?.toString() ?: ''}">2026/01/19</td>
-                            <td>
+                            <td class="d-none d-lg-table-cell">
                                 <div class="fw-bold" th:text="${book.purchaseDate.toString()}">9999/01/01</div>
                                 <div class="fw-bold">
                                     <span th:text="${book.purchasePrice}">000</span>円
@@ -192,7 +193,7 @@
 
 <!-- 編集モーダル -->
 <div class="modal fade" id="editModal" tabindex="-1">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-sm-down">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">蔵書情報を編集</h5>
