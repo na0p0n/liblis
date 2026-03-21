@@ -1,5 +1,6 @@
 package net.naoponju.liblis.application.dto
 
+import org.springframework.format.annotation.DateTimeFormat
 import java.time.LocalDate
 import java.util.UUID
 
@@ -25,5 +26,6 @@ data class UserBooksUpdateForm(
     val bookId: UUID,
     val status: String,
     val purchasePrice: Int?,
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     val purchaseDate: LocalDate?, // 更新時に未入力のケースも考慮
 )
