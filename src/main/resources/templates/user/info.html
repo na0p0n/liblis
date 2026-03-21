@@ -8,6 +8,9 @@
     <style>
         body { background-color: #f8f9fa; }
         .settings-card { max-width: 600px; margin: 2rem auto; }
+        @media (min-width: 576px) {
+            .account-action-btn { width: auto !important; }
+        }
     </style>
 </head>
 <body class="bg-light">
@@ -72,13 +75,13 @@
             <div class="d-flex flex-column flex-sm-row justify-content-between align-items-stretch align-items-sm-center gap-2">
                 <div>
                     <button th:if="${userDetails.hasPassword}" type="button"
-                            class="btn btn-outline-secondary w-100 w-sm-auto"
+                            class="btn btn-outline-secondary w-100 account-action-btn"
                             data-bs-toggle="modal" data-bs-target="#changePasswordModal">
                         🔑 パスワードを変更する
                     </button>
                 </div>
                 <div>
-                    <button type="button" class="btn btn-outline-danger w-100 w-sm-auto"
+                    <button type="button" class="btn btn-outline-danger w-100 account-action-btn"
                             data-bs-toggle="modal" data-bs-target="#deleteAccountModal">
                         アカウントを削除する
                     </button>
