@@ -83,4 +83,9 @@ class BookService(
     ): List<BookEntity> {
         return bookRepository.findAllPaged(offset, limit)
     }
+
+    // B-9: 書籍詳細ページ用
+    fun findBookById(id: UUID): BookEntity? {
+        return bookRepository.findById(id)
+    }
 }

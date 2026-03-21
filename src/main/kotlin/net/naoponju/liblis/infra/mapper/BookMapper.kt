@@ -23,8 +23,12 @@ interface BookMapper {
         SELECT
             id
             , title
+            , title_kana
+            , sub_title
+            , sub_title_kana
             , author
             , publisher
+            , book_size
             , publish_date
             , pages
             , description
@@ -32,12 +36,17 @@ interface BookMapper {
             , isbn13
             , list_price
             , category
+            , small_thumbnail_url
             , thumbnail_url
+            , large_thumbnail_url
             , registration_count
             , is_searched_ndl
             , ndl_url
             , is_searched_google
             , google_url
+            , is_searched_rakuten
+            , rakuten_item_url
+            , rakuten_affiliate_url
             , created_at
             , updated_at
         FROM books
@@ -49,8 +58,12 @@ interface BookMapper {
         value = [
             Result(id = true, column = "id", property = "id", typeHandler = UUIDTypeHandler::class),
             Result(column = "title", property = "title"),
+            Result(column = "title_kana", property = "titleKana"),
+            Result(column = "sub_title", property = "subTitle"),
+            Result(column = "sub_title_kana", property = "subTitleKana"),
             Result(column = "author", property = "author", typeHandler = StringListTypeHandler::class),
             Result(column = "publisher", property = "publisher"),
+            Result(column = "book_size", property = "bookSize"),
             Result(column = "publish_date", property = "publishDate"),
             Result(column = "pages", property = "pages"),
             Result(column = "description", property = "description"),
@@ -58,12 +71,17 @@ interface BookMapper {
             Result(column = "isbn13", property = "isbn13"),
             Result(column = "list_price", property = "listPrice"),
             Result(column = "category", property = "category"),
+            Result(column = "small_thumbnail_url", property = "smallThumbnailUrl"),
             Result(column = "thumbnail_url", property = "thumbnailUrl"),
+            Result(column = "large_thumbnail_url", property = "largeThumbnailUrl"),
             Result(column = "registration_count", property = "registrationCount"),
             Result(column = "is_searched_ndl", property = "isSearchedNDL"),
             Result(column = "ndl_url", property = "ndlUrl"),
             Result(column = "is_searched_google", property = "isSearchedGoogle"),
             Result(column = "google_url", property = "googleUrl"),
+            Result(column = "is_searched_rakuten", property = "isSearchedRakuten"),
+            Result(column = "rakuten_item_url", property = "rakutenItemUrl"),
+            Result(column = "rakuten_affiliate_url", property = "rakutenAffiliateUrl"),
             Result(column = "created_at", property = "createdAt"),
             Result(column = "updated_at", property = "updatedAt"),
         ],
@@ -77,8 +95,12 @@ interface BookMapper {
                 SELECT
                     id
                     , title
+                    , title_kana
+                    , sub_title
+                    , sub_title_kana
                     , author
                     , publisher
+                    , book_size
                     , publish_date
                     , pages
                     , description
@@ -86,12 +108,17 @@ interface BookMapper {
                     , isbn13
                     , list_price
                     , category
+                    , small_thumbnail_url
                     , thumbnail_url
+                    , large_thumbnail_url
                     , registration_count
                     , is_searched_ndl
                     , ndl_url
                     , is_searched_google
                     , google_url
+                    , is_searched_rakuten
+                    , rakuten_item_url
+                    , rakuten_affiliate_url
                     , created_at
                     , updated_at
                 FROM books
@@ -111,8 +138,12 @@ interface BookMapper {
         SELECT
             id
             , title
+            , title_kana
+            , sub_title
+            , sub_title_kana
             , author
             , publisher
+            , book_size
             , publish_date
             , pages
             , description
@@ -120,12 +151,17 @@ interface BookMapper {
             , isbn13
             , list_price
             , category
+            , small_thumbnail_url
             , thumbnail_url
+            , large_thumbnail_url
             , registration_count
             , is_searched_ndl
             , ndl_url
             , is_searched_google
             , google_url
+            , is_searched_rakuten
+            , rakuten_item_url
+            , rakuten_affiliate_url
             , created_at
             , updated_at
         FROM books
@@ -141,8 +177,12 @@ interface BookMapper {
         SELECT
             id
             , title
+            , title_kana
+            , sub_title
+            , sub_title_kana
             , author
             , publisher
+            , book_size
             , publish_date
             , pages
             , description
@@ -150,12 +190,17 @@ interface BookMapper {
             , isbn13
             , list_price
             , category
+            , small_thumbnail_url
             , thumbnail_url
+            , large_thumbnail_url
             , registration_count
             , is_searched_ndl
             , ndl_url
             , is_searched_google
             , google_url
+            , is_searched_rakuten
+            , rakuten_item_url
+            , rakuten_affiliate_url
             , created_at
             , updated_at
         FROM books
@@ -171,8 +216,12 @@ interface BookMapper {
         SELECT
             id
             , title
+            , title_kana
+            , sub_title
+            , sub_title_kana
             , author
             , publisher
+            , book_size
             , publish_date
             , pages
             , description
@@ -180,12 +229,17 @@ interface BookMapper {
             , isbn13
             , list_price
             , category
+            , small_thumbnail_url
             , thumbnail_url
+            , large_thumbnail_url
             , registration_count
             , is_searched_ndl
             , ndl_url
             , is_searched_google
             , google_url
+            , is_searched_rakuten
+            , rakuten_item_url
+            , rakuten_affiliate_url
             , created_at
             , updated_at
         FROM books
@@ -201,8 +255,12 @@ interface BookMapper {
         SELECT
             id
             , title
+            , title_kana
+            , sub_title
+            , sub_title_kana
             , author
             , publisher
+            , book_size
             , publish_date
             , pages
             , description
@@ -210,12 +268,17 @@ interface BookMapper {
             , isbn13
             , list_price
             , category
+            , small_thumbnail_url
             , thumbnail_url
+            , large_thumbnail_url
             , registration_count
             , is_searched_ndl
             , ndl_url
             , is_searched_google
             , google_url
+            , is_searched_rakuten
+            , rakuten_item_url
+            , rakuten_affiliate_url
             , created_at
             , updated_at
         FROM books
@@ -231,8 +294,12 @@ interface BookMapper {
         SELECT
             id
             , title
+            , title_kana
+            , sub_title
+            , sub_title_kana
             , author
             , publisher
+            , book_size
             , publish_date
             , pages
             , description
@@ -240,12 +307,17 @@ interface BookMapper {
             , isbn13
             , list_price
             , category
+            , small_thumbnail_url
             , thumbnail_url
+            , large_thumbnail_url
             , registration_count
             , is_searched_ndl
             , ndl_url
             , is_searched_google
             , google_url
+            , is_searched_rakuten
+            , rakuten_item_url
+            , rakuten_affiliate_url
             , created_at
             , updated_at
         FROM books
@@ -261,8 +333,12 @@ interface BookMapper {
         SELECT
             id
             , title
+            , title_kana
+            , sub_title
+            , sub_title_kana
             , author
             , publisher
+            , book_size
             , publish_date
             , pages
             , description
@@ -270,12 +346,17 @@ interface BookMapper {
             , isbn13
             , list_price
             , category
+            , small_thumbnail_url
             , thumbnail_url
+            , large_thumbnail_url
             , registration_count
             , is_searched_ndl
             , ndl_url
             , is_searched_google
             , google_url
+            , is_searched_rakuten
+            , rakuten_item_url
+            , rakuten_affiliate_url
             , created_at
             , updated_at
         FROM books
@@ -291,8 +372,12 @@ interface BookMapper {
         SELECT
             id
             , title
+            , title_kana
+            , sub_title
+            , sub_title_kana
             , author
             , publisher
+            , book_size
             , publish_date
             , pages
             , description
@@ -300,12 +385,17 @@ interface BookMapper {
             , isbn13
             , list_price
             , category
+            , small_thumbnail_url
             , thumbnail_url
+            , large_thumbnail_url
             , registration_count
             , is_searched_ndl
             , ndl_url
             , is_searched_google
             , google_url
+            , is_searched_rakuten
+            , rakuten_item_url
+            , rakuten_affiliate_url
             , created_at
             , updated_at
         FROM books
@@ -322,8 +412,12 @@ interface BookMapper {
         SELECT
             id
             , title
+            , title_kana
+            , sub_title
+            , sub_title_kana
             , author
             , publisher
+            , book_size
             , publish_date
             , pages
             , description
@@ -331,12 +425,17 @@ interface BookMapper {
             , isbn13
             , list_price
             , category
+            , small_thumbnail_url
             , thumbnail_url
+            , large_thumbnail_url
             , registration_count
             , is_searched_ndl
             , ndl_url
             , is_searched_google
             , google_url
+            , is_searched_rakuten
+            , rakuten_item_url
+            , rakuten_affiliate_url
             , created_at
             , updated_at
         FROM books
@@ -360,8 +459,12 @@ interface BookMapper {
             SELECT 
                 b.id
                 , b.title
+                , b.title_kana
+                , b.sub_title
+                , b.sub_title_kana
                 , b.author
                 , b.publisher
+                , b.book_size
                 , b.publish_date
                 , b.pages
                 , b.description
@@ -369,12 +472,17 @@ interface BookMapper {
                 , b.isbn13
                 , b.list_price
                 , b.category
+                , b.small_thumbnail_url
                 , b.thumbnail_url
+                , b.large_thumbnail_url
                 , b.registration_count
                 , b.is_searched_ndl
                 , b.ndl_url
                 , b.is_searched_google
                 , b.google_url
+                , b.is_searched_rakuten
+                , b.rakuten_item_url
+                , b.rakuten_affiliate_url
                 , b.created_at
                 , b.updated_at
             FROM books b
@@ -401,8 +509,12 @@ interface BookMapper {
             SELECT 
                 b.id
                 , b.title
+                , b.title_kana
+                , b.sub_title
+                , b.sub_title_kana
                 , b.author
                 , b.publisher
+                , b.book_size
                 , b.publish_date
                 , b.pages
                 , b.description
@@ -410,12 +522,17 @@ interface BookMapper {
                 , b.isbn13
                 , b.list_price
                 , b.category
+                , b.small_thumbnail_url
                 , b.thumbnail_url
+                , b.large_thumbnail_url
                 , b.registration_count
                 , b.is_searched_ndl
                 , b.ndl_url
                 , b.is_searched_google
                 , b.google_url
+                , b.is_searched_rakuten
+                , b.rakuten_item_url
+                , b.rakuten_affiliate_url
                 , b.created_at
                 , b.updated_at
             FROM books b
@@ -439,8 +556,12 @@ interface BookMapper {
         INSERT INTO books (
             id
             , title
+            , title_kana
+            , sub_title
+            , sub_title_kana
             , author
             , publisher
+            , book_size
             , publish_date
             , pages
             , description
@@ -448,19 +569,28 @@ interface BookMapper {
             , isbn13
             , list_price
             , category
+            , small_thumbnail_url
             , thumbnail_url
+            , large_thumbnail_url
             , registration_count
             , is_searched_ndl
             , ndl_url
             , is_searched_google
             , google_url
+            , is_searched_rakuten
+            , rakuten_item_url
+            , rakuten_affiliate_url
             , created_at
             , updated_at
         ) VALUES (
             #{id, jdbcType=OTHER}
             , #{title}
+            , #{titleKana}
+            , #{subTitle}
+            , #{subTitleKana}
             , #{author, typeHandler=net.naoponju.liblis.common.config.StringListTypeHandler}
             , #{publisher}
+            , #{bookSize}
             , #{publishDate}
             , #{pages}
             , #{description}
@@ -468,12 +598,17 @@ interface BookMapper {
             , #{isbn13}
             , #{listPrice}
             , #{category}
+            , #{smallThumbnailUrl}
             , #{thumbnailUrl}
+            , #{largeThumbnailUrl}
             , #{registrationCount}
             , #{isSearchedNDL}
             , #{ndlUrl}
             , #{isSearchedGoogle}
             , #{googleUrl}
+            , #{isSearchedRakuten}
+            , #{rakutenItemUrl}
+            , #{rakutenAffiliateUrl}
             , CURRENT_TIMESTAMP
             , CURRENT_TIMESTAMP
         );
@@ -485,19 +620,28 @@ interface BookMapper {
         """
         UPDATE books SET
             title = #{title},
+            title_kana = #{titleKana},
+            sub_title = #{subTitle},
+            sub_title_kana = #{subTitleKana},
             author = #{author, typeHandler=net.naoponju.liblis.common.config.StringListTypeHandler},
             publisher = #{publisher},
+            book_size = #{bookSize},
             publish_date = #{publishDate},
             pages = #{pages},
             description = #{description},
             list_price = #{listPrice},
             category = #{category},
+            small_thumbnail_url = #{smallThumbnailUrl},
             thumbnail_url = #{thumbnailUrl},
+            large_thumbnail_url = #{largeThumbnailUrl},
             registration_count = #{registrationCount},
             is_searched_ndl = #{isSearchedNDL},
             ndl_url = #{ndlUrl},
             is_searched_google = #{isSearchedGoogle},
             google_url = #{googleUrl},
+            is_searched_rakuten = #{isSearchedRakuten},
+            rakuten_item_url = #{rakutenItemUrl},
+            rakuten_affiliate_url = #{rakutenAffiliateUrl},
             updated_at = CURRENT_TIMESTAMP
         WHERE id = #{id, jdbcType=OTHER}
     """,

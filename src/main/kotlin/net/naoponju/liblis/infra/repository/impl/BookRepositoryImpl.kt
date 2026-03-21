@@ -32,10 +32,7 @@ class BookRepositoryImpl(
         userId: UUID,
         bookIds: List<UUID>,
     ): List<BookEntity>? {
-        return bookMapper.fetchUserHavingBookIdsInBookIdList(
-            userId,
-            bookIds,
-        )
+        return bookMapper.fetchUserHavingBookIdsInBookIdList(userId, bookIds)
     }
 
     override fun fetchUserHavingBooksPaged(
@@ -43,11 +40,7 @@ class BookRepositoryImpl(
         offset: Int,
         limit: Int,
     ): List<BookEntity> {
-        return bookMapper.fetchUserBooksPaged(
-            userId,
-            offset,
-            limit,
-        ) ?: emptyList()
+        return bookMapper.fetchUserBooksPaged(userId, offset, limit) ?: emptyList()
     }
 
     override fun findBookByTitle(title: String): List<BookEntity> {
@@ -62,11 +55,12 @@ class BookRepositoryImpl(
         return bookMapper.fetchRecentBooks(limit) ?: emptyList()
     }
 
-    override fun findAllPaged(
-        offset: Int,
-        limit: Int,
-    ): List<BookEntity> {
+    override fun findAllPaged(offset: Int, limit: Int): List<BookEntity> {
         return bookMapper.findAllPaged(offset, limit)
+    }
+
+    override fun findById(id: UUID): BookEntity? {
+        return bookMapper.findById(id)
     }
 
     override fun findBookByISBNFromGoogle(isbn: String): BookEntity {
@@ -83,12 +77,17 @@ class BookRepositoryImpl(
             description = fetchedBookData.description,
             listPrice = null,
             category = null,
+            smallThumbnailUrl = null,
             thumbnailUrl = fetchedBookData.bookThumbnailUrl,
+            largeThumbnailUrl = null,
             registrationCount = 0,
             isSearchedNDL = false,
             ndlUrl = null,
             isSearchedGoogle = true,
             googleUrl = fetchedBookData.selfLink,
+            isSearchedRakuten = false,
+            rakutenItemUrl = null,
+            rakutenAffiliateUrl = null,
             isbn10 = fetchedBookData.isbn10,
             isbn13 = fetchedBookData.isbn13,
         )
@@ -108,15 +107,12 @@ class BookRepositoryImpl(
 
         return try {
             when {
-                // publishedDateが完全な日付ならそのままLocalDateにパース
-                publishedDateStr.length == PublishDateLength.FULL -> LocalDate.parse(publishedDateStr)
-
-                // publishedDateが"yyyy-MM"の形式ならあとに"-01"を付加してLocalDateにパース
-                publishedDateStr.length == PublishDateLength.NON_DAY -> LocalDate.parse("$publishedDateStr-01")
-
-                // publishedDateが"yyyy"の形式ならあとに"-01-01"を付加してLocalDateにパース
-                publishedDateStr.length == PublishDateLength.NON_MONTH_DAY -> LocalDate.parse("$publishedDateStr-01-01")
-
+                publishedDateStr.length == PublishDateLength.FULL ->
+                    LocalDate.parse(publishedDateStr)
+                publishedDateStr.length == PublishDateLength.NON_DAY ->
+                    LocalDate.parse("$publishedDateStr-01")
+                publishedDateStr.length == PublishDateLength.NON_MONTH_DAY ->
+                    LocalDate.parse("$publishedDateStr-01-01")
                 else -> null
             }
         } catch (e: Exception) {

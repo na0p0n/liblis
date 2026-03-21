@@ -74,9 +74,9 @@
                         <dt class="col-sm-3 text-muted fw-normal" th:if="${book.pages != null}">ページ数</dt>
                         <dd class="col-sm-9" th:if="${book.pages != null}" th:text="${book.pages + ' ページ'}">ページ数</dd>
 
-                        <dt class="col-sm-3 text-muted fw-normal" th:if="${book.liblisCategory != null}">ジャンル</dt>
-                        <dd class="col-sm-9" th:if="${book.liblisCategory != null}">
-                            <span class="badge bg-info text-dark" th:text="${book.liblisCategory}">技術書</span>
+                        <dt class="col-sm-3 text-muted fw-normal" th:if="${book.category != null}">ジャンル</dt>
+                        <dd class="col-sm-9" th:if="${book.category != null}">
+                            <span class="badge bg-info text-dark" th:text="${book.category}">技術書</span>
                         </dd>
                     </dl>
 
@@ -111,8 +111,7 @@
                 <button type="button"
                         class="btn btn-primary"
                         data-bs-toggle="modal"
-                        data-bs-target="#addBookModal"
-                        th:attr="data-book-id=${book.id}, data-book-title=${book.title}">
+                        data-bs-target="#addBookModal">
                     <i class="bi bi-plus-lg me-1"></i>書庫に追加
                 </button>
             </div>
@@ -171,7 +170,6 @@
             </div>
             <form id="addBookForm">
                 <input type="hidden" id="addBookId" name="bookId" th:value="${book.id}">
-                <input type="hidden" name="status" value="OWNED">
                 <div class="modal-body">
                     <div class="mb-3">
                         <label class="form-label fw-bold">書籍タイトル</label>
@@ -327,14 +325,14 @@
     if (editModal) {
         editModal.addEventListener('show.bs.modal', function (event) {
             const btn = event.relatedTarget;
-            document.getElementById('editUserBooksId').value    = btn.dataset.userBooksId;
-            document.getElementById('editStatus').value         = btn.dataset.status || 'OWNED';
-            document.getElementById('editPurchaseDate').value   = btn.dataset.purchaseDate || '';
-            document.getElementById('editPurchasePrice').value  = btn.dataset.purchasePrice || '';
+            document.getElementById('editUserBooksId').value   = btn.dataset.userBooksId;
+            document.getElementById('editStatus').value        = btn.dataset.status || 'OWNED';
+            document.getElementById('editPurchaseDate').value  = btn.dataset.purchaseDate || '';
+            document.getElementById('editPurchasePrice').value = btn.dataset.purchasePrice || '';
         });
         document.getElementById('editBookForm').addEventListener('submit', async function (e) {
             e.preventDefault();
-            const userBooksId    = document.getElementById('editUserBooksId').value;
+            const userBooksId     = document.getElementById('editUserBooksId').value;
             const purchaseDateVal = document.getElementById('editPurchaseDate').value;
             const params = new URLSearchParams({
                 status:        document.getElementById('editStatus').value,
