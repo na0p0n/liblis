@@ -35,6 +35,8 @@ interface BookRepository {
         limit: Int,
     ): List<BookEntity>
 
+    fun findById(id: UUID): BookEntity?
+
     fun countAllBooks(): Int
 
     fun insert(book: BookEntity)

@@ -30,4 +30,10 @@ interface UserBooksRepository {
     fun deleteUserBooks(userBooksId: UUID)
 
     fun countUserBooks(userId: UUID): Int
+
+    // B-9: 書籍詳細ページ用
+    fun findUserBookByBookId(
+        userId: UUID,
+        bookId: UUID,
+    ): UserBooksDto?
 }

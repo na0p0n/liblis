@@ -256,6 +256,46 @@ class BookServiceTest {
         Assertions.assertNull(actual)
     }
 
+    @Test
+    @DisplayName("書籍詳細取得_正常系_書籍が見つかる")
+    fun findBookByIdSuccess01() {
+        val bookId = UUID.fromString("00000000-0000-0000-0000-000000000001")
+        val expect = defaultBookEntity.copy(id = bookId)
+
+        every { bookRepository.findById(bookId) } returns expect
+
+        val actual = bookService.findBookById(bookId)
+        Assertions.assertEquals(expect, actual)
+        verify(exactly = 1) { bookRepository.findById(bookId) }
+    }
+
+    @Test
+    @DisplayName("書籍詳細取得_正常系_書籍が見つからない場合nullを返す")
+    fun findBookByIdSuccess02() {
+        val bookId = UUID.fromString("00000000-0000-0000-0000-000000000001")
+
+        every { bookRepository.findById(bookId) } returns null
+
+        val actual = bookService.findBookById(bookId)
+        Assertions.assertNull(actual)
+        verify(exactly = 1) { bookRepository.findById(bookId) }
+    }
+
+    @Test
+    @DisplayName("書籍詳細取得_境界値_異なるIDでは別の書籍を返す")
+    fun findBookByIdDifferentIdsReturnDifferentBooks() {
+        val bookId1 = UUID.fromString("00000000-0000-0000-0000-000000000001")
+        val bookId2 = UUID.fromString("00000000-0000-0000-0000-000000000002")
+        val book1 = defaultBookEntity.copy(id = bookId1, title = "Book 1")
+        val book2 = defaultBookEntity.copy(id = bookId2, title = "Book 2")
+
+        every { bookRepository.findById(bookId1) } returns book1
+        every { bookRepository.findById(bookId2) } returns book2
+
+        Assertions.assertEquals(book1, bookService.findBookById(bookId1))
+        Assertions.assertEquals(book2, bookService.findBookById(bookId2))
+    }
+
     companion object {
         private const val DEFAULT_ISBN = "1111222233334"
         private val DEFAULT_USER_ID = UUID.fromString("00000000-0000-0000-0000-000000000099")

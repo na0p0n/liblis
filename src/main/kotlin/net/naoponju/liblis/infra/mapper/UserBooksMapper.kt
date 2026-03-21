@@ -5,7 +5,9 @@ import net.naoponju.liblis.common.config.UUIDTypeHandler
 import net.naoponju.liblis.domain.entity.UserBooksEntity
 import org.apache.ibatis.annotations.Insert
 import org.apache.ibatis.annotations.Mapper
+import org.apache.ibatis.annotations.Param
 import org.apache.ibatis.annotations.Result
+import org.apache.ibatis.annotations.ResultMap
 import org.apache.ibatis.annotations.Results
 import org.apache.ibatis.annotations.Select
 import org.apache.ibatis.annotations.Update
@@ -46,6 +48,32 @@ interface UserBooksMapper {
         ],
     )
     fun findBooksByUserId(userId: UUID): List<UserBooksEntity>?
+
+    // B-9: 書籍詳細ページ用 — userId + bookId で1件取得
+    @Select(
+        """
+            SELECT
+                id
+                , user_id
+                , book_id
+                , status
+                , purchase_price
+                , purchase_date
+                , is_deleted
+                , created_at
+                , updated_at
+            FROM user_books
+            WHERE user_id = #{userId, jdbcType=OTHER}
+            AND book_id = #{bookId, jdbcType=OTHER}
+            AND is_deleted = false
+            LIMIT 1
+        """,
+    )
+    @ResultMap("userBooksResult")
+    fun findByUserIdAndBookId(
+        @Param("userId") userId: UUID,
+        @Param("bookId") bookId: UUID,
+    ): UserBooksEntity?
 
     @Select(
         """

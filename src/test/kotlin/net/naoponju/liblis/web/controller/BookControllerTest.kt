@@ -3,8 +3,10 @@ package net.naoponju.liblis.web.controller
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.spyk
+import net.naoponju.liblis.application.dto.UserBooksDto
 import net.naoponju.liblis.application.dto.UserDto
 import net.naoponju.liblis.application.service.BookService
+import net.naoponju.liblis.application.service.UserBooksService
 import net.naoponju.liblis.application.service.UserService
 import net.naoponju.liblis.domain.entity.BookEntity
 import org.junit.jupiter.api.Assertions
@@ -15,18 +17,23 @@ import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User
 import org.springframework.security.oauth2.core.user.OAuth2User
 import org.springframework.ui.Model
+import org.springframework.web.servlet.mvc.support.RedirectAttributes
+import java.time.LocalDate
 import java.util.UUID
 
 class BookControllerTest {
     private val bookService: BookService = mockk(relaxed = true)
+    private val userBooksService: UserBooksService = mockk(relaxed = true)
     private val userService: UserService = mockk(relaxed = true)
     private val model: Model = mockk(relaxed = true)
+    private val redirectAttributes: RedirectAttributes = mockk(relaxed = true)
 
     private val bookController =
         spyk(
             objToCopy =
                 BookController(
                     bookService = bookService,
+                    userBooksService = userBooksService,
                     userService = userService,
                 ),
         )
@@ -142,6 +149,130 @@ class BookControllerTest {
     }
 
     @Test
+    @DisplayName("書籍詳細表示_正常系_from=listで書籍詳細を返す")
+    fun showBookDetailSuccess01() {
+        val bookId = DEFAULT_BOOK_ID
+        val userDetails: UserDetails =
+            User.withUsername(DEFAULT_EMAIL).password("password").roles("USER").build()
+
+        every { bookService.findBookById(bookId) } returns defaultBookEntity
+        every { userService.findByEmail(DEFAULT_EMAIL) } returns defaultUserDto
+        every { userBooksService.findUserBookByBookId(DEFAULT_USER_ID, bookId) } returns defaultUserBooksDto
+
+        val actual =
+            bookController.showBookDetail(
+                bookId = bookId,
+                from = "list",
+                userDetails = userDetails,
+                model = model,
+                redirectAttributes = redirectAttributes,
+            )
+        Assertions.assertEquals("books/detail", actual)
+    }
+
+    @Test
+    @DisplayName("書籍詳細表示_正常系_from=libraryで書籍詳細を返す")
+    fun showBookDetailSuccess02() {
+        val bookId = DEFAULT_BOOK_ID
+        val userDetails: UserDetails =
+            User.withUsername(DEFAULT_EMAIL).password("password").roles("USER").build()
+
+        every { bookService.findBookById(bookId) } returns defaultBookEntity
+        every { userService.findByEmail(DEFAULT_EMAIL) } returns defaultUserDto
+        every { userBooksService.findUserBookByBookId(DEFAULT_USER_ID, bookId) } returns null
+
+        val actual =
+            bookController.showBookDetail(
+                bookId = bookId,
+                from = "library",
+                userDetails = userDetails,
+                model = model,
+                redirectAttributes = redirectAttributes,
+            )
+        Assertions.assertEquals("books/detail", actual)
+    }
+
+    @Test
+    @DisplayName("書籍詳細表示_異常系_未認証はログインにリダイレクト")
+    fun showBookDetailFailure01() {
+        val bookId = DEFAULT_BOOK_ID
+
+        val actual =
+            bookController.showBookDetail(
+                bookId = bookId,
+                from = "list",
+                userDetails = null,
+                model = model,
+                redirectAttributes = redirectAttributes,
+            )
+        Assertions.assertEquals("redirect:/login", actual)
+    }
+
+    @Test
+    @DisplayName("書籍詳細表示_異常系_書籍が見つからない場合は書籍一覧にリダイレクト")
+    fun showBookDetailFailure02() {
+        val bookId = DEFAULT_BOOK_ID
+        val userDetails: UserDetails =
+            User.withUsername(DEFAULT_EMAIL).password("password").roles("USER").build()
+
+        every { bookService.findBookById(bookId) } returns null
+
+        val actual =
+            bookController.showBookDetail(
+                bookId = bookId,
+                from = "list",
+                userDetails = userDetails,
+                model = model,
+                redirectAttributes = redirectAttributes,
+            )
+        Assertions.assertEquals("redirect:/books/list", actual)
+    }
+
+    @Test
+    @DisplayName("書籍詳細表示_異常系_不正なfromパラメータはエラーページにリダイレクト")
+    fun showBookDetailFailure03() {
+        val bookId = DEFAULT_BOOK_ID
+        val userDetails: UserDetails =
+            User.withUsername(DEFAULT_EMAIL).password("password").roles("USER").build()
+
+        val actual =
+            bookController.showBookDetail(
+                bookId = bookId,
+                from = "invalid",
+                userDetails = userDetails,
+                model = model,
+                redirectAttributes = redirectAttributes,
+            )
+        Assertions.assertEquals("redirect:/error/500", actual)
+    }
+
+    @Test
+    @DisplayName("書籍詳細表示_正常系_OAuth2User認証でも詳細を返す")
+    fun showBookDetailSuccess03() {
+        val bookId = DEFAULT_BOOK_ID
+        val oauth2User: OAuth2User =
+            DefaultOAuth2User(
+                emptyList(),
+                mapOf("email" to DEFAULT_EMAIL, "sub" to "google-sub"),
+                "sub",
+            )
+
+        every { bookService.findBookById(bookId) } returns defaultBookEntity
+        every { userService.findByEmail(DEFAULT_EMAIL) } returns defaultUserDto
+        every { userBooksService.findUserBookByBookId(DEFAULT_USER_ID, bookId) } returns defaultUserBooksDto
+
+        val actual =
+            bookController.showBookDetail(
+                bookId = bookId,
+                from = "list",
+                userDetails = oauth2User,
+                model = model,
+                redirectAttributes = redirectAttributes,
+            )
+        Assertions.assertEquals("books/detail", actual)
+    }
+
+    @Test
     @DisplayName("書籍一覧表示_正常系_ユーザーIDなしでも書籍一覧は表示する")
     fun showBookListSuccess04() {
         val userDetails: UserDetails =
@@ -162,6 +293,7 @@ class BookControllerTest {
         private const val DEFAULT_EMAIL = "test@example.com"
         private val DEFAULT_USER_ID = UUID.fromString("00000000-0000-0000-0000-000000000001")
         private val DEFAULT_BOOK_ID = UUID.fromString("00000000-0000-0000-0000-000000000002")
+        private val DEFAULT_USER_BOOKS_ID = UUID.fromString("00000000-0000-0000-0000-000000000003")
         private val defaultUserDto =
             UserDto(
                 id = DEFAULT_USER_ID,
@@ -171,6 +303,15 @@ class BookControllerTest {
                 isGoogleLinked = false,
                 isGithubLinked = false,
                 isAppleLinked = false,
+            )
+        private val defaultUserBooksDto =
+            UserBooksDto(
+                id = DEFAULT_USER_BOOKS_ID,
+                userId = DEFAULT_USER_ID,
+                bookId = DEFAULT_BOOK_ID,
+                status = "OWNED",
+                purchasePrice = 1500,
+                purchaseDate = LocalDate.of(2024, 1, 1),
             )
         private val defaultBookEntity =
             BookEntity(
