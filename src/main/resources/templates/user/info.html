@@ -74,7 +74,7 @@
         <div class="card-footer bg-white py-3 px-4">
             <div class="d-flex flex-column flex-sm-row justify-content-between align-items-stretch align-items-sm-center gap-2">
                 <div>
-                    <button th:if="${userDetails.hasPassword}" type="button"
+                    <button th:if="${hasPassword}" type="button"
                             class="btn btn-outline-secondary w-100 account-action-btn"
                             data-bs-toggle="modal" data-bs-target="#changePasswordModal">
                         🔑 パスワードを変更する

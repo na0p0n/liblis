@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest
 import net.naoponju.liblis.application.service.UserBooksService
 import net.naoponju.liblis.application.service.UserService
 import net.naoponju.liblis.common.constraint.ChangePasswordResult
+import net.naoponju.liblis.common.security.CustomUserDetails
 import org.slf4j.LoggerFactory
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.security.core.context.SecurityContextHolder
@@ -31,15 +32,14 @@ class UserController(
         @AuthenticationPrincipal userDetails: Any?,
         model: Model,
     ): String {
-        val email = getEmailFromPrincipal(userDetails)
+        val email = getEmailFromPrincipal(userDetails) ?: return "redirect:/login"
 
-        if (email == null) {
-            return "redirect:/login"
-        }
+        val userDto = userService.findByEmail(email) ?: return "redirect:/login"
 
-        val userDto = userService.findByEmail(email) ?: "redirect:/login"
+        val hasPassword = userDetails is CustomUserDetails && userDetails.hasPassword
+
         model.addAttribute("user", userDto)
-        model.addAttribute("userDetails", userDetails)
+        model.addAttribute("hasPassword", hasPassword)
 
         return "user/info"
     }
