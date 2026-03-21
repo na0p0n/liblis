@@ -36,36 +36,81 @@ class UserBooksRepositoryImpl(
         return userBooksMapper.fetchRecentAddedBooks()
     }
 
+    /**
+     * Checks whether a user-book association exists for the given user and book.
+     *
+     * @param userId The UUID of the user.
+     * @param bookId The UUID of the book.
+     * @return `true` if an association exists for the given user and book, `false` otherwise.
+     */
     override fun existsByUserIdAndBookId(
         userId: UUID,
         bookId: UUID,
     ): Boolean {
-        return userBooksMapper.existsByUserIdAndBookId(
-            userId,
-            bookId,
-        )
+        return userBooksMapper.existsByUserIdAndBookId(userId, bookId)
     }
 
+    /**
+     * Finds the UserBooks record ID for the specified user and book.
+     *
+     * @return the `UUID` of the matching UserBooks record if present, `null` otherwise.
+     */
     override fun fetchUserBooksIdFromUserIdAndBookId(
         userId: UUID,
         bookId: UUID,
     ): UUID? {
-        return userBooksMapper.fetchUserBooksIdFromUserIdAndBookId(
-            userId,
-            bookId,
-        )
+        return userBooksMapper.fetchUserBooksIdFromUserIdAndBookId(userId, bookId)
     }
 
+    /**
+     * Determines whether a user-book relationship with the given user ID and user-books ID exists.
+     *
+     * @param userId The user's UUID.
+     * @param userBooksId The user-books record UUID.
+     * @return `true` if a matching record exists, `false` otherwise.
+     */
     override fun existsByUserIdAndUserBooksId(
         userId: UUID,
         userBooksId: UUID,
     ): Boolean {
-        return userBooksMapper.existsByUserIdAndUserBooksId(
-            userId,
-            userBooksId,
-        )
+        return userBooksMapper.existsByUserIdAndUserBooksId(userId, userBooksId)
     }
 
+    /**
+     * Retrieve the user's book record for a specific book.
+     *
+     * Maps the persisted entity to a UserBooksDto containing id, userId, bookId, status, purchasePrice, and purchaseDate.
+     *
+     * @param userId The user's UUID.
+     * @param bookId The book's UUID.
+     * @return The matching UserBooksDto if found, `null` otherwise.
+     */
+    override fun findUserBookByBookId(
+        userId: UUID,
+        bookId: UUID,
+    ): UserBooksDto? {
+        return userBooksMapper.findByUserIdAndBookId(userId, bookId)?.let { entity ->
+            UserBooksDto(
+                id = entity.id,
+                userId = entity.userId,
+                bookId = entity.bookId,
+                status = entity.status,
+                purchasePrice = entity.purchasePrice,
+                purchaseDate = entity.purchaseDate,
+            )
+        }
+    }
+
+    /**
+     * Inserts a new user-book record for the given DTO and returns the created record's id.
+     *
+     * Creates and persists a new UserBooksEntity populated from the provided DTO. If a record for
+     * the same userId and bookId already exists, if the insert does not affect exactly one row, or
+     * if a persistence/SQL error occurs, the method returns `null`.
+     *
+     * @param userBooksDto DTO containing the data to store for the new user-book record.
+     * @return The generated `UUID` of the inserted record, or `null` if insertion was skipped or failed.
+     */
     @Suppress("ReturnCount")
     override fun insertUserBooksData(userBooksDto: UserBooksDto): UUID? {
         if (existsByUserIdAndBookId(userBooksDto.userId, userBooksDto.bookId)) {

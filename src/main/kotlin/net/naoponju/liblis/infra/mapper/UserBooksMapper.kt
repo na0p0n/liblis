@@ -5,7 +5,9 @@ import net.naoponju.liblis.common.config.UUIDTypeHandler
 import net.naoponju.liblis.domain.entity.UserBooksEntity
 import org.apache.ibatis.annotations.Insert
 import org.apache.ibatis.annotations.Mapper
+import org.apache.ibatis.annotations.Param
 import org.apache.ibatis.annotations.Result
+import org.apache.ibatis.annotations.ResultMap
 import org.apache.ibatis.annotations.Results
 import org.apache.ibatis.annotations.Select
 import org.apache.ibatis.annotations.Update
@@ -14,6 +16,12 @@ import java.util.UUID
 @Mapper
 @Suppress("TooManyFunctions")
 interface UserBooksMapper {
+    /**
+     * Retrieves all non-deleted user_books records for the given user.
+     *
+     * @param userId The UUID of the user whose books to fetch.
+     * @return `List<UserBooksEntity>` containing matching records, or `null` if none found.
+     */
     @Select(
         """
             SELECT
@@ -47,6 +55,45 @@ interface UserBooksMapper {
     )
     fun findBooksByUserId(userId: UUID): List<UserBooksEntity>?
 
+    /**
+     * Retrieve the user's user_books record for the specified book.
+     *
+     * @param userId UUID of the user whose record to fetch.
+     * @param bookId UUID of the book to match.
+     * @return The matching UserBooksEntity, or `null` if no non-deleted record exists.
+     */
+    @Select(
+        """
+            SELECT
+                id
+                , user_id
+                , book_id
+                , status
+                , purchase_price
+                , purchase_date
+                , is_deleted
+                , created_at
+                , updated_at
+            FROM user_books
+            WHERE user_id = #{userId, jdbcType=OTHER}
+            AND book_id = #{bookId, jdbcType=OTHER}
+            AND is_deleted = false
+            LIMIT 1
+        """,
+    )
+    @ResultMap("userBooksResult")
+    fun findByUserIdAndBookId(
+        @Param("userId") userId: UUID,
+        @Param("bookId") bookId: UUID,
+    ): UserBooksEntity?
+
+    /**
+     * Retrieves up to four distinct book IDs corresponding to the most recently added entries across all users.
+     *
+     * The result contains at most four UUIDs ordered by their latest `created_at` descending (newest first).
+     *
+     * @return A list of book `UUID`s representing the most recently added books, ordered newest to oldest, limited to 4.
+     */
     @Select(
         """
             SELECT book_id

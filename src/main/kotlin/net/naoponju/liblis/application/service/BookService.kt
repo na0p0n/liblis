@@ -77,10 +77,27 @@ class BookService(
         return havingBooks
     }
 
+    /**
+     * Retrieve a page of books.
+     *
+     * @param offset The zero-based index of the first book to include.
+     * @param limit The maximum number of books to return.
+     * @return A list of BookEntity representing the requested page; may be empty.
+     */
     fun getBookListPaged(
         offset: Int,
         limit: Int,
     ): List<BookEntity> {
         return bookRepository.findAllPaged(offset, limit)
+    }
+
+    /**
+     * Retrieve a book by its UUID for the book detail page.
+     *
+     * @param id The book's UUID to look up.
+     * @return The matching BookEntity if found, `null` otherwise.
+     */
+    fun findBookById(id: UUID): BookEntity? {
+        return bookRepository.findById(id)
     }
 }
