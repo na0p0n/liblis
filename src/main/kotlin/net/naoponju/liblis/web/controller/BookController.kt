@@ -102,11 +102,12 @@ class BookController(
                 else -> null
             } ?: return "redirect:/login"
 
-        val book = bookService.findBookById(bookId)
-            ?: run {
-                redirectAttributes.addFlashAttribute("error", "書籍が見つかりませんでした。")
-                return "redirect:/books/list"
-            }
+        val book =
+            bookService.findBookById(bookId)
+                ?: run {
+                    redirectAttributes.addFlashAttribute("error", "書籍が見つかりませんでした。")
+                    return "redirect:/books/list"
+                }
 
         val userId = userService.findByEmail(email)?.id
         val userBook = userId?.let { userBooksService.findUserBookByBookId(it, bookId) }

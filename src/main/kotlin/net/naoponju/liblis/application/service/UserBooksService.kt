@@ -39,19 +39,21 @@ class UserBooksService(
         userId: UUID,
         bookId: UUID,
     ): UUID? {
-        return userBooksRepository.fetchUserBooksIdFromUserIdAndBookId(
-            userId,
-            bookId,
-        )
+        return userBooksRepository.fetchUserBooksIdFromUserIdAndBookId(userId, bookId)
     }
 
     fun isOwnedByUser(
         userId: UUID,
         userBooksId: UUID,
     ): Boolean {
-        return userBooksRepository.existsByUserIdAndUserBooksId(
-            userId,
-            userBooksId,
-        )
+        return userBooksRepository.existsByUserIdAndUserBooksId(userId, userBooksId)
+    }
+
+    // B-9: 書籍詳細ページ用
+    fun findUserBookByBookId(
+        userId: UUID,
+        bookId: UUID,
+    ): UserBooksDto? {
+        return userBooksRepository.findUserBookByBookId(userId, bookId)
     }
 }

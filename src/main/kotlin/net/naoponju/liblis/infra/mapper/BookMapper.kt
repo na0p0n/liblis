@@ -15,7 +15,7 @@ import org.apache.ibatis.annotations.Update
 import java.util.UUID
 
 @Mapper
-@Suppress("TooManyFunctions")
+@Suppress("TooManyFunctions", "LargeClass")
 interface BookMapper {
     // ISBNから検索
     @Select(

@@ -40,30 +40,38 @@ class UserBooksRepositoryImpl(
         userId: UUID,
         bookId: UUID,
     ): Boolean {
-        return userBooksMapper.existsByUserIdAndBookId(
-            userId,
-            bookId,
-        )
+        return userBooksMapper.existsByUserIdAndBookId(userId, bookId)
     }
 
     override fun fetchUserBooksIdFromUserIdAndBookId(
         userId: UUID,
         bookId: UUID,
     ): UUID? {
-        return userBooksMapper.fetchUserBooksIdFromUserIdAndBookId(
-            userId,
-            bookId,
-        )
+        return userBooksMapper.fetchUserBooksIdFromUserIdAndBookId(userId, bookId)
     }
 
     override fun existsByUserIdAndUserBooksId(
         userId: UUID,
         userBooksId: UUID,
     ): Boolean {
-        return userBooksMapper.existsByUserIdAndUserBooksId(
-            userId,
-            userBooksId,
-        )
+        return userBooksMapper.existsByUserIdAndUserBooksId(userId, userBooksId)
+    }
+
+    // B-9: 書籍詳細ページ用
+    override fun findUserBookByBookId(
+        userId: UUID,
+        bookId: UUID,
+    ): UserBooksDto? {
+        return userBooksMapper.findByUserIdAndBookId(userId, bookId)?.let { entity ->
+            UserBooksDto(
+                id = entity.id,
+                userId = entity.userId,
+                bookId = entity.bookId,
+                status = entity.status,
+                purchasePrice = entity.purchasePrice,
+                purchaseDate = entity.purchaseDate,
+            )
+        }
     }
 
     @Suppress("ReturnCount")

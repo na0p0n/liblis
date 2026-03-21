@@ -55,7 +55,10 @@ class BookRepositoryImpl(
         return bookMapper.fetchRecentBooks(limit) ?: emptyList()
     }
 
-    override fun findAllPaged(offset: Int, limit: Int): List<BookEntity> {
+    override fun findAllPaged(
+        offset: Int,
+        limit: Int,
+    ): List<BookEntity> {
         return bookMapper.findAllPaged(offset, limit)
     }
 

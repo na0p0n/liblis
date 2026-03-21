@@ -5,6 +5,7 @@ import io.mockk.mockk
 import io.mockk.spyk
 import net.naoponju.liblis.application.dto.UserDto
 import net.naoponju.liblis.application.service.BookService
+import net.naoponju.liblis.application.service.UserBooksService
 import net.naoponju.liblis.application.service.UserService
 import net.naoponju.liblis.domain.entity.BookEntity
 import org.junit.jupiter.api.Assertions
@@ -19,6 +20,7 @@ import java.util.UUID
 
 class BookControllerTest {
     private val bookService: BookService = mockk(relaxed = true)
+    private val userBooksService: UserBooksService = mockk(relaxed = true)
     private val userService: UserService = mockk(relaxed = true)
     private val model: Model = mockk(relaxed = true)
 
@@ -27,6 +29,7 @@ class BookControllerTest {
             objToCopy =
                 BookController(
                     bookService = bookService,
+                    userBooksService = userBooksService,
                     userService = userService,
                 ),
         )
