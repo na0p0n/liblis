@@ -41,7 +41,7 @@ class UserController(
         model.addAttribute("user", userDto)
         model.addAttribute("userDetails", userDetails)
 
-        return "/user/info"
+        return "user/info"
     }
 
     @PostMapping("/unlink/{provider}")
