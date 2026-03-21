@@ -82,7 +82,10 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <tr th:each="book : ${books}">
+                        <tr th:each="book : ${books}"
+                            class="book-row"
+                            th:attr="data-href=@{/books/{id}(id=${book.id})}"
+                            style="cursor: pointer;">
                             <td><img th:src="${book.thumbnailUrl != null ? book.thumbnailUrl : 'https://dummy.kobeya.com/?width=60&height=85&bg=cccccc&color=000000&text=No%20Image&_=1772546481754'}" class="book-thumb rounded shadow-sm"></td>
                             <td>
                                 <div class="fw-bold" th:text="${book.title}">実践Kotlin入門</div>
@@ -265,6 +268,13 @@
         url.searchParams.set('page', 1);
         window.location.href = url.toString();
     };
+
+    document.querySelectorAll('.book-row').forEach(row => {
+      row.addEventListener('click', (e) => {
+      if (e.target.closest('[data-bs-toggle="modal"]')) return;
+        window.location.href = row.dataset.href;
+      });
+    });
 
     const bookModal = document.getElementById('bookRegistrationModal');
     bookModal.addEventListener('show.bs.modal', function (event) {
