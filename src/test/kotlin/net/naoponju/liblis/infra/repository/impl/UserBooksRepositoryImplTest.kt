@@ -376,6 +376,28 @@ class UserBooksRepositoryImplTest {
     }
 
     @Test
+    @DisplayName("ユーザー書庫書籍ID取得_正常系_IDが存在する場合はUUIDを返す")
+    fun fetchUserBooksIdFromUserIdAndBookIdSuccess01() {
+        every {
+            userBooksMapper.fetchUserBooksIdFromUserIdAndBookId(DEFAULT_USER_ID, DEFAULT_BOOK_ID)
+        } returns DEFAULT_USER_BOOKS_ID
+
+        val actual = userBooksRepositoryImpl.fetchUserBooksIdFromUserIdAndBookId(DEFAULT_USER_ID, DEFAULT_BOOK_ID)
+        Assertions.assertEquals(DEFAULT_USER_BOOKS_ID, actual)
+    }
+
+    @Test
+    @DisplayName("ユーザー書庫書籍ID取得_正常系_IDが存在しない場合はnullを返す")
+    fun fetchUserBooksIdFromUserIdAndBookIdSuccess02() {
+        every {
+            userBooksMapper.fetchUserBooksIdFromUserIdAndBookId(DEFAULT_USER_ID, DEFAULT_BOOK_ID)
+        } returns null
+
+        val actual = userBooksRepositoryImpl.fetchUserBooksIdFromUserIdAndBookId(DEFAULT_USER_ID, DEFAULT_BOOK_ID)
+        Assertions.assertNull(actual)
+    }
+
+    @Test
     @DisplayName("ユーザー書庫書籍登録_正常系_purchasePriceがnullの場合も登録できる")
     fun insertUserBooksDataNullPurchasePrice() {
         val fixedUuid = UUID.fromString("00000000-0000-0000-0000-000000000099")

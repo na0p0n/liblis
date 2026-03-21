@@ -242,6 +242,20 @@ class BookServiceTest {
         verify(exactly = 1) { bookRepository.findAllPaged(offset, limit) }
     }
 
+    @Test
+    @DisplayName("ユーザー所持書籍IDリスト取得_正常系_書籍IDが存在するがリポジトリがnullを返す場合はnullを返す")
+    fun fetchUserHavingBookIdsInBookIdListReturnsNullWhenRepoReturnsNull() {
+        val userId = DEFAULT_USER_ID
+        val bookIds = listOf(UUID.fromString("00000000-0000-0000-0000-000000000001"))
+
+        every {
+            bookRepository.fetchUserHavingBookIdsInBookIdList(userId, bookIds)
+        } returns null
+
+        val actual = bookService.fetchUserHavingBookIdsInBookIdList(userId, bookIds)
+        Assertions.assertNull(actual)
+    }
+
     companion object {
         private const val DEFAULT_ISBN = "1111222233334"
         private val DEFAULT_USER_ID = UUID.fromString("00000000-0000-0000-0000-000000000099")
