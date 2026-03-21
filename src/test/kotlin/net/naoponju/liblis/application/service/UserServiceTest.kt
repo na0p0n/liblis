@@ -167,7 +167,9 @@ class UserServiceTest {
         every { passwordEncoder.encode(newPassword) } returns hashedNew
         justRun { userRepository.updatePassword(userId, hashedNew) }
 
-        userService.changePassword(userId, currentPassword, newPassword)
+        val actual = userService.changePassword(userId, currentPassword, newPassword)
+
+        Assertions.assertEquals(ChangePasswordResult.SUCCESS, actual)
 
         verify(exactly = 1) { userRepository.updatePassword(userId, hashedNew) }
         verify(exactly = 0) { userRepository.updatePassword(userId, neq(hashedNew)) }
@@ -185,8 +187,9 @@ class UserServiceTest {
         every { passwordEncoder.encode(newPassword) } returns "hashed_new"
         justRun { userRepository.updatePassword(userId, "hashed_new") }
 
-        userService.changePassword(userId, currentPassword, newPassword)
+        val actual = userService.changePassword(userId, currentPassword, newPassword)
 
+        Assertions.assertEquals(ChangePasswordResult.SUCCESS, actual)
         verify(exactly = 1) { userRepository.findById(userId) }
     }
 

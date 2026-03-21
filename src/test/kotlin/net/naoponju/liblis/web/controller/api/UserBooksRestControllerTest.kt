@@ -113,6 +113,34 @@ class UserBooksRestControllerTest {
     }
 
     @Test
+    @DisplayName("ユーザー書庫書籍追加API_正常系_再登録で更新成功")
+    fun addUserBooksReRegisterSuccess() {
+        val userDetails: UserDetails =
+            User.withUsername(DEFAULT_EMAIL).password("pw").roles("USER").build()
+        val form =
+            UserBooksForm(
+                bookId = DEFAULT_BOOK_ID,
+                status = "OWNED",
+                purchasePrice = 1500,
+                purchaseYear = 2024,
+                purchaseMonth = 1,
+                purchaseDay = 15,
+            )
+
+        every { userService.findByEmail(DEFAULT_EMAIL) } returns defaultUserDto
+        every {
+            userBooksService.getUserBooksIdFromUserIdAndBookId(defaultUserDto.id!!, DEFAULT_BOOK_ID)
+        } returns DEFAULT_USER_BOOKS_ID
+        justRun { userBooksService.updateUserBooksData(any()) }
+
+        val response = controller.addUserBooks(userDetails, form)
+        Assertions.assertEquals(HttpStatus.OK, response.statusCode)
+        verify(exactly = 1) { userBooksService.getUserBooksIdFromUserIdAndBookId(any(), any()) }
+        verify(exactly = 1) { userBooksService.updateUserBooksData(any()) }
+        verify(exactly = 0) { userBooksService.insertUserBooksData(any()) }
+    }
+
+    @Test
     @DisplayName("ユーザー書庫書籍追加API_異常系_未認証は401")
     fun addUserBooksFailure01() {
         val form =
@@ -175,7 +203,7 @@ class UserBooksRestControllerTest {
     }
 
     @Test
-    @DisplayName("ユーザー書庫書籍追加API_異常系_重複登録は400")
+    @DisplayName("ユーザー書庫書籍追加API_異常系_更新処理で例外発生は400")
     fun addUserBooksFailure04() {
         val userDetails: UserDetails =
             User.withUsername(DEFAULT_EMAIL).password("pw").roles("USER").build()
@@ -190,11 +218,14 @@ class UserBooksRestControllerTest {
             )
 
         every { userService.findByEmail(DEFAULT_EMAIL) } returns defaultUserDto
-        every { userBooksService.insertUserBooksData(any()) } returns null
-        every { userBooksService.updateUserBooksData(any()) }
+        every {
+            userBooksService.getUserBooksIdFromUserIdAndBookId(defaultUserDto.id!!, DEFAULT_BOOK_ID)
+        } returns DEFAULT_USER_BOOKS_ID
+        every { userBooksService.updateUserBooksData(any()) } throws RuntimeException("Update failed")
 
         val response = controller.addUserBooks(userDetails, form)
         Assertions.assertNotNull(response)
+        verify(exactly = 1) { userBooksService.getUserBooksIdFromUserIdAndBookId(any(), any()) }
         verify(exactly = 0) { userBooksService.insertUserBooksData(any()) }
         verify(exactly = 1) { userBooksService.updateUserBooksData(any()) }
         Assertions.assertEquals(HttpStatus.BAD_REQUEST, response.statusCode)
