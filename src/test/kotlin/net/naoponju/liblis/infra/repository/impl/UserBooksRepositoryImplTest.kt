@@ -398,6 +398,50 @@ class UserBooksRepositoryImplTest {
     }
 
     @Test
+    @DisplayName("書籍詳細ページ用ユーザー書庫取得_正常系_EntityがDTOにマッピングされる")
+    fun findUserBookByBookIdSuccess01() {
+        every {
+            userBooksMapper.findByUserIdAndBookId(DEFAULT_USER_ID, DEFAULT_BOOK_ID)
+        } returns defaultUserBooksEntity
+
+        val actual = userBooksRepositoryImpl.findUserBookByBookId(DEFAULT_USER_ID, DEFAULT_BOOK_ID)
+
+        Assertions.assertNotNull(actual)
+        Assertions.assertEquals(DEFAULT_USER_BOOKS_ID, actual!!.id)
+        Assertions.assertEquals(DEFAULT_USER_ID, actual.userId)
+        Assertions.assertEquals(DEFAULT_BOOK_ID, actual.bookId)
+        Assertions.assertEquals("OWNED", actual.status)
+        Assertions.assertEquals(1500, actual.purchasePrice)
+        Assertions.assertEquals(LocalDate.of(2024, 1, 1), actual.purchaseDate)
+    }
+
+    @Test
+    @DisplayName("書籍詳細ページ用ユーザー書庫取得_正常系_書籍が見つからない場合nullを返す")
+    fun findUserBookByBookIdSuccess02() {
+        every {
+            userBooksMapper.findByUserIdAndBookId(DEFAULT_USER_ID, DEFAULT_BOOK_ID)
+        } returns null
+
+        val actual = userBooksRepositoryImpl.findUserBookByBookId(DEFAULT_USER_ID, DEFAULT_BOOK_ID)
+
+        Assertions.assertNull(actual)
+    }
+
+    @Test
+    @DisplayName("書籍詳細ページ用ユーザー書庫取得_正常系_purchasePriceがnullでもマッピングされる")
+    fun findUserBookByBookIdNullPurchasePrice() {
+        val entityWithNullPrice = defaultUserBooksEntity.copy(purchasePrice = null)
+        every {
+            userBooksMapper.findByUserIdAndBookId(DEFAULT_USER_ID, DEFAULT_BOOK_ID)
+        } returns entityWithNullPrice
+
+        val actual = userBooksRepositoryImpl.findUserBookByBookId(DEFAULT_USER_ID, DEFAULT_BOOK_ID)
+
+        Assertions.assertNotNull(actual)
+        Assertions.assertNull(actual!!.purchasePrice)
+    }
+
+    @Test
     @DisplayName("ユーザー書庫書籍登録_正常系_purchasePriceがnullの場合も登録できる")
     fun insertUserBooksDataNullPurchasePrice() {
         val fixedUuid = UUID.fromString("00000000-0000-0000-0000-000000000099")

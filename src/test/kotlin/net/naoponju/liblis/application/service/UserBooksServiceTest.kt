@@ -254,6 +254,48 @@ class UserBooksServiceTest {
         Assertions.assertEquals(expect, actual)
     }
 
+    @Test
+    @DisplayName("書籍詳細用ユーザー書庫取得_正常系_書籍が見つかる")
+    fun findUserBookByBookIdSuccess01() {
+        val userId = DEFAULT_USER_ID
+        val bookId = DEFAULT_BOOK_ID
+        val expect = defaultUserBooksDto
+
+        every { userBooksRepository.findUserBookByBookId(userId, bookId) } returns defaultUserBooksDto
+
+        val actual = userBooksService.findUserBookByBookId(userId, bookId)
+        Assertions.assertEquals(expect, actual)
+        verify(exactly = 1) { userBooksRepository.findUserBookByBookId(userId, bookId) }
+    }
+
+    @Test
+    @DisplayName("書籍詳細用ユーザー書庫取得_正常系_書籍が見つからない場合nullを返す")
+    fun findUserBookByBookIdSuccess02() {
+        val userId = DEFAULT_USER_ID
+        val bookId = DEFAULT_BOOK_ID
+
+        every { userBooksRepository.findUserBookByBookId(userId, bookId) } returns null
+
+        val actual = userBooksService.findUserBookByBookId(userId, bookId)
+        Assertions.assertNull(actual)
+    }
+
+    @Test
+    @DisplayName("書籍詳細用ユーザー書庫取得_正常系_リポジトリに正確な引数が渡される")
+    fun findUserBookByBookIdPassesCorrectArgs() {
+        val userId = DEFAULT_USER_ID
+        val bookId = DEFAULT_BOOK_ID
+        val otherId = UUID.fromString("00000000-0000-0000-0000-000000000099")
+
+        every { userBooksRepository.findUserBookByBookId(userId, bookId) } returns defaultUserBooksDto
+
+        userBooksService.findUserBookByBookId(userId, bookId)
+
+        verify(exactly = 1) { userBooksRepository.findUserBookByBookId(userId, bookId) }
+        verify(exactly = 0) { userBooksRepository.findUserBookByBookId(otherId, bookId) }
+        verify(exactly = 0) { userBooksRepository.findUserBookByBookId(userId, otherId) }
+    }
+
     companion object {
         private val DEFAULT_USER_ID = UUID.fromString("00000000-0000-0000-0000-000000000001")
         private val DEFAULT_BOOK_ID = UUID.fromString("00000000-0000-0000-0000-000000000002")
