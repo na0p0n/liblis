@@ -48,7 +48,7 @@
         </li>
     </ul>
 
-    <div class="tab-content" id="bookTabContent">
+    <div class="tab-content mb-4" id="bookTabContent">
         <div class="tab-pane fade show active" id="mybooks" role="tabpanel">
             <div class="card shadow-sm">
                 <div class="d-flex justify-content-end align-items-center px-3 pt-3 pb-2">
@@ -84,7 +84,7 @@
                         <tbody>
                         <tr th:each="book : ${books}"
                             class="book-row"
-                            th:attr="data-href=@{/books/{id}(id=${book.id})}"
+                            th:attr="data-href=@{/books/{id}(id=${book.id}, from='list')}"
                             style="cursor: pointer;">
                             <td><img th:src="${book.thumbnailUrl != null ? book.thumbnailUrl : 'https://dummy.kobeya.com/?width=60&height=85&bg=cccccc&color=000000&text=No%20Image&_=1772546481754'}" class="book-thumb rounded shadow-sm"></td>
                             <td>

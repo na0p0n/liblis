@@ -135,6 +135,7 @@
                             data-bs-toggle="modal"
                             data-bs-target="#editBookModal"
                             th:attr="data-user-books-id=${userBook.id},
+                                     data-book-id=${book.id},
                                      data-status=${userBook.status},
                                      data-purchase-date=${userBook.purchaseDate},
                                      data-purchase-price=${userBook.purchasePrice}">
@@ -154,8 +155,8 @@
 
     <!-- 戻るボタン -->
     <div class="mt-4">
-        <a th:href="@{/books/list}" class="btn btn-secondary btn-sm">
-            <i class="bi bi-arrow-left me-1"></i>書籍一覧に戻る
+        <a th:href="${redirectUrl}" class="btn btn-secondary btn-sm">
+            <i class="bi bi-arrow-left me-1"></i><div th:text="${redirectText}">書籍一覧に戻る</div>
         </a>
     </div>
 </div>
@@ -206,6 +207,7 @@
             </div>
             <form id="editBookForm">
                 <input type="hidden" id="editUserBooksId">
+                <input type="hidden" id="editBookId">
                 <div class="modal-body">
                     <div class="mb-3">
                         <label for="editStatus" class="form-label">読書ステータス</label>
@@ -326,6 +328,7 @@
         editModal.addEventListener('show.bs.modal', function (event) {
             const btn = event.relatedTarget;
             document.getElementById('editUserBooksId').value   = btn.dataset.userBooksId;
+            document.getElementById('editBookId').value   = btn.dataset.bookId;
             document.getElementById('editStatus').value        = btn.dataset.status || 'OWNED';
             document.getElementById('editPurchaseDate').value  = btn.dataset.purchaseDate || '';
             document.getElementById('editPurchasePrice').value = btn.dataset.purchasePrice || '';
@@ -333,17 +336,12 @@
         document.getElementById('editBookForm').addEventListener('submit', async function (e) {
             e.preventDefault();
             const userBooksId     = document.getElementById('editUserBooksId').value;
-            const purchaseDateVal = document.getElementById('editPurchaseDate').value;
             const params = new URLSearchParams({
+                bookId:        document.getElementById('editBookId').value,
                 status:        document.getElementById('editStatus').value,
                 purchasePrice: document.getElementById('editPurchasePrice').value || '',
+                purchaseDate:  document.getElementById('editPurchaseDate').value,
             });
-            if (purchaseDateVal) {
-                const [year, month, day] = purchaseDateVal.split('-');
-                params.append('purchaseYear',  year);
-                params.append('purchaseMonth', month);
-                params.append('purchaseDay',   day);
-            }
             try {
                 const res = await fetch(`/api/library/${userBooksId}`, {
                     method: 'PUT',

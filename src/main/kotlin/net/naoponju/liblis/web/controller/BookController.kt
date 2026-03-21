@@ -91,10 +91,18 @@ class BookController(
     @GetMapping("/{bookId}")
     fun showBookDetail(
         @PathVariable bookId: UUID,
+        @RequestParam(defaultValue = "list") from: String,
         @AuthenticationPrincipal userDetails: Any?,
         model: Model,
         redirectAttributes: RedirectAttributes,
     ): String {
+        val redirectInfo =
+            when (from) {
+                "list" -> Pair("/books/list", "書籍一覧画面に戻る")
+                "library" -> Pair("/library", "My書庫画面に戻る")
+                else -> return "redirect:/error/500"
+            }
+
         val email =
             when (userDetails) {
                 is UserDetails -> userDetails.username
@@ -114,6 +122,8 @@ class BookController(
 
         model.addAttribute("book", book)
         model.addAttribute("userBook", userBook)
+        model.addAttribute("redirectUrl", redirectInfo.first)
+        model.addAttribute("redirectText", redirectInfo.second)
         return "books/detail"
     }
 
