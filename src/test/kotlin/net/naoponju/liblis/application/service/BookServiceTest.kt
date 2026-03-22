@@ -60,6 +60,8 @@ class BookServiceTest {
         } returns defaultBookEntity
 
         val actual = bookService.findBookByISBN(isbn)
+        verify(exactly = 1) { bookRepository.findBookByISBNFromRakuten(isbn = isbn) }
+        verify(exactly = 0) { bookRepository.findBookByISBNFromGoogle(isbn = any()) }
         verify(exactly = 1) { bookRepository.insert(any<BookEntity>()) }
         Assertions.assertEquals(expect, actual)
     }
