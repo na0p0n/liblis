@@ -74,7 +74,7 @@ google:
     key: dummy
 rakuten:
   api:
-    application-id: ${RAKUTEN_BOOKS_APP_ID}
-    affiliate-id: ${RAKUTEN_BOOKS_AFFILIATE_ID}
-    key: ${RAKUTEN_BOOKS_API_KEY}
-    site-url: ${RAKUTEN_BOOKS_API_SITE_URL}
+    application-id: dummy
+    affiliate-id: dummy
+    key: dummy
+    site-url: dummy
