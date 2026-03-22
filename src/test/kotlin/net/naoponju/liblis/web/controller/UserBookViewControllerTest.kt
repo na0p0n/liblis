@@ -47,7 +47,14 @@ class UserBookViewControllerTest {
         every { bookService.getHavingBooksPaged(DEFAULT_USER_ID, 0, 20) } returns listOf(defaultBookEntity)
         every { userBooksService.getUserHavingBooks(DEFAULT_USER_ID) } returns listOf(defaultUserBooksDto)
 
-        val actual = controller.showUserBooks(page = 1, size = 20, userDetails = userDetails, model = model)
+        val actual = controller.showUserBooks(
+            q = null,
+            type = null,
+            page = 1,
+            size = 20,
+            userDetails = userDetails,
+            model = model,
+        )
         Assertions.assertEquals("books/library", actual)
     }
 
@@ -62,14 +69,28 @@ class UserBookViewControllerTest {
         every { bookService.getHavingBooksPaged(DEFAULT_USER_ID, 0, 20) } returns listOf(defaultBookEntity)
         every { userBooksService.getUserHavingBooks(DEFAULT_USER_ID) } returns listOf(defaultUserBooksDto)
 
-        val actual = controller.showUserBooks(page = 1, size = 20, userDetails = oauth2User, model = model)
+        val actual = controller.showUserBooks(
+            q = null,
+            type = null,
+            page = 1,
+            size = 20,
+            userDetails = oauth2User,
+            model = model,
+        )
         Assertions.assertEquals("books/library", actual)
     }
 
     @Test
     @DisplayName("書庫画面表示_異常系_未認証はログインにリダイレクト")
     fun showUserBooksFailure01() {
-        val actual = controller.showUserBooks(page = 1, size = 20, userDetails = null, model = model)
+        val actual = controller.showUserBooks(
+            q = null,
+            type = null,
+            page = 1,
+            size = 20,
+            userDetails = null,
+            model = model,
+        )
         Assertions.assertEquals("redirect:/login", actual)
     }
 
@@ -81,7 +102,14 @@ class UserBookViewControllerTest {
 
         every { userService.findByEmail(DEFAULT_EMAIL) } returns null
 
-        val actual = controller.showUserBooks(page = 1, size = 20, userDetails = userDetails, model = model)
+        val actual = controller.showUserBooks(
+            q = null,
+            type = null,
+            page = 1,
+            size = 20,
+            userDetails = userDetails,
+            model = model,
+        )
         Assertions.assertEquals("redirect:/login", actual)
     }
 
@@ -94,8 +122,15 @@ class UserBookViewControllerTest {
         every { userService.findByEmail(DEFAULT_EMAIL) } returns defaultUserDto
         every { userBooksService.countUserBooks(DEFAULT_USER_ID) } returns 20
 
-        // page=0 is invalid (< 1)
-        val actual = controller.showUserBooks(page = 0, size = 20, userDetails = userDetails, model = model)
+        // page=0 は不正 (< 1) → リダイレクト
+        val actual = controller.showUserBooks(
+            q = null,
+            type = null,
+            page = 0,
+            size = 20,
+            userDetails = userDetails,
+            model = model,
+        )
         Assertions.assertEquals("redirect:/library?page=1", actual)
     }
 
@@ -105,13 +140,20 @@ class UserBookViewControllerTest {
         val userDetails: UserDetails =
             User.withUsername(DEFAULT_EMAIL).password("pw").roles("USER").build()
 
-        // size=30 is not in ALLOWED_PAGE_SIZES, should fall back to DEFAULT_PAGE_SIZE=20
+        // size=30 は ALLOWED_PAGE_SIZES 外 → DEFAULT_PAGE_SIZE=20 にフォールバック
         every { userService.findByEmail(DEFAULT_EMAIL) } returns defaultUserDto
         every { userBooksService.countUserBooks(DEFAULT_USER_ID) } returns 1
         every { bookService.getHavingBooksPaged(DEFAULT_USER_ID, 0, 20) } returns listOf(defaultBookEntity)
         every { userBooksService.getUserHavingBooks(DEFAULT_USER_ID) } returns listOf(defaultUserBooksDto)
 
-        val actual = controller.showUserBooks(page = 1, size = 30, userDetails = userDetails, model = model)
+        val actual = controller.showUserBooks(
+            q = null,
+            type = null,
+            page = 1,
+            size = 30,
+            userDetails = userDetails,
+            model = model,
+        )
         Assertions.assertEquals("books/library", actual)
     }
 
@@ -122,11 +164,82 @@ class UserBookViewControllerTest {
             User.withUsername(DEFAULT_EMAIL).password("pw").roles("USER").build()
 
         every { userService.findByEmail(DEFAULT_EMAIL) } returns defaultUserDto
+        // countUserBooks=0 → totalPages は coerceAtLeast(1) で 1 になるため page=1 は有効
         every { userBooksService.countUserBooks(DEFAULT_USER_ID) } returns 0
         every { bookService.getHavingBooksPaged(DEFAULT_USER_ID, 0, 20) } returns emptyList()
         every { userBooksService.getUserHavingBooks(DEFAULT_USER_ID) } returns emptyList()
 
-        val actual = controller.showUserBooks(page = 1, size = 20, userDetails = userDetails, model = model)
+        val actual = controller.showUserBooks(
+            q = null,
+            type = null,
+            page = 1,
+            size = 20,
+            userDetails = userDetails,
+            model = model,
+        )
+        Assertions.assertEquals("books/library", actual)
+    }
+
+    @Test
+    @DisplayName("書庫画面表示_正常系_タイトル検索クエリあり_ページネーションなし全件返す")
+    fun showUserBooksSuccess_searchByTitle() {
+        val userDetails: UserDetails =
+            User.withUsername(DEFAULT_EMAIL).password("pw").roles("USER").build()
+
+        every { userService.findByEmail(DEFAULT_EMAIL) } returns defaultUserDto
+        every { bookService.findUserBooksByTitle(DEFAULT_USER_ID, "テスト") } returns listOf(defaultBookEntity)
+        every { userBooksService.getUserHavingBooks(DEFAULT_USER_ID) } returns listOf(defaultUserBooksDto)
+
+        val actual = controller.showUserBooks(
+            q = "テスト",
+            type = "title",
+            page = 1,
+            size = 20,
+            userDetails = userDetails,
+            model = model,
+        )
+        Assertions.assertEquals("books/library", actual)
+    }
+
+    @Test
+    @DisplayName("書庫画面表示_正常系_著者検索クエリあり_ページネーションなし全件返す")
+    fun showUserBooksSuccess_searchByAuthor() {
+        val userDetails: UserDetails =
+            User.withUsername(DEFAULT_EMAIL).password("pw").roles("USER").build()
+
+        every { userService.findByEmail(DEFAULT_EMAIL) } returns defaultUserDto
+        every { bookService.findUserBooksByAuthor(DEFAULT_USER_ID, "著者名") } returns listOf(defaultBookEntity)
+        every { userBooksService.getUserHavingBooks(DEFAULT_USER_ID) } returns listOf(defaultUserBooksDto)
+
+        val actual = controller.showUserBooks(
+            q = "著者名",
+            type = "author",
+            page = 1,
+            size = 20,
+            userDetails = userDetails,
+            model = model,
+        )
+        Assertions.assertEquals("books/library", actual)
+    }
+
+    @Test
+    @DisplayName("書庫画面表示_正常系_検索結果なしの場合も空リストでlibrary表示")
+    fun showUserBooksSuccess_searchNoResult() {
+        val userDetails: UserDetails =
+            User.withUsername(DEFAULT_EMAIL).password("pw").roles("USER").build()
+
+        every { userService.findByEmail(DEFAULT_EMAIL) } returns defaultUserDto
+        every { bookService.findUserBooksByTitle(DEFAULT_USER_ID, "存在しない本") } returns emptyList()
+        every { userBooksService.getUserHavingBooks(DEFAULT_USER_ID) } returns emptyList()
+
+        val actual = controller.showUserBooks(
+            q = "存在しない本",
+            type = "title",
+            page = 1,
+            size = 20,
+            userDetails = userDetails,
+            model = model,
+        )
         Assertions.assertEquals("books/library", actual)
     }
 

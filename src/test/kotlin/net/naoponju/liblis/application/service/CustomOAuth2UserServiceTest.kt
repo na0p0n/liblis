@@ -74,11 +74,12 @@ class CustomOAuth2UserServiceTest {
         val attributes = mapOf("sub" to "google-sub-id-123", "email" to "test@example.com")
         val registrationId = "google"
 
-        val providerId = when (registrationId) {
-            "google" -> attributes["sub"] as String
-            "github" -> attributes["id"].toString()
-            else -> throw OAuth2AuthenticationException("サポートされていない認証プロバイダです。")
-        }
+        val providerId =
+            when (registrationId) {
+                "google" -> attributes["sub"] as String
+                "github" -> attributes["id"].toString()
+                else -> throw OAuth2AuthenticationException("サポートされていない認証プロバイダです。")
+            }
 
         Assertions.assertEquals("google-sub-id-123", providerId)
     }
@@ -89,11 +90,12 @@ class CustomOAuth2UserServiceTest {
         val attributes = mapOf("id" to 42, "email" to "github@example.com")
         val registrationId = "github"
 
-        val providerId = when (registrationId) {
-            "google" -> attributes["sub"] as String
-            "github" -> attributes["id"].toString()
-            else -> throw OAuth2AuthenticationException("サポートされていない認証プロバイダです。")
-        }
+        val providerId =
+            when (registrationId) {
+                "google" -> attributes["sub"] as String
+                "github" -> attributes["id"].toString()
+                else -> throw OAuth2AuthenticationException("サポートされていない認証プロバイダです。")
+            }
 
         Assertions.assertEquals("42", providerId)
     }
@@ -185,11 +187,12 @@ class CustomOAuth2UserServiceTest {
         val userDetails = User.withUsername(email).password("pass").roles("USER").build()
         val principal: Any = userDetails
 
-        val extractedEmail = when (principal) {
-            is org.springframework.security.core.userdetails.UserDetails -> principal.username
-            is OAuth2User -> principal.attributes["email"]?.toString()
-            else -> null
-        }
+        val extractedEmail =
+            when (principal) {
+                is org.springframework.security.core.userdetails.UserDetails -> principal.username
+                is OAuth2User -> principal.attributes["email"]?.toString()
+                else -> null
+            }
 
         Assertions.assertEquals(email, extractedEmail)
     }
@@ -198,18 +201,20 @@ class CustomOAuth2UserServiceTest {
     @DisplayName("メールアドレス取得_正常系_OAuth2Userからはattributesのemailを返す")
     fun emailExtractionFromOAuth2User() {
         val email = "oauth2user@example.com"
-        val oauth2User = DefaultOAuth2User(
-            emptyList(),
-            mapOf("email" to email, "sub" to "sub-id"),
-            "sub",
-        )
+        val oauth2User =
+            DefaultOAuth2User(
+                emptyList(),
+                mapOf("email" to email, "sub" to "sub-id"),
+                "sub",
+            )
         val principal: Any = oauth2User
 
-        val extractedEmail = when (principal) {
-            is org.springframework.security.core.userdetails.UserDetails -> principal.username
-            is OAuth2User -> principal.attributes["email"]?.toString()
-            else -> null
-        }
+        val extractedEmail =
+            when (principal) {
+                is org.springframework.security.core.userdetails.UserDetails -> principal.username
+                is OAuth2User -> principal.attributes["email"]?.toString()
+                else -> null
+            }
 
         Assertions.assertEquals(email, extractedEmail)
     }
@@ -219,11 +224,12 @@ class CustomOAuth2UserServiceTest {
     fun emailExtractionFromUnknownPrincipal() {
         val principal: Any = "string-principal"
 
-        val extractedEmail = when (principal) {
-            is org.springframework.security.core.userdetails.UserDetails -> principal.username
-            is OAuth2User -> principal.attributes["email"]?.toString()
-            else -> null
-        }
+        val extractedEmail =
+            when (principal) {
+                is org.springframework.security.core.userdetails.UserDetails -> principal.username
+                is OAuth2User -> principal.attributes["email"]?.toString()
+                else -> null
+            }
 
         Assertions.assertNull(extractedEmail)
     }
@@ -274,10 +280,12 @@ class CustomOAuth2UserServiceTest {
         val user = defaultUserEntity
         val originalAttributes = mapOf("sub" to "google-sub-id", "name" to "Google User")
 
-        val mergedAttributes = originalAttributes + mapOf(
-            "displayName" to user.displayName,
-            "email" to user.mailAddress,
-        )
+        val mergedAttributes =
+            originalAttributes +
+                mapOf(
+                    "displayName" to user.displayName,
+                    "email" to user.mailAddress,
+                )
 
         Assertions.assertEquals(user.displayName, mergedAttributes["displayName"])
         Assertions.assertEquals(user.mailAddress, mergedAttributes["email"])
@@ -289,15 +297,18 @@ class CustomOAuth2UserServiceTest {
     @DisplayName("返却attributesでemailはユーザーのmailAddressで上書きされる")
     fun emailInAttributesIsOverriddenByUserMailAddress() {
         val user = defaultUserEntity.copy(mailAddress = "db-stored@example.com")
-        val originalAttributes = mapOf(
-            "sub" to "google-sub-id",
-            "email" to "oauth-provided@google.com",
-        )
+        val originalAttributes =
+            mapOf(
+                "sub" to "google-sub-id",
+                "email" to "oauth-provided@google.com",
+            )
 
-        val mergedAttributes = originalAttributes + mapOf(
-            "displayName" to user.displayName,
-            "email" to user.mailAddress,
-        )
+        val mergedAttributes =
+            originalAttributes +
+                mapOf(
+                    "displayName" to user.displayName,
+                    "email" to user.mailAddress,
+                )
 
         // email should be the DB-stored one, not the OAuth2 provider's email
         Assertions.assertEquals("db-stored@example.com", mergedAttributes["email"])

@@ -342,10 +342,11 @@ class BookServiceTest {
     @DisplayName("タイトル書籍検索_正常系_複数件を返す")
     fun findByTitleReturnsMultiple() {
         val title = "プログラミング"
-        val books = listOf(
-            defaultBookEntity.copy(title = "プログラミングKotlin"),
-            defaultBookEntity.copy(title = "プログラミングJava"),
-        )
+        val books =
+            listOf(
+                defaultBookEntity.copy(title = "プログラミングKotlin"),
+                defaultBookEntity.copy(title = "プログラミングJava"),
+            )
 
         every { bookRepository.findBookByTitle(title) } returns books
 
@@ -382,10 +383,11 @@ class BookServiceTest {
     @DisplayName("著者書籍検索_正常系_複数件を返す")
     fun findByAuthorReturnsMultiple() {
         val author = "テスト著者"
-        val books = listOf(
-            defaultBookEntity.copy(author = listOf(author, "共著者A")),
-            defaultBookEntity.copy(author = listOf(author, "共著者B")),
-        )
+        val books =
+            listOf(
+                defaultBookEntity.copy(author = listOf(author, "共著者A")),
+                defaultBookEntity.copy(author = listOf(author, "共著者B")),
+            )
 
         every { bookRepository.findBookByAuthor(author) } returns books
 
@@ -483,9 +485,10 @@ class BookServiceTest {
         every { bookRepository.findBookByISBN(isbn = isbn) } returns null
         every { bookRepository.findBookByISBNFromRakuten(isbn = isbn) } returns null
 
-        val exception = assertThrows<BookNotFoundException> {
-            bookService.findBookByISBN(isbn)
-        }
+        val exception =
+            assertThrows<BookNotFoundException> {
+                bookService.findBookByISBN(isbn)
+            }
         Assertions.assertTrue(exception.message!!.contains(isbn))
     }
 

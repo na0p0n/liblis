@@ -35,78 +35,81 @@ class UserBookViewController(
     ): String {
         val pageSize = if (size in PagingConstants.ALLOWED_PAGE_SIZES) size else PagingConstants.DEFAULT_PAGE_SIZE
 
-        val email = when (userDetails) {
-            is UserDetails -> userDetails.username
-            is OAuth2User -> userDetails.attributes["email"]?.toString()
-            else -> null
-        } ?: return "redirect:/login"
+        val email =
+            when (userDetails) {
+                is UserDetails -> userDetails.username
+                is OAuth2User -> userDetails.attributes["email"]?.toString()
+                else -> null
+            } ?: return "redirect:/login"
 
         val userId = userService.findByEmail(email)?.id ?: return "redirect:/login"
 
-        val myBooks: List<LibraryBookDto> = if (!q.isNullOrBlank()) {
-            // 検索モード：ページネーションなし、全件返す
-            val books = when (type) {
-                "author" -> bookService.findUserBooksByAuthor(userId, q)
-                else     -> bookService.findUserBooksByTitle(userId, q)
-            }
-            val userBooksList = userBooksService.getUserHavingBooks(userId) ?: emptyList()
-            val userBooksMap = userBooksList.associateBy { it.bookId }
-            books.mapNotNull { book ->
-                val bookId = book.id ?: return@mapNotNull null
-                val ub = userBooksMap[bookId] ?: return@mapNotNull null
-                val userBooksId = ub.id ?: return@mapNotNull null
-                LibraryBookDto(
-                    userBooksId = userBooksId,
-                    bookId = bookId,
-                    title = book.title,
-                    author = book.author,
-                    publisher = book.publisher,
-                    publishDate = book.publishDate,
-                    pages = book.pages,
-                    isbn10 = book.isbn10,
-                    isbn13 = book.isbn13,
-                    thumbnailUrl = book.thumbnailUrl,
-                    status = ub.status,
-                    purchasePrice = ub.purchasePrice,
-                    purchaseDate = ub.purchaseDate,
-                )
-            }
-        } else {
-            // 通常モード：既存のページネーション処理
-            val totalCount = userBooksService.countUserBooks(userId)
-            val totalPages = ceil(totalCount.toDouble() / pageSize).toInt().coerceAtLeast(1)
-            if (page < 1 || page > totalPages) return "redirect:/library?page=1"
+        val myBooks: List<LibraryBookDto> =
+            if (!q.isNullOrBlank()) {
+                // 検索モード：ページネーションなし、全件返す
+                val books =
+                    when (type) {
+                        "author" -> bookService.findUserBooksByAuthor(userId, q)
+                        else -> bookService.findUserBooksByTitle(userId, q)
+                    }
+                val userBooksList = userBooksService.getUserHavingBooks(userId) ?: emptyList()
+                val userBooksMap = userBooksList.associateBy { it.bookId }
+                books.mapNotNull { book ->
+                    val bookId = book.id ?: return@mapNotNull null
+                    val ub = userBooksMap[bookId] ?: return@mapNotNull null
+                    val userBooksId = ub.id ?: return@mapNotNull null
+                    LibraryBookDto(
+                        userBooksId = userBooksId,
+                        bookId = bookId,
+                        title = book.title,
+                        author = book.author,
+                        publisher = book.publisher,
+                        publishDate = book.publishDate,
+                        pages = book.pages,
+                        isbn10 = book.isbn10,
+                        isbn13 = book.isbn13,
+                        thumbnailUrl = book.thumbnailUrl,
+                        status = ub.status,
+                        purchasePrice = ub.purchasePrice,
+                        purchaseDate = ub.purchaseDate,
+                    )
+                }
+            } else {
+                // 通常モード：既存のページネーション処理
+                val totalCount = userBooksService.countUserBooks(userId)
+                val totalPages = ceil(totalCount.toDouble() / pageSize).toInt().coerceAtLeast(1)
+                if (page < 1 || page > totalPages) return "redirect:/library?page=1"
 
-            val offset = (page - 1) * pageSize
-            val books = bookService.getHavingBooksPaged(userId, offset, pageSize) ?: emptyList()
-            val userBooksList = userBooksService.getUserHavingBooks(userId) ?: emptyList()
-            val userBooksMap = userBooksList.associateBy { it.bookId }
+                val offset = (page - 1) * pageSize
+                val books = bookService.getHavingBooksPaged(userId, offset, pageSize) ?: emptyList()
+                val userBooksList = userBooksService.getUserHavingBooks(userId) ?: emptyList()
+                val userBooksMap = userBooksList.associateBy { it.bookId }
 
-            model.addAttribute("totalPages", totalPages)
-            model.addAttribute("currentPage", page)
-            model.addAttribute("totalCount", totalCount)
+                model.addAttribute("totalPages", totalPages)
+                model.addAttribute("currentPage", page)
+                model.addAttribute("totalCount", totalCount)
 
-            books.mapNotNull { book ->
-                val bookId = book.id ?: return@mapNotNull null
-                val ub = userBooksMap[bookId] ?: return@mapNotNull null
-                val userBooksId = ub.id ?: return@mapNotNull null
-                LibraryBookDto(
-                    userBooksId = userBooksId,
-                    bookId = bookId,
-                    title = book.title,
-                    author = book.author,
-                    publisher = book.publisher,
-                    publishDate = book.publishDate,
-                    pages = book.pages,
-                    isbn10 = book.isbn10,
-                    isbn13 = book.isbn13,
-                    thumbnailUrl = book.thumbnailUrl,
-                    status = ub.status,
-                    purchasePrice = ub.purchasePrice,
-                    purchaseDate = ub.purchaseDate,
-                )
+                books.mapNotNull { book ->
+                    val bookId = book.id ?: return@mapNotNull null
+                    val ub = userBooksMap[bookId] ?: return@mapNotNull null
+                    val userBooksId = ub.id ?: return@mapNotNull null
+                    LibraryBookDto(
+                        userBooksId = userBooksId,
+                        bookId = bookId,
+                        title = book.title,
+                        author = book.author,
+                        publisher = book.publisher,
+                        publishDate = book.publishDate,
+                        pages = book.pages,
+                        isbn10 = book.isbn10,
+                        isbn13 = book.isbn13,
+                        thumbnailUrl = book.thumbnailUrl,
+                        status = ub.status,
+                        purchasePrice = ub.purchasePrice,
+                        purchaseDate = ub.purchaseDate,
+                    )
+                }
             }
-        }
 
         model.addAttribute("myBooks", myBooks)
         model.addAttribute("pageSize", pageSize)

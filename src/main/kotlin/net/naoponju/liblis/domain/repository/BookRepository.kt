@@ -26,9 +26,15 @@ interface BookRepository {
         limit: Int,
     ): List<BookEntity>
 
-    fun findUserBooksByTitle(userId: UUID, title: String): List<BookEntity>
+    fun findUserBooksByTitle(
+        userId: UUID,
+        title: String,
+    ): List<BookEntity>
 
-    fun findUserBooksByAuthor(userId: UUID, author: String): List<BookEntity>
+    fun findUserBooksByAuthor(
+        userId: UUID,
+        author: String,
+    ): List<BookEntity>
 
     fun findBookByTitle(title: String): List<BookEntity>
 

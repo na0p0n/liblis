@@ -4,7 +4,6 @@ import net.naoponju.liblis.application.service.BookService
 import net.naoponju.liblis.application.service.UserBooksService
 import net.naoponju.liblis.application.service.UserService
 import net.naoponju.liblis.common.constraint.PagingConstants
-import net.naoponju.liblis.common.exception.BookNotFoundException
 import net.naoponju.liblis.infra.mapper.RakutenBooksGenreMapper
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.security.core.userdetails.UserDetails
@@ -60,11 +59,12 @@ class BookController(
         }
 
         val offset = (page - 1) * pageSize
-        val books = when {
-            q.isNullOrBlank() -> bookService.getBookListPaged(offset, pageSize)
-            type == "author"  -> bookService.findByAuthor(q)
-            else              -> bookService.findByTitle(q)  // デフォルト: title
-        }
+        val books =
+            when {
+                q.isNullOrBlank() -> bookService.getBookListPaged(offset, pageSize)
+                type == "author" -> bookService.findByAuthor(q)
+                else -> bookService.findByTitle(q) // デフォルト: title
+            }
 
         val bookIds =
             books.map { book ->

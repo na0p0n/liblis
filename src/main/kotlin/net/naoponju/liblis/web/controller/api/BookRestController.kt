@@ -57,10 +57,11 @@ class BookRestController(
         @RequestParam q: String,
         @RequestParam(required = false) type: String?,
     ): ResponseEntity<List<BookEntity>> {
-        val result = when (type) {
-            "author" -> bookService.findByAuthor(q)
-            else     -> bookService.findByTitle(q)
-        }
+        val result =
+            when (type) {
+                "author" -> bookService.findByAuthor(q)
+                else -> bookService.findByTitle(q)
+            }
         return ResponseEntity.ok(result)
     }
 
