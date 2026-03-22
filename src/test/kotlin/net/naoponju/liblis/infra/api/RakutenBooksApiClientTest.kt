@@ -14,7 +14,6 @@ import java.lang.reflect.Method
 import java.time.LocalDate
 
 class RakutenBooksApiClientTest {
-
     // ─── ヘルパー ─────────────────────────────────────────────────────────────
 
     private fun createClient(restTemplate: RestTemplate = mockk()): RakutenBooksApiClient =
@@ -41,7 +40,10 @@ class RakutenBooksApiClientTest {
         return method
     }
 
-    private fun callParsePublishDate(client: RakutenBooksApiClient, salesDate: String?): LocalDate? {
+    private fun callParsePublishDate(
+        client: RakutenBooksApiClient,
+        salesDate: String?,
+    ): LocalDate? {
         @Suppress("UNCHECKED_CAST")
         return getParsePublishDate().invoke(client, salesDate) as? LocalDate
     }
@@ -173,32 +175,34 @@ class RakutenBooksApiClientTest {
     @Test
     @DisplayName("findByIsbn_正常系_APIが書籍を返す場合BookEntityを返す")
     fun findByIsbnSuccess01() {
-        val rt = mockRestTemplate(
-            mapOf(
-                "count" to 1,
-                "Items" to listOf(
-                    mapOf(
-                        "title" to "テスト書籍",
-                        "titleKana" to "テストショセキ",
-                        "subTitle" to "",
-                        "subTitleKana" to "",
-                        "author" to "著者A / 著者B",
-                        "publisherName" to "出版社テスト",
-                        "isbn" to "9784000000001",
-                        "salesDate" to "2024年03月15日",
-                        "itemPrice" to 1500,
-                        "booksGenreId" to "001004008",
-                        "itemCaption" to "テスト本の説明",
-                        "smallImageUrl" to "https://example.com/small.jpg",
-                        "mediumImageUrl" to "https://example.com/medium.jpg",
-                        "largeImageUrl" to "https://example.com/large.jpg",
-                        "itemUrl" to "https://books.rakuten.co.jp/rb/12345/",
-                        "affiliateUrl" to "",
-                        "size" to 1,
-                    ),
+        val rt =
+            mockRestTemplate(
+                mapOf(
+                    "count" to 1,
+                    "Items" to
+                        listOf(
+                            mapOf(
+                                "title" to "テスト書籍",
+                                "titleKana" to "テストショセキ",
+                                "subTitle" to "",
+                                "subTitleKana" to "",
+                                "author" to "著者A / 著者B",
+                                "publisherName" to "出版社テスト",
+                                "isbn" to "9784000000001",
+                                "salesDate" to "2024年03月15日",
+                                "itemPrice" to 1500,
+                                "booksGenreId" to "001004008",
+                                "itemCaption" to "テスト本の説明",
+                                "smallImageUrl" to "https://example.com/small.jpg",
+                                "mediumImageUrl" to "https://example.com/medium.jpg",
+                                "largeImageUrl" to "https://example.com/large.jpg",
+                                "itemUrl" to "https://books.rakuten.co.jp/rb/12345/",
+                                "affiliateUrl" to "",
+                                "size" to 1,
+                            ),
+                        ),
                 ),
-            ),
-        )
+            )
 
         val result = createClient(rt).findByIsbn("9784000000001")
 
@@ -247,29 +251,31 @@ class RakutenBooksApiClientTest {
     @Test
     @DisplayName("findByIsbn_正常系_ISBN10桁の場合isbn10に設定されisbn13はnull")
     fun findByIsbnIsbn10Length() {
-        val rt = mockRestTemplate(
-            mapOf(
-                "count" to 1,
-                "Items" to listOf(
-                    mapOf(
-                        "title" to "テスト書籍",
-                        "author" to "著者",
-                        "publisherName" to "出版社",
-                        "isbn" to "4000000001",
-                        "salesDate" to "",
-                        "itemPrice" to 0,
-                        "booksGenreId" to "",
-                        "itemCaption" to "",
-                        "smallImageUrl" to "",
-                        "mediumImageUrl" to "",
-                        "largeImageUrl" to "",
-                        "itemUrl" to "",
-                        "affiliateUrl" to "",
-                        "size" to 0,
-                    ),
+        val rt =
+            mockRestTemplate(
+                mapOf(
+                    "count" to 1,
+                    "Items" to
+                        listOf(
+                            mapOf(
+                                "title" to "テスト書籍",
+                                "author" to "著者",
+                                "publisherName" to "出版社",
+                                "isbn" to "4000000001",
+                                "salesDate" to "",
+                                "itemPrice" to 0,
+                                "booksGenreId" to "",
+                                "itemCaption" to "",
+                                "smallImageUrl" to "",
+                                "mediumImageUrl" to "",
+                                "largeImageUrl" to "",
+                                "itemUrl" to "",
+                                "affiliateUrl" to "",
+                                "size" to 0,
+                            ),
+                        ),
                 ),
-            ),
-        )
+            )
 
         val result = createClient(rt).findByIsbn("4000000001")
         Assertions.assertNotNull(result)
@@ -280,29 +286,31 @@ class RakutenBooksApiClientTest {
     @Test
     @DisplayName("findByIsbn_正常系_著者が空の場合emptyListになる")
     fun findByIsbnEmptyAuthor() {
-        val rt = mockRestTemplate(
-            mapOf(
-                "count" to 1,
-                "Items" to listOf(
-                    mapOf(
-                        "title" to "タイトル",
-                        "author" to "",
-                        "publisherName" to "出版社",
-                        "isbn" to "9784000000001",
-                        "salesDate" to "2024年01月",
-                        "itemPrice" to 0,
-                        "booksGenreId" to "",
-                        "itemCaption" to "",
-                        "smallImageUrl" to "",
-                        "mediumImageUrl" to "",
-                        "largeImageUrl" to "",
-                        "itemUrl" to "",
-                        "affiliateUrl" to "",
-                        "size" to 0,
-                    ),
+        val rt =
+            mockRestTemplate(
+                mapOf(
+                    "count" to 1,
+                    "Items" to
+                        listOf(
+                            mapOf(
+                                "title" to "タイトル",
+                                "author" to "",
+                                "publisherName" to "出版社",
+                                "isbn" to "9784000000001",
+                                "salesDate" to "2024年01月",
+                                "itemPrice" to 0,
+                                "booksGenreId" to "",
+                                "itemCaption" to "",
+                                "smallImageUrl" to "",
+                                "mediumImageUrl" to "",
+                                "largeImageUrl" to "",
+                                "itemUrl" to "",
+                                "affiliateUrl" to "",
+                                "size" to 0,
+                            ),
+                        ),
                 ),
-            ),
-        )
+            )
 
         val result = createClient(rt).findByIsbn("9784000000001")
         Assertions.assertNotNull(result)
@@ -312,29 +320,31 @@ class RakutenBooksApiClientTest {
     @Test
     @DisplayName("findByIsbn_正常系_largeImageUrlが空の場合mediumImageUrlをlargeThumbnailUrlに使う")
     fun findByIsbnLargeImageUrlFallsBackToMedium() {
-        val rt = mockRestTemplate(
-            mapOf(
-                "count" to 1,
-                "Items" to listOf(
-                    mapOf(
-                        "title" to "タイトル",
-                        "author" to "著者",
-                        "publisherName" to "出版社",
-                        "isbn" to "9784000000001",
-                        "salesDate" to "2024年01月",
-                        "itemPrice" to 0,
-                        "booksGenreId" to "",
-                        "itemCaption" to "",
-                        "smallImageUrl" to "",
-                        "mediumImageUrl" to "https://example.com/medium.jpg",
-                        "largeImageUrl" to "",
-                        "itemUrl" to "",
-                        "affiliateUrl" to "",
-                        "size" to 0,
-                    ),
+        val rt =
+            mockRestTemplate(
+                mapOf(
+                    "count" to 1,
+                    "Items" to
+                        listOf(
+                            mapOf(
+                                "title" to "タイトル",
+                                "author" to "著者",
+                                "publisherName" to "出版社",
+                                "isbn" to "9784000000001",
+                                "salesDate" to "2024年01月",
+                                "itemPrice" to 0,
+                                "booksGenreId" to "",
+                                "itemCaption" to "",
+                                "smallImageUrl" to "",
+                                "mediumImageUrl" to "https://example.com/medium.jpg",
+                                "largeImageUrl" to "",
+                                "itemUrl" to "",
+                                "affiliateUrl" to "",
+                                "size" to 0,
+                            ),
+                        ),
                 ),
-            ),
-        )
+            )
 
         val result = createClient(rt).findByIsbn("9784000000001")
         Assertions.assertNotNull(result)
@@ -344,37 +354,40 @@ class RakutenBooksApiClientTest {
     @Test
     @DisplayName("findByIsbn_正常系_affiliateIdが空でないURLが付与される")
     fun findByIsbnWithAffiliateId() {
-        val rt = mockRestTemplate(
-            mapOf(
-                "count" to 1,
-                "Items" to listOf(
-                    mapOf(
-                        "title" to "タイトル",
-                        "author" to "著者",
-                        "publisherName" to "出版社",
-                        "isbn" to "9784000000001",
-                        "salesDate" to "2024年01月",
-                        "itemPrice" to 0,
-                        "booksGenreId" to "",
-                        "itemCaption" to "",
-                        "smallImageUrl" to "",
-                        "mediumImageUrl" to "",
-                        "largeImageUrl" to "",
-                        "itemUrl" to "https://books.rakuten.co.jp/rb/12345/",
-                        "affiliateUrl" to "https://af.rakuten.co.jp/abc",
-                        "size" to 0,
-                    ),
+        val rt =
+            mockRestTemplate(
+                mapOf(
+                    "count" to 1,
+                    "Items" to
+                        listOf(
+                            mapOf(
+                                "title" to "タイトル",
+                                "author" to "著者",
+                                "publisherName" to "出版社",
+                                "isbn" to "9784000000001",
+                                "salesDate" to "2024年01月",
+                                "itemPrice" to 0,
+                                "booksGenreId" to "",
+                                "itemCaption" to "",
+                                "smallImageUrl" to "",
+                                "mediumImageUrl" to "",
+                                "largeImageUrl" to "",
+                                "itemUrl" to "https://books.rakuten.co.jp/rb/12345/",
+                                "affiliateUrl" to "https://af.rakuten.co.jp/abc",
+                                "size" to 0,
+                            ),
+                        ),
                 ),
-            ),
-        )
+            )
 
-        val client = RakutenBooksApiClient(
-            applicationId = "test-app-id",
-            accessKey = "test-access-key",
-            affiliateId = "aff-id-123",
-            siteUrl = "https://example.com",
-            restTemplate = rt,
-        )
+        val client =
+            RakutenBooksApiClient(
+                applicationId = "test-app-id",
+                accessKey = "test-access-key",
+                affiliateId = "aff-id-123",
+                siteUrl = "https://example.com",
+                restTemplate = rt,
+            )
 
         val result = client.findByIsbn("9784000000001")
         Assertions.assertNotNull(result)

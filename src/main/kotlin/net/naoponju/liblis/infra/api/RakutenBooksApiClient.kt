@@ -28,16 +28,20 @@ class RakutenBooksApiClient(
 ) {
     private val log = LoggerFactory.getLogger(javaClass)
 
-    private val restTemplate: RestTemplate = restTemplate ?: run {
-        val requestConfig = RequestConfig.custom()
-            .setConnectionRequestTimeout(Timeout.ofSeconds(5))
-            .setResponseTimeout(Timeout.ofSeconds(5))
-            .build()
-        val httpClient = HttpClientBuilder.create()
-            .setDefaultRequestConfig(requestConfig)
-            .build()
-        RestTemplate(HttpComponentsClientHttpRequestFactory(httpClient))
-    }
+    private val restTemplate: RestTemplate =
+        restTemplate ?: run {
+            val requestConfig =
+                RequestConfig.custom()
+                    .setConnectionRequestTimeout(Timeout.ofSeconds(5))
+                    .setResponseTimeout(Timeout.ofSeconds(5))
+                    .build()
+            val httpClient =
+                HttpClientBuilder.create()
+                    .setDefaultRequestConfig(requestConfig)
+                    .build()
+            RestTemplate(HttpComponentsClientHttpRequestFactory(httpClient))
+        }
+
     companion object {
         private const val API_URL =
             "https://openapi.rakuten.co.jp/services/api/BooksBook/Search/20170404"
