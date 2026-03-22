@@ -96,7 +96,13 @@
                                     </span>
                                 </div>
                             </td>
-                            <td class="d-none d-lg-table-cell"><span class="badge bg-info text-dark">技術書</span></td>
+                            <td class="d-none d-lg-table-cell">
+                                <span th:if="${book.category != null and genreNameMap[book.category.split('/')[0]] != null}"
+                                      class="badge bg-info text-dark"
+                                      th:text="${genreNameMap[book.category.split('/')[0]]}">ジャンル名</span>
+                                <span th:if="${book.category == null or genreNameMap[book.category.split('/')[0]] == null}"
+                                      class="text-muted small">—</span>
+                            </td>
                             <td class="d-none d-lg-table-cell"><span class="small text-muted" th:text="${book.publisher}">リブリス出版</span></td>
                             <td class="d-none d-lg-table-cell"><span class="small text-muted" th:text="${book.pages}">100</span></td>
                             <td class="d-none d-lg-table-cell small text-muted" th:text="${book.isbn13 != null ? book.isbn13 : book.isbn10}">9784000000000</td>

@@ -41,8 +41,8 @@
                                   'https://dummy.kobeya.com/?width=160&height=225&bg=cccccc&color=000000&text=No%20Image')}"
                          class="book-cover rounded shadow-sm mb-3"
                          th:alt="${book.title}">
-                    <div th:if="${book.rakutenItemUrl != null}">
-                        <a th:href="${book.rakutenItemUrl}"
+                    <div th:if="${book.rakutenAffiliateUrl != null or book.rakutenItemUrl != null}">
+                        <a th:href="${book.rakutenAffiliateUrl != null ? book.rakutenAffiliateUrl : book.rakutenItemUrl}"
                            target="_blank" rel="noopener noreferrer"
                            class="btn btn-danger btn-sm w-100">
                             <i class="bi bi-bag me-1"></i>楽天ブックスで見る
@@ -74,9 +74,9 @@
                         <dt class="col-sm-3 text-muted fw-normal" th:if="${book.pages != null}">ページ数</dt>
                         <dd class="col-sm-9" th:if="${book.pages != null}" th:text="${book.pages + ' ページ'}">ページ数</dd>
 
-                        <dt class="col-sm-3 text-muted fw-normal" th:if="${book.category != null}">ジャンル</dt>
-                        <dd class="col-sm-9" th:if="${book.category != null}">
-                            <span class="badge bg-info text-dark" th:text="${book.category}">技術書</span>
+                        <dt class="col-sm-3 text-muted fw-normal" th:if="${genrePath != null}">ジャンル</dt>
+                        <dd class="col-sm-9" th:if="${genrePath != null}">
+                            <span class="badge bg-info text-dark" th:text="${genrePath}">本 > 文学・小説 > 日本文学</span>
                         </dd>
                     </dl>
 

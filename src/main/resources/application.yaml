@@ -62,6 +62,12 @@ logging:
 google:
   api:
     key: ${GOOGLE_BOOKS_API_KEY}
+rakuten:
+  api:
+    application-id: ${RAKUTEN_BOOKS_APP_ID}
+    affiliate-id: ${RAKUTEN_BOOKS_AFFILIATE_ID}
+    key: ${RAKUTEN_BOOKS_API_KEY}
+    site-url: ${RAKUTEN_BOOKS_API_SITE_URL}
 server:
   forward-headers-strategy: native
   error:
