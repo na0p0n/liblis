@@ -1,0 +1,103 @@
+spring:
+  application:
+    name: liblis
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/liblis_db?currentSchema=${DB_SCHEMA:liblis_dev}}
+    username: ${SPRING_DATASOURCE_USERNAME:liblis}
+    password: ${SPRING_DATASOURCE_PASSWORD:liblis}
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 2
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+    driver-class-name: org.postgresql.Driver
+  security:
+    oauth2:
+      client:
+        registration:
+          github:
+            client-id: ${GITHUB_CLIENT_ID}
+            client-secret: ${GITHUB_CLIENT_SECRET}
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+            scope:
+              - user:email
+              - read:user
+          google:
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
+            scope:
+              - email
+              - profile
+        provider:
+          google:
+            authorization-uri: https://accounts.google.com/o/oauth2/v2/auth
+            token-uri: https://oauth2.googleapis.com/token
+            user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
+            user-name-attribute: sub
+  # ── Thymeleaf（本番はキャッシュ有効）
+  thymeleaf:
+    cache: true
+  # ── セッション
+  session:
+    timeout: 1800s
+  mvc:
+    hiddenmethod:
+      filter:
+        enabled: true
+  flyway:
+    schemas: ${DB_SCHEMA:liblis_prod}
+    baseline-on-migrate: true
+    clean-disabled: true
+# MyBatisの設定もここに追加していく
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true
+  type-handlers-package: net.naoponju.liblis.common.config
+logging:
+  logback:
+    rollingpolicy:
+      file-name-pattern: "${LOG_FILE}.%d{yyyy-MM-dd}.%i.gz"
+      max-file-size: 10MB
+      max-history: 30
+      total-size-cap: 1GB
+      clean-history-on-start: false
+  level:
+    root: INFO
+    net.naoponju.liblis: INFO
+    org.springframework.web: WARN
+    org.springframework.security: WARN
+    org.mybatis: WARN
+    org.flywaydb: INFO
+  file:
+    name: logs/liblis.log
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+google:
+  api:
+    key: ${GOOGLE_BOOKS_API_KEY}
+rakuten:
+  api:
+    application-id: ${RAKUTEN_BOOKS_APP_ID}
+    affiliate-id: ${RAKUTEN_BOOKS_AFFILIATE_ID}
+    key: ${RAKUTEN_BOOKS_API_KEY}
+    site-url: ${RAKUTEN_BOOKS_API_SITE_URL}
+server:
+  forward-headers-strategy: native
+  error:
+    path: /error
+  servlet:
+    session:
+      cookie:
+        secure: ${SESSION_COOKIE_SECURE:true}
+        same-site: ${SESSION_COOKIE_SAMESITE:none}
+        http-only: true
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: never
