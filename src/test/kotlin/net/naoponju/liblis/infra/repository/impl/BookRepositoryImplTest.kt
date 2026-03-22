@@ -9,6 +9,7 @@ import net.naoponju.liblis.application.dto.GoogleBookDataDto
 import net.naoponju.liblis.common.exception.BookNotFoundException
 import net.naoponju.liblis.domain.entity.BookEntity
 import net.naoponju.liblis.infra.api.GoogleBooksApiClient
+import net.naoponju.liblis.infra.api.RakutenBooksApiClient
 import net.naoponju.liblis.infra.mapper.BookMapper
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions
@@ -26,6 +27,7 @@ class BookRepositoryImplTest {
 
     private val bookMapper: BookMapper = mockk()
     private val googleBooksApiClient: GoogleBooksApiClient = mockk()
+    private val rakutenBooksApiClient: RakutenBooksApiClient = mockk()
 
     private val bookRepositoryImpl =
         spyk(
@@ -33,6 +35,7 @@ class BookRepositoryImplTest {
                 BookRepositoryImpl(
                     bookMapper = bookMapper,
                     googleBooksApiClient = googleBooksApiClient,
+                    rakutenBooksApiClient = rakutenBooksApiClient,
                 ),
         )
 
@@ -448,6 +451,41 @@ class BookRepositoryImplTest {
 
         Assertions.assertEquals(book1, bookRepositoryImpl.findById(bookId1))
         Assertions.assertEquals(book2, bookRepositoryImpl.findById(bookId2))
+    }
+
+    @Test
+    @DisplayName("楽天から書籍データ検索_正常系_書籍が見つかる")
+    fun findBookByISBNFromRakutenSuccess01() {
+        val isbn = DEFAULT_ISBN
+        val expect = defaultBookEntity.copy(isSearchedRakuten = true)
+
+        every { rakutenBooksApiClient.findByIsbn(isbn) } returns expect
+
+        val actual = bookRepositoryImpl.findBookByISBNFromRakuten(isbn)
+        Assertions.assertEquals(expect, actual)
+    }
+
+    @Test
+    @DisplayName("楽天から書籍データ検索_正常系_書籍が見つからない場合nullを返す")
+    fun findBookByISBNFromRakutenSuccess02() {
+        val isbn = DEFAULT_ISBN
+
+        every { rakutenBooksApiClient.findByIsbn(isbn) } returns null
+
+        val actual = bookRepositoryImpl.findBookByISBNFromRakuten(isbn)
+        Assertions.assertNull(actual)
+    }
+
+    @Test
+    @DisplayName("楽天から書籍データ検索_正常系_rakutenBooksApiClientに正確なISBNが渡される")
+    fun findBookByISBNFromRakutenPassesCorrectIsbn() {
+        val isbn = "9784000000001"
+        val expect = defaultBookEntity.copy(isbn13 = isbn, isSearchedRakuten = true)
+
+        every { rakutenBooksApiClient.findByIsbn(isbn) } returns expect
+
+        val actual = bookRepositoryImpl.findBookByISBNFromRakuten(isbn)
+        Assertions.assertEquals(expect, actual)
     }
 
     companion object {
