@@ -2,9 +2,11 @@ package net.naoponju.liblis.infra.api
 
 import io.mockk.every
 import io.mockk.mockk
+import net.naoponju.liblis.common.exception.RemoteApiServiceException
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.springframework.http.HttpMethod
 import org.springframework.http.ResponseEntity
 import org.springframework.web.client.RestTemplate
@@ -230,14 +232,16 @@ class RakutenBooksApiClientTest {
     }
 
     @Test
-    @DisplayName("findByIsbn_正常系_APIが例外をスローした場合nullを返す")
-    fun findByIsbnExceptionReturnsNull() {
+    @DisplayName("findByIsbn_異常系_APIが例外をスローした場合RemoteApiServiceExceptionをスロー")
+    fun findByIsbnExceptionThrowsRemoteApiServiceException() {
         val rt = mockk<RestTemplate>()
         every {
             rt.exchange(any<String>(), HttpMethod.GET, any(), Map::class.java)
         } throws RuntimeException("Network error")
 
-        Assertions.assertNull(createClient(rt).findByIsbn("9784000000001"))
+        assertThrows<RemoteApiServiceException> {
+            createClient(rt).findByIsbn("9784000000001")
+        }
     }
 
     @Test

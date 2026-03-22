@@ -1,6 +1,10 @@
 package net.naoponju.liblis.infra.api
 
+import net.naoponju.liblis.common.exception.RemoteApiServiceException
 import net.naoponju.liblis.domain.entity.BookEntity
+import org.apache.hc.client5.http.config.RequestConfig
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder
+import org.apache.hc.core5.util.Timeout
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpEntity
@@ -20,10 +24,20 @@ class RakutenBooksApiClient(
     @Value("\${rakuten.api.key}") private val accessKey: String,
     @Value("\${rakuten.api.affiliate-id:}") private val affiliateId: String,
     @Value("\${rakuten.api.site-url}") private val siteUrl: String,
-    private val restTemplate: RestTemplate = RestTemplate(HttpComponentsClientHttpRequestFactory()),
+    restTemplate: RestTemplate? = null,
 ) {
     private val log = LoggerFactory.getLogger(javaClass)
 
+    private val restTemplate: RestTemplate = restTemplate ?: run {
+        val requestConfig = RequestConfig.custom()
+            .setConnectionRequestTimeout(Timeout.ofSeconds(5))
+            .setResponseTimeout(Timeout.ofSeconds(5))
+            .build()
+        val httpClient = HttpClientBuilder.create()
+            .setDefaultRequestConfig(requestConfig)
+            .build()
+        RestTemplate(HttpComponentsClientHttpRequestFactory(httpClient))
+    }
     companion object {
         private const val API_URL =
             "https://openapi.rakuten.co.jp/services/api/BooksBook/Search/20170404"
@@ -40,7 +54,6 @@ class RakutenBooksApiClient(
                 .queryParam("formatVersion", 2)
                 .apply { if (affiliateId.isNotBlank()) queryParam("affiliateId", affiliateId) }
                 .toUriString()
-        log.info("URL: $url")
 
         // ★ getForObject() ではなく exchange() を使う（Referer/Origin がないと403）
         val headers =
@@ -49,7 +62,6 @@ class RakutenBooksApiClient(
                 set("Origin", siteUrl)
                 set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/120.0.0.0")
             }
-        log.info("header: $headers")
 
         return try {
             @Suppress("UNCHECKED_CAST")
@@ -69,7 +81,7 @@ class RakutenBooksApiClient(
             mapToEntity(item)
         } catch (e: Exception) {
             log.warn("楽天ブックスAPI呼び出し失敗 isbn=$isbn : ${e.message}")
-            null
+            throw RemoteApiServiceException("楽天ブックスAPI側でエラーが発生しました")
         }
     }
 
