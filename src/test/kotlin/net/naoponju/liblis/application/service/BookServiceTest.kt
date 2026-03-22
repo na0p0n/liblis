@@ -4,11 +4,13 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.spyk
 import io.mockk.verify
+import net.naoponju.liblis.common.exception.BookNotFoundException
 import net.naoponju.liblis.domain.entity.BookEntity
 import net.naoponju.liblis.domain.repository.BookRepository
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import java.util.UUID
 
 class BookServiceTest {
@@ -296,6 +298,198 @@ class BookServiceTest {
 
         Assertions.assertEquals(book1, bookService.findBookById(bookId1))
         Assertions.assertEquals(book2, bookService.findBookById(bookId2))
+    }
+
+    @Test
+    @DisplayName("ISBN書籍検索_異常系_楽天ブックスAPIがnullを返す場合はBookNotFoundExceptionをスロー")
+    fun findBookByISBNThrowsWhenRakutenReturnsNull() {
+        val isbn = DEFAULT_ISBN
+
+        every { bookRepository.findBookByISBN(isbn = isbn) } returns null
+        every { bookRepository.findBookByISBNFromRakuten(isbn = isbn) } returns null
+
+        assertThrows<BookNotFoundException> {
+            bookService.findBookByISBN(isbn)
+        }
+        verify(exactly = 0) { bookRepository.insert(any<BookEntity>()) }
+    }
+
+    @Test
+    @DisplayName("タイトル書籍検索_正常系_書籍あり")
+    fun findByTitleSuccess01() {
+        val title = "テスト本"
+        val expect = listOf(defaultBookEntity.copy(title = title))
+
+        every { bookRepository.findBookByTitle(title) } returns listOf(defaultBookEntity.copy(title = title))
+
+        val actual = bookService.findByTitle(title)
+        Assertions.assertEquals(expect, actual)
+        verify(exactly = 1) { bookRepository.findBookByTitle(title) }
+    }
+
+    @Test
+    @DisplayName("タイトル書籍検索_正常系_検索結果なし")
+    fun findByTitleSuccess02() {
+        val title = "存在しない本"
+
+        every { bookRepository.findBookByTitle(title) } returns emptyList()
+
+        val actual = bookService.findByTitle(title)
+        Assertions.assertEquals(emptyList<BookEntity>(), actual)
+    }
+
+    @Test
+    @DisplayName("タイトル書籍検索_正常系_複数件を返す")
+    fun findByTitleReturnsMultiple() {
+        val title = "プログラミング"
+        val books =
+            listOf(
+                defaultBookEntity.copy(title = "プログラミングKotlin"),
+                defaultBookEntity.copy(title = "プログラミングJava"),
+            )
+
+        every { bookRepository.findBookByTitle(title) } returns books
+
+        val actual = bookService.findByTitle(title)
+        Assertions.assertEquals(2, actual.size)
+        Assertions.assertEquals(books, actual)
+    }
+
+    @Test
+    @DisplayName("著者書籍検索_正常系_書籍あり")
+    fun findByAuthorSuccess01() {
+        val author = "著者テスト"
+        val expect = listOf(defaultBookEntity.copy(author = listOf(author)))
+
+        every { bookRepository.findBookByAuthor(author) } returns listOf(defaultBookEntity.copy(author = listOf(author)))
+
+        val actual = bookService.findByAuthor(author)
+        Assertions.assertEquals(expect, actual)
+        verify(exactly = 1) { bookRepository.findBookByAuthor(author) }
+    }
+
+    @Test
+    @DisplayName("著者書籍検索_正常系_検索結果なし")
+    fun findByAuthorSuccess02() {
+        val author = "存在しない著者"
+
+        every { bookRepository.findBookByAuthor(author) } returns emptyList()
+
+        val actual = bookService.findByAuthor(author)
+        Assertions.assertEquals(emptyList<BookEntity>(), actual)
+    }
+
+    @Test
+    @DisplayName("著者書籍検索_正常系_複数件を返す")
+    fun findByAuthorReturnsMultiple() {
+        val author = "テスト著者"
+        val books =
+            listOf(
+                defaultBookEntity.copy(author = listOf(author, "共著者A")),
+                defaultBookEntity.copy(author = listOf(author, "共著者B")),
+            )
+
+        every { bookRepository.findBookByAuthor(author) } returns books
+
+        val actual = bookService.findByAuthor(author)
+        Assertions.assertEquals(2, actual.size)
+    }
+
+    @Test
+    @DisplayName("ユーザー書庫タイトル検索_正常系_書籍あり")
+    fun findUserBooksByTitleSuccess01() {
+        val userId = DEFAULT_USER_ID
+        val title = "マイ本"
+        val expect = listOf(defaultBookEntity.copy(title = title))
+
+        every { bookRepository.findUserBooksByTitle(userId, title) } returns listOf(defaultBookEntity.copy(title = title))
+
+        val actual = bookService.findUserBooksByTitle(userId, title)
+        Assertions.assertEquals(expect, actual)
+        verify(exactly = 1) { bookRepository.findUserBooksByTitle(userId, title) }
+    }
+
+    @Test
+    @DisplayName("ユーザー書庫タイトル検索_正常系_検索結果なし")
+    fun findUserBooksByTitleSuccess02() {
+        val userId = DEFAULT_USER_ID
+        val title = "存在しない本"
+
+        every { bookRepository.findUserBooksByTitle(userId, title) } returns emptyList()
+
+        val actual = bookService.findUserBooksByTitle(userId, title)
+        Assertions.assertEquals(emptyList<BookEntity>(), actual)
+    }
+
+    @Test
+    @DisplayName("ユーザー書庫タイトル検索_正常系_正確なuserIdとtitleが渡される")
+    fun findUserBooksByTitlePassesCorrectArgs() {
+        val userId = DEFAULT_USER_ID
+        val title = "テスト"
+        val otherId = UUID.fromString("00000000-0000-0000-0000-000000000001")
+
+        every { bookRepository.findUserBooksByTitle(userId, title) } returns emptyList()
+
+        bookService.findUserBooksByTitle(userId, title)
+
+        verify(exactly = 1) { bookRepository.findUserBooksByTitle(userId, title) }
+        verify(exactly = 0) { bookRepository.findUserBooksByTitle(otherId, title) }
+    }
+
+    @Test
+    @DisplayName("ユーザー書庫著者検索_正常系_書籍あり")
+    fun findUserBooksByAuthorSuccess01() {
+        val userId = DEFAULT_USER_ID
+        val author = "マイ著者"
+        val expect = listOf(defaultBookEntity.copy(author = listOf(author)))
+
+        every { bookRepository.findUserBooksByAuthor(userId, author) } returns listOf(defaultBookEntity.copy(author = listOf(author)))
+
+        val actual = bookService.findUserBooksByAuthor(userId, author)
+        Assertions.assertEquals(expect, actual)
+        verify(exactly = 1) { bookRepository.findUserBooksByAuthor(userId, author) }
+    }
+
+    @Test
+    @DisplayName("ユーザー書庫著者検索_正常系_検索結果なし")
+    fun findUserBooksByAuthorSuccess02() {
+        val userId = DEFAULT_USER_ID
+        val author = "存在しない著者"
+
+        every { bookRepository.findUserBooksByAuthor(userId, author) } returns emptyList()
+
+        val actual = bookService.findUserBooksByAuthor(userId, author)
+        Assertions.assertEquals(emptyList<BookEntity>(), actual)
+    }
+
+    @Test
+    @DisplayName("ユーザー書庫著者検索_正常系_正確なuserIdとauthorが渡される")
+    fun findUserBooksByAuthorPassesCorrectArgs() {
+        val userId = DEFAULT_USER_ID
+        val author = "テスト著者"
+        val otherId = UUID.fromString("00000000-0000-0000-0000-000000000001")
+
+        every { bookRepository.findUserBooksByAuthor(userId, author) } returns emptyList()
+
+        bookService.findUserBooksByAuthor(userId, author)
+
+        verify(exactly = 1) { bookRepository.findUserBooksByAuthor(userId, author) }
+        verify(exactly = 0) { bookRepository.findUserBooksByAuthor(otherId, author) }
+    }
+
+    @Test
+    @DisplayName("ISBN書籍検索_異常系_BookNotFoundExceptionにISBNが含まれるメッセージ")
+    fun findBookByISBNExceptionContainsIsbn() {
+        val isbn = "9784000000001"
+
+        every { bookRepository.findBookByISBN(isbn = isbn) } returns null
+        every { bookRepository.findBookByISBNFromRakuten(isbn = isbn) } returns null
+
+        val exception =
+            assertThrows<BookNotFoundException> {
+                bookService.findBookByISBN(isbn)
+            }
+        Assertions.assertTrue(exception.message!!.contains(isbn))
     }
 
     companion object {

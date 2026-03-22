@@ -243,7 +243,9 @@ interface BookMapper {
             , created_at
             , updated_at
         FROM books
-        WHERE author LIKE '%' || #{author} || '%'
+        WHERE EXISTS (
+            SELECT 1 FROM unnest(author) AS a WHERE a LIKE '%' || #{author} || '%'
+        )
     """,
     )
     @ResultMap("bookResult")
@@ -550,6 +552,57 @@ interface BookMapper {
         offset: Int,
         limit: Int,
     ): List<BookEntity>?
+
+    @Select(
+        """
+            SELECT
+                b.id, b.title, b.title_kana, b.sub_title, b.sub_title_kana,
+                b.author, b.publisher, b.book_size, b.publish_date, b.pages,
+                b.description, b.isbn10, b.isbn13, b.list_price, b.category,
+                b.small_thumbnail_url, b.thumbnail_url, b.large_thumbnail_url,
+                b.registration_count, b.is_searched_ndl, b.ndl_url,
+                b.is_searched_google, b.google_url, b.is_searched_rakuten,
+                b.rakuten_item_url, b.rakuten_affiliate_url, b.created_at, b.updated_at
+            FROM books b
+            INNER JOIN user_books ub ON b.id = ub.book_id
+            WHERE ub.user_id = #{userId, jdbcType=OTHER}
+            AND ub.is_deleted = false
+            AND b.title LIKE '%' || #{title} || '%'
+            ORDER BY ub.created_at DESC
+        """,
+    )
+    @ResultMap("bookResult")
+    fun findUserBooksByTitle(
+        @Param("userId") userId: UUID,
+        @Param("title") title: String,
+    ): List<BookEntity>
+
+    @Select(
+        """
+            SELECT
+                b.id, b.title, b.title_kana, b.sub_title, b.sub_title_kana,
+                b.author, b.publisher, b.book_size, b.publish_date, b.pages,
+                b.description, b.isbn10, b.isbn13, b.list_price, b.category,
+                b.small_thumbnail_url, b.thumbnail_url, b.large_thumbnail_url,
+                b.registration_count, b.is_searched_ndl, b.ndl_url,
+                b.is_searched_google, b.google_url, b.is_searched_rakuten,
+                b.rakuten_item_url, b.rakuten_affiliate_url, b.created_at, b.updated_at
+            FROM books b
+            INNER JOIN user_books ub ON b.id = ub.book_id
+            WHERE ub.user_id = #{userId, jdbcType=OTHER}
+            AND ub.is_deleted = false
+            AND EXISTS (
+                SELECT 1 FROM unnest(b.author) AS a
+                WHERE a LIKE '%' || #{author} || '%'
+            )
+            ORDER BY ub.created_at DESC
+        """,
+    )
+    @ResultMap("bookResult")
+    fun findUserBooksByAuthor(
+        @Param("userId") userId: UUID,
+        @Param("author") author: String,
+    ): List<BookEntity>
 
     @Insert(
         """

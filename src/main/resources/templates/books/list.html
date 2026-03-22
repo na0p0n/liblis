@@ -7,19 +7,21 @@
 
 <div class="filter-section py-3 mb-4 shadow-sm">
     <div class="container">
-        <form class="row g-2 align-items-center" th:action="@{/books}" method="get" aria-disabled="true">
-            <div class="col-12 col-md-4">
-                <input type="text" class="form-control" placeholder="タイトル、著者で検索..." disabled>
+        <form class="row g-2" th:action="@{/books/list}" method="get">
+            <div class="col-md-4">
+                <input type="text" class="form-control" name="q"
+                       th:value="${q}" placeholder="タイトル、著者で検索...">
             </div>
-            <div class="col-12 col-md-2">
-                <select class="form-select" disabled>
-                    <option selected>すべてのカテゴリ</option>
-                    <option>技術書</option>
-                    <option>小説</option>
+            <div class="col-md-2">
+                <select class="form-select" name="type">
+                    <option value="title"  th:selected="${type == 'title' or type == null}">タイトル</option>
+                    <option value="author" th:selected="${type == 'author'}">著者</option>
                 </select>
             </div>
-            <div class="col-12 col-md-2">
-                <button type="submit" class="btn btn-primary w-100" disabled><i class="bi bi-search me-2"></i>検索</button>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="bi bi-search me-2"></i>検索
+                </button>
             </div>
         </form>
     </div>

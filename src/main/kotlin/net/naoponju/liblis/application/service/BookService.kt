@@ -65,6 +65,20 @@ class BookService(
         )
     }
 
+    fun findByTitle(title: String): List<BookEntity> = bookRepository.findBookByTitle(title)
+
+    fun findByAuthor(author: String): List<BookEntity> = bookRepository.findBookByAuthor(author)
+
+    fun findUserBooksByTitle(
+        userId: UUID,
+        title: String,
+    ): List<BookEntity> = bookRepository.findUserBooksByTitle(userId, title)
+
+    fun findUserBooksByAuthor(
+        userId: UUID,
+        author: String,
+    ): List<BookEntity> = bookRepository.findUserBooksByAuthor(userId, author)
+
     fun getHavingBooksPaged(
         userId: UUID,
         offset: Int,
