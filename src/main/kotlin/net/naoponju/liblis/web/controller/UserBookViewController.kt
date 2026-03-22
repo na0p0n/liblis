@@ -5,6 +5,7 @@ import net.naoponju.liblis.application.service.BookService
 import net.naoponju.liblis.application.service.UserBooksService
 import net.naoponju.liblis.application.service.UserService
 import net.naoponju.liblis.common.constraint.PagingConstants
+import net.naoponju.liblis.infra.mapper.RakutenBooksGenreMapper
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.oauth2.core.user.OAuth2User
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import kotlin.math.ceil
+import kotlin.text.split
 
 @Controller
 @Suppress("FunctionOnlyReturningConstant", "LongParameterList", "LongMethod", "CyclomaticComplexMethod")
@@ -22,6 +24,7 @@ class UserBookViewController(
     private val userService: UserService,
     private val userBooksService: UserBooksService,
     private val bookService: BookService,
+    private val rakutenBooksGenreMapper: RakutenBooksGenreMapper,
 ) {
     @GetMapping("")
     @Suppress("ReturnCount", "CyclomaticComplexity")
@@ -72,6 +75,15 @@ class UserBookViewController(
                         status = ub.status,
                         purchasePrice = ub.purchasePrice,
                         purchaseDate = ub.purchaseDate,
+                        titleKana = book.titleKana,
+                        subTitle = book.subTitle,
+                        subTitleKana = book.subTitleKana,
+                        bookSize = book.bookSize,
+                        description = book.description,
+                        listPrice = book.listPrice,
+                        category = book.category,
+                        smallThumbnailUrl = book.smallThumbnailUrl,
+                        largeThumbnailUrl = book.largeThumbnailUrl,
                     )
                 }
             } else {
@@ -107,9 +119,34 @@ class UserBookViewController(
                         status = ub.status,
                         purchasePrice = ub.purchasePrice,
                         purchaseDate = ub.purchaseDate,
+                        titleKana = book.titleKana,
+                        subTitle = book.subTitle,
+                        subTitleKana = book.subTitleKana,
+                        bookSize = book.bookSize,
+                        description = book.description,
+                        listPrice = book.listPrice,
+                        category = book.category,
+                        smallThumbnailUrl = book.smallThumbnailUrl,
+                        largeThumbnailUrl = book.largeThumbnailUrl,
                     )
                 }
             }
+
+        val genreIds =
+            myBooks
+                .mapNotNull { it.category?.split("/")?.firstOrNull() }
+                .distinct()
+
+        val genreNameMap: Map<String, String> =
+            if (genreIds.isNotEmpty()) {
+                rakutenBooksGenreMapper.findGenreNamesByIds(genreIds)
+                    .associate { it["books_genre_id"]!! to (it["display_genre_name"] ?: "") }
+                    .filter { it.value.isNotEmpty() }
+            } else {
+                emptyMap()
+            }
+
+        model.addAttribute("genreNameMap", genreNameMap)
 
         model.addAttribute("myBooks", myBooks)
         model.addAttribute("pageSize", pageSize)
