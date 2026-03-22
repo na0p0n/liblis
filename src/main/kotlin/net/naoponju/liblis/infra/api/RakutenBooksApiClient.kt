@@ -13,15 +13,16 @@ import org.springframework.web.util.UriComponentsBuilder
 import java.time.LocalDate
 import java.util.UUID
 
+@Suppress("TooGenericExceptionCaught", "ReturnCount", "MagicNumber")
 @Component
 class RakutenBooksApiClient(
     @Value("\${rakuten.api.application-id}") private val applicationId: String,
     @Value("\${rakuten.api.key}") private val accessKey: String,
     @Value("\${rakuten.api.affiliate-id:}") private val affiliateId: String,
     @Value("\${rakuten.api.site-url}") private val siteUrl: String,
+    private val restTemplate: RestTemplate = RestTemplate(HttpComponentsClientHttpRequestFactory()),
 ) {
     private val log = LoggerFactory.getLogger(javaClass)
-    private val restTemplate = RestTemplate(HttpComponentsClientHttpRequestFactory())
 
     companion object {
         private const val API_URL =
@@ -29,33 +30,39 @@ class RakutenBooksApiClient(
     }
 
     fun findByIsbn(isbn: String): BookEntity? {
-        val url = UriComponentsBuilder.fromHttpUrl(API_URL)
-            .queryParam("applicationId", applicationId)
-            .queryParam("accessKey", accessKey)
-            .queryParam("isbn", isbn)
-            .queryParam("hits", 1)
-            .queryParam("format", "json")
-            .queryParam("formatVersion", 2)
-            .apply { if (affiliateId.isNotBlank()) queryParam("affiliateId", affiliateId) }
-            .toUriString()
+        val url =
+            UriComponentsBuilder.fromHttpUrl(API_URL)
+                .queryParam("applicationId", applicationId)
+                .queryParam("accessKey", accessKey)
+                .queryParam("isbn", isbn)
+                .queryParam("hits", 1)
+                .queryParam("format", "json")
+                .queryParam("formatVersion", 2)
+                .apply { if (affiliateId.isNotBlank()) queryParam("affiliateId", affiliateId) }
+                .toUriString()
         log.info("URL: $url")
 
         // ★ getForObject() ではなく exchange() を使う（Referer/Origin がないと403）
-        val headers = HttpHeaders().apply {
-            set("Referer", siteUrl)
-            set("Origin", siteUrl)
-            set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/120.0.0.0")
-        }
+        val headers =
+            HttpHeaders().apply {
+                set("Referer", siteUrl)
+                set("Origin", siteUrl)
+                set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/120.0.0.0")
+            }
         log.info("header: $headers")
 
         return try {
             @Suppress("UNCHECKED_CAST")
-            val response = restTemplate
-                .exchange(url, HttpMethod.GET, HttpEntity<Void>(null, headers), Map::class.java)
-                .body as? Map<String, Any> ?: return null
+            val response =
+                restTemplate
+                    .exchange(url, HttpMethod.GET, HttpEntity<Void>(null, headers), Map::class.java)
+                    .body as? Map<String, Any> ?: return null
 
             val count = (response["count"] as? Int) ?: 0
-            if (count == 0) { log.debug("楽天ブックスAPI: 未ヒット isbn=$isbn"); return null }
+            if (count == 0) {
+                log.debug("楽天ブックスAPI: 未ヒット isbn=$isbn")
+                return null
+            }
 
             @Suppress("UNCHECKED_CAST")
             val item = (response["Items"] as? List<Map<String, Any>>)?.firstOrNull() ?: return null
@@ -71,11 +78,12 @@ class RakutenBooksApiClient(
         val isbn10 = if (isbn.length == 10) isbn else null
         val isbn13 = if (isbn.length == 13) isbn else null
 
-        val authors = (item["author"] as? String)
-            ?.split("/")
-            ?.map { it.trim() }
-            ?.filter { it.isNotEmpty() }
-            ?: emptyList()
+        val authors =
+            (item["author"] as? String)
+                ?.split("/")
+                ?.map { it.trim() }
+                ?.filter { it.isNotEmpty() }
+                ?: emptyList()
 
         val largeImageUrl = (item["largeImageUrl"] as? String)?.takeIf { it.isNotEmpty() }
         val mediumImageUrl = (item["mediumImageUrl"] as? String)?.takeIf { it.isNotEmpty() }
@@ -84,18 +92,18 @@ class RakutenBooksApiClient(
         return BookEntity(
             id = UUID.randomUUID(),
             title = item["title"] as? String,
-            titleKana = item["titleKana"] as? String,       // ★追加
-            subTitle = item["subTitle"] as? String,         // ★追加
+            titleKana = item["titleKana"] as? String, // ★追加
+            subTitle = item["subTitle"] as? String, // ★追加
             subTitleKana = item["subTitleKana"] as? String, // ★追加
             author = authors,
             publisher = item["publisherName"] as? String,
-            bookSize = (item["size"] as? Int),              // ★追加
+            bookSize = (item["size"] as? Int), // ★追加
             publishDate = parsePublishDate(item["salesDate"] as? String),
             pages = null,
             description = (item["itemCaption"] as? String)?.takeIf { it.isNotEmpty() },
             isbn10 = isbn10,
             isbn13 = isbn13,
-            listPrice = (item["itemPrice"] as? Int),        // ★listPrice→itemPrice（listPriceは常に0）
+            listPrice = (item["itemPrice"] as? Int), // ★listPrice→itemPrice（listPriceは常に0）
             category = item["booksGenreId"] as? String,
             smallThumbnailUrl = smallImageUrl,
             thumbnailUrl = mediumImageUrl,

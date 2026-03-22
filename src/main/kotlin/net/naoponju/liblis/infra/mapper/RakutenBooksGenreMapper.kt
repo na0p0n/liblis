@@ -6,13 +6,14 @@ import org.apache.ibatis.annotations.Select
 
 @Mapper
 interface RakutenBooksGenreMapper {
-
-    @Select("""
+    @Select(
+        """
         SELECT books_genre_path
         FROM v_rakuten_books_genre
         WHERE books_genre_id = #{booksGenreId}
         LIMIT 1
-    """)
+    """,
+    )
     fun findGenrePathById(booksGenreId: String): String?
 
     @Select(
@@ -26,6 +27,9 @@ interface RakutenBooksGenreMapper {
                     #{id}
                 </foreach>
             </script>
-        """)
-    fun findGenreNamesByIds(@Param("ids") ids: List<String>): List<Map<String, String>>
+        """,
+    )
+    fun findGenreNamesByIds(
+        @Param("ids") ids: List<String>,
+    ): List<Map<String, String>>
 }

@@ -9,6 +9,7 @@ import net.naoponju.liblis.application.service.BookService
 import net.naoponju.liblis.application.service.UserBooksService
 import net.naoponju.liblis.application.service.UserService
 import net.naoponju.liblis.domain.entity.BookEntity
+import net.naoponju.liblis.infra.mapper.RakutenBooksGenreMapper
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
@@ -25,6 +26,7 @@ class BookControllerTest {
     private val bookService: BookService = mockk(relaxed = true)
     private val userBooksService: UserBooksService = mockk(relaxed = true)
     private val userService: UserService = mockk(relaxed = true)
+    private val rakutenBooksGenreMapper: RakutenBooksGenreMapper = mockk(relaxed = true)
     private val model: Model = mockk(relaxed = true)
     private val redirectAttributes: RedirectAttributes = mockk(relaxed = true)
 
@@ -35,6 +37,7 @@ class BookControllerTest {
                     bookService = bookService,
                     userBooksService = userBooksService,
                     userService = userService,
+                    rakutenBooksGenreMapper = rakutenBooksGenreMapper,
                 ),
         )
 

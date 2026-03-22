@@ -79,17 +79,21 @@ class BookController(
                 ?.toHashSet()
                 ?: HashSet()
 
-        val genreIds = books
-            .mapNotNull { it.category?.split("/")?.firstOrNull() }
-            .distinct()
+        val genreIds =
+            books
+                .mapNotNull { it.category?.split("/")?.firstOrNull() }
+                .distinct()
 
-        val genreNameMap: Map<String, String> = if (genreIds.isNotEmpty()) {
-            rakutenBooksGenreMapper.findGenreNamesByIds(genreIds)
-                .associate { it["books_genre_id"]!! to (it["display_genre_name"] ?: "") }
-                .filter { it.value.isNotEmpty() }
-        } else emptyMap()
+        val genreNameMap: Map<String, String> =
+            if (genreIds.isNotEmpty()) {
+                rakutenBooksGenreMapper.findGenreNamesByIds(genreIds)
+                    .associate { it["books_genre_id"]!! to (it["display_genre_name"] ?: "") }
+                    .filter { it.value.isNotEmpty() }
+            } else {
+                emptyMap()
+            }
 
-        model.addAttribute("genreNameMap", genreNameMap)  // ★追加
+        model.addAttribute("genreNameMap", genreNameMap) // ★追加
 
         model.addAttribute("books", books)
         model.addAttribute("pageSize", pageSize)
@@ -134,10 +138,11 @@ class BookController(
         val userId = userService.findByEmail(email)?.id
         val userBook = userId?.let { userBooksService.findUserBookByBookId(it, bookId) }
 
-        val genrePath = book.category
-            ?.split("/")
-            ?.firstOrNull()
-            ?.let { rakutenBooksGenreMapper.findGenrePathById(it) }
+        val genrePath =
+            book.category
+                ?.split("/")
+                ?.firstOrNull()
+                ?.let { rakutenBooksGenreMapper.findGenrePathById(it) }
 
         model.addAttribute("book", book)
         model.addAttribute("userBook", userBook)

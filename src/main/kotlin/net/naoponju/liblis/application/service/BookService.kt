@@ -25,8 +25,9 @@ class BookService(
         if (foundFromDB != null) {
             return foundFromDB to true
         } else {
-            val foundFromRakuten = bookRepository.findBookByISBNFromRakuten(isbn)
-                ?: throw BookNotFoundException("書籍が見つかりませんでした: isbn=$isbn")
+            val foundFromRakuten =
+                bookRepository.findBookByISBNFromRakuten(isbn)
+                    ?: throw BookNotFoundException("書籍が見つかりませんでした: isbn=$isbn")
             bookRepository.insert(foundFromRakuten)
             return foundFromRakuten to false
         }

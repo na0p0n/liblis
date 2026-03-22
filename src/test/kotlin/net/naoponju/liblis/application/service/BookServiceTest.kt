@@ -42,7 +42,7 @@ class BookServiceTest {
     }
 
     @Test
-    @DisplayName("ISBN書籍検索_正常系_GoogleBooksAPIから検索")
+    @DisplayName("ISBN書籍検索_正常系_楽天ブックスAPIから検索")
     fun findBookByISBNSuccess02() {
         val isbn = DEFAULT_ISBN
         val expect: Pair<BookEntity, Boolean> =
@@ -56,7 +56,7 @@ class BookServiceTest {
         } returns null
 
         every {
-            bookRepository.findBookByISBNFromGoogle(isbn = isbn)
+            bookRepository.findBookByISBNFromRakuten(isbn = isbn)
         } returns defaultBookEntity
 
         val actual = bookService.findBookByISBN(isbn)
@@ -303,8 +303,12 @@ class BookServiceTest {
             BookEntity(
                 id = null,
                 title = null,
+                titleKana = null,
+                subTitle = null,
+                subTitleKana = null,
                 author = emptyList(),
                 publisher = null,
+                bookSize = null,
                 publishDate = null,
                 pages = null,
                 description = null,
@@ -312,12 +316,17 @@ class BookServiceTest {
                 isbn13 = "1111222233334",
                 listPrice = null,
                 category = null,
+                smallThumbnailUrl = null,
                 thumbnailUrl = null,
+                largeThumbnailUrl = null,
                 registrationCount = 0,
                 isSearchedNDL = false,
                 ndlUrl = null,
                 isSearchedGoogle = false,
                 googleUrl = null,
+                isSearchedRakuten = false,
+                rakutenItemUrl = null,
+                rakutenAffiliateUrl = null,
                 createdAt = null,
                 updatedAt = null,
             )
