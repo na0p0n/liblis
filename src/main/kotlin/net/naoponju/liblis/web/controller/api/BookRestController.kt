@@ -27,7 +27,7 @@ class BookRestController(
                 if (it.second) {
                     logger.info("書籍情報Web取得API: DBからのデータ取得に成功 (取得データ: $foundBookData)")
                 } else {
-                    logger.info("書籍情報Web取得API: Googleからのデータ取得に成功 (取得データ: $foundBookData)")
+                    logger.info("書籍情報Web取得API: 楽天ブックスからのデータ取得に成功 (取得データ: $foundBookData)")
                 }
             }
 

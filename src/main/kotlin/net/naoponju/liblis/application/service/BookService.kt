@@ -1,5 +1,6 @@
 package net.naoponju.liblis.application.service
 
+import net.naoponju.liblis.common.exception.BookNotFoundException
 import net.naoponju.liblis.domain.entity.BookEntity
 import net.naoponju.liblis.domain.repository.BookRepository
 import org.springframework.stereotype.Service
@@ -24,9 +25,11 @@ class BookService(
         if (foundFromDB != null) {
             return foundFromDB to true
         } else {
-            val foundFromGoogle = bookRepository.findBookByISBNFromGoogle(isbn)
-            bookRepository.insert(foundFromGoogle)
-            return foundFromGoogle to false
+            val foundFromRakuten =
+                bookRepository.findBookByISBNFromRakuten(isbn)
+                    ?: throw BookNotFoundException("書籍が見つかりませんでした: isbn=$isbn")
+            bookRepository.insert(foundFromRakuten)
+            return foundFromRakuten to false
         }
     }
 

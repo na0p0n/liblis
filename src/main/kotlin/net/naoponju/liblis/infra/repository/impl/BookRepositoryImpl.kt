@@ -4,6 +4,7 @@ import net.naoponju.liblis.common.constraint.PublishDateLength
 import net.naoponju.liblis.domain.entity.BookEntity
 import net.naoponju.liblis.domain.repository.BookRepository
 import net.naoponju.liblis.infra.api.GoogleBooksApiClient
+import net.naoponju.liblis.infra.api.RakutenBooksApiClient
 import net.naoponju.liblis.infra.mapper.BookMapper
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Repository
@@ -15,6 +16,7 @@ import java.util.UUID
 class BookRepositoryImpl(
     private val bookMapper: BookMapper,
     private val googleBooksApiClient: GoogleBooksApiClient,
+    private val rakutenBooksApiClient: RakutenBooksApiClient,
 ) : BookRepository {
     override fun findBookByISBN(isbn: String): BookEntity? {
         return bookMapper.findByISBN(isbn)
@@ -64,6 +66,11 @@ class BookRepositoryImpl(
 
     override fun findById(id: UUID): BookEntity? {
         return bookMapper.findById(id)
+    }
+
+    override fun findBookByISBNFromRakuten(isbn: String): BookEntity? {
+        val item = rakutenBooksApiClient.findByIsbn(isbn) ?: return null
+        return item
     }
 
     override fun findBookByISBNFromGoogle(isbn: String): BookEntity {

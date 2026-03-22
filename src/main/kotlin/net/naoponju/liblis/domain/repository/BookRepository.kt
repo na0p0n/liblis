@@ -9,6 +9,8 @@ interface BookRepository {
 
     fun findBookListByBookIdList(bookIds: List<UUID>): List<BookEntity>
 
+    fun findBookByISBNFromRakuten(isbn: String): BookEntity?
+
     fun findBookByISBNFromGoogle(isbn: String): BookEntity
 
     fun fetchAllBooks(): List<BookEntity>

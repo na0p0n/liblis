@@ -5,6 +5,7 @@ import net.naoponju.liblis.application.service.UserBooksService
 import net.naoponju.liblis.application.service.UserService
 import net.naoponju.liblis.common.constraint.PagingConstants
 import net.naoponju.liblis.common.exception.BookNotFoundException
+import net.naoponju.liblis.infra.mapper.RakutenBooksGenreMapper
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.oauth2.core.user.OAuth2User
@@ -25,6 +26,7 @@ class BookController(
     private val bookService: BookService,
     private val userBooksService: UserBooksService,
     private val userService: UserService,
+    private val rakutenBooksGenreMapper: RakutenBooksGenreMapper,
 ) {
     @Suppress("ReturnCount")
     @GetMapping("/list")
@@ -77,6 +79,22 @@ class BookController(
                 ?.toHashSet()
                 ?: HashSet()
 
+        val genreIds =
+            books
+                .mapNotNull { it.category?.split("/")?.firstOrNull() }
+                .distinct()
+
+        val genreNameMap: Map<String, String> =
+            if (genreIds.isNotEmpty()) {
+                rakutenBooksGenreMapper.findGenreNamesByIds(genreIds)
+                    .associate { it["books_genre_id"]!! to (it["display_genre_name"] ?: "") }
+                    .filter { it.value.isNotEmpty() }
+            } else {
+                emptyMap()
+            }
+
+        model.addAttribute("genreNameMap", genreNameMap) // ★追加
+
         model.addAttribute("books", books)
         model.addAttribute("pageSize", pageSize)
         model.addAttribute("ownedBookIds", ownedBookIds)
@@ -120,10 +138,17 @@ class BookController(
         val userId = userService.findByEmail(email)?.id
         val userBook = userId?.let { userBooksService.findUserBookByBookId(it, bookId) }
 
+        val genrePath =
+            book.category
+                ?.split("/")
+                ?.firstOrNull()
+                ?.let { rakutenBooksGenreMapper.findGenrePathById(it) }
+
         model.addAttribute("book", book)
         model.addAttribute("userBook", userBook)
         model.addAttribute("redirectUrl", redirectInfo.first)
         model.addAttribute("redirectText", redirectInfo.second)
+        model.addAttribute("genrePath", genrePath)
         return "books/detail"
     }
 
