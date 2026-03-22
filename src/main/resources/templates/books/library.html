@@ -20,21 +20,32 @@
 
 <div class="filter-section py-3 mb-4 shadow-sm">
     <div class="container">
-        <form class="row g-2 align-items-center" th:action="@{/books}" method="get" aria-disabled="true">
+        <form class="row g-2 align-items-center" th:action="@{/library}" method="get">
             <div class="col-12 col-md-4">
-                <input type="text" class="form-control" placeholder="タイトル、著者で検索..." disabled>
+                <input type="text" class="form-control" name="q"
+                       th:value="${q}" placeholder="タイトル、著者で検索...">
             </div>
             <div class="col-12 col-md-2">
-                <select class="form-select" disabled>
-                    <option selected>すべてのカテゴリ</option>
-                    <option>技術書</option>
-                    <option>小説</option>
+                <select class="form-select" name="type">
+                    <option value="title"  th:selected="${type == 'title' or type == null}">タイトル</option>
+                    <option value="author" th:selected="${type == 'author'}">著者</option>
                 </select>
             </div>
             <div class="col-12 col-md-2">
-                <button type="submit" class="btn btn-primary w-100" disabled><i class="bi bi-search me-2"></i>検索</button>
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="bi bi-search me-2"></i>検索
+                </button>
             </div>
         </form>
+
+        <!-- 検索時の結果件数表示（フォームの直下に追加） -->
+        <div th:if="${q != null and !#strings.isEmpty(q)}" class="mb-3 mt-2">
+            <span class="text-muted small">
+                「<span th:text="${q}"></span>」の検索結果：
+                <span th:text="${myBooks.size()}"></span> 件
+                &nbsp;(<a th:href="@{/library}">クリア</a>)
+            </span>
+        </div>
     </div>
 </div>
 

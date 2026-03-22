@@ -31,6 +31,8 @@ class BookController(
     @Suppress("ReturnCount")
     @GetMapping("/list")
     fun showBookList(
+        @RequestParam(required = false) q: String?,
+        @RequestParam(required = false) type: String?,
         @RequestParam(defaultValue = "1") page: Int,
         @RequestParam(defaultValue = "20") size: Int,
         @AuthenticationPrincipal userDetails: Any?,
@@ -58,12 +60,11 @@ class BookController(
         }
 
         val offset = (page - 1) * pageSize
-        val books =
-            try {
-                bookService.getBookListPaged(offset, pageSize)
-            } catch (_: BookNotFoundException) {
-                emptyList()
-            }
+        val books = when {
+            q.isNullOrBlank() -> bookService.getBookListPaged(offset, pageSize)
+            type == "author"  -> bookService.findByAuthor(q)
+            else              -> bookService.findByTitle(q)  // デフォルト: title
+        }
 
         val bookIds =
             books.map { book ->
@@ -96,6 +97,8 @@ class BookController(
         model.addAttribute("genreNameMap", genreNameMap) // ★追加
 
         model.addAttribute("books", books)
+        model.addAttribute("q", q)
+        model.addAttribute("type", type)
         model.addAttribute("pageSize", pageSize)
         model.addAttribute("ownedBookIds", ownedBookIds)
         model.addAttribute("currentPage", page)
