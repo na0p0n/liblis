@@ -24,6 +24,9 @@
                         <a class="nav-link" th:href="@{/books/list}">書籍一覧</a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link" th:href="@{/library}">My書庫</a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" th:href="@{/}">気になる本</a>
                     </li>
                     <li class="nav-item">
@@ -36,8 +39,12 @@
                     </li>
 
                     <li class="nav-item">
-                        <form class="d-flex align-items-center h-100" role="search">
-                            <input class="form-control form-control-sm me-2" type="search" placeholder="書籍検索" aria-label="Search">
+                        <form class="d-flex align-items-center h-100"
+                              th:action="@{/books/list}" method="get" role="search">
+                            <input class="form-control form-control-sm me-2"
+                                   type="search" name="q"
+                                   placeholder="書籍検索" aria-label="Search">
+                            <input type="hidden" name="type" value="title">
                             <button class="btn btn-sm btn-outline-success" type="submit">検索</button>
                         </form>
                     </li>
@@ -55,7 +62,7 @@
                               #authentication.principal.displayName}">ユーザー名</span> さん
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a class="dropdown-item" th:href="@{/account}">アカウント設定</a></li>
+                        <li><a class="dropdown-item" th:href="@{/user/info}">アカウント設定</a></li>
                         <li><hr class="dropdown-divider"></li>
                         <li>
                             <form th:action="@{/logout}" method="post">

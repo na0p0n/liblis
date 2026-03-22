@@ -4,6 +4,7 @@ import net.naoponju.liblis.common.constraint.PublishDateLength
 import net.naoponju.liblis.domain.entity.BookEntity
 import net.naoponju.liblis.domain.repository.BookRepository
 import net.naoponju.liblis.infra.api.GoogleBooksApiClient
+import net.naoponju.liblis.infra.api.RakutenBooksApiClient
 import net.naoponju.liblis.infra.mapper.BookMapper
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Repository
@@ -11,21 +12,48 @@ import java.time.LocalDate
 import java.util.UUID
 
 @Repository
+@Suppress("TooManyFunctions")
 class BookRepositoryImpl(
     private val bookMapper: BookMapper,
     private val googleBooksApiClient: GoogleBooksApiClient,
+    private val rakutenBooksApiClient: RakutenBooksApiClient,
 ) : BookRepository {
     override fun findBookByISBN(isbn: String): BookEntity? {
         return bookMapper.findByISBN(isbn)
+    }
+
+    override fun findBookListByBookIdList(bookIds: List<UUID>): List<BookEntity> {
+        return bookMapper.fetchBookList(bookIds)
     }
 
     override fun fetchAllBooks(): List<BookEntity> {
         return bookMapper.fetchAllBooksOrderByTitle() ?: emptyList()
     }
 
-    override fun fetchUserHavingBooks(userId: UUID): List<BookEntity> {
-        return bookMapper.fetchUserBooks(userId) ?: emptyList()
+    override fun fetchUserHavingBookIdsInBookIdList(
+        userId: UUID,
+        bookIds: List<UUID>,
+    ): List<BookEntity>? {
+        return bookMapper.fetchUserHavingBookIdsInBookIdList(userId, bookIds)
     }
+
+    override fun fetchUserHavingBooksPaged(
+        userId: UUID,
+        offset: Int,
+        limit: Int,
+    ): List<BookEntity> {
+        return bookMapper.fetchUserBooksPaged(userId, offset, limit) ?: emptyList()
+    }
+
+    override fun findUserBooksByTitle(
+        userId: UUID,
+        title: String,
+    ): List<BookEntity> = bookMapper.findUserBooksByTitle(userId, title)
+
+    override fun findUserBooksByAuthor(
+        userId: UUID,
+        author: String,
+    ): List<BookEntity> = bookMapper.findUserBooksByAuthor(userId, author)
 
     override fun findBookByTitle(title: String): List<BookEntity> {
         return bookMapper.findBookByTitle(title) ?: emptyList()
@@ -37,6 +65,22 @@ class BookRepositoryImpl(
 
     override fun fetchRecentBooks(limit: Int): List<BookEntity> {
         return bookMapper.fetchRecentBooks(limit) ?: emptyList()
+    }
+
+    override fun findAllPaged(
+        offset: Int,
+        limit: Int,
+    ): List<BookEntity> {
+        return bookMapper.findAllPaged(offset, limit)
+    }
+
+    override fun findById(id: UUID): BookEntity? {
+        return bookMapper.findById(id)
+    }
+
+    override fun findBookByISBNFromRakuten(isbn: String): BookEntity? {
+        val item = rakutenBooksApiClient.findByIsbn(isbn) ?: return null
+        return item
     }
 
     override fun findBookByISBNFromGoogle(isbn: String): BookEntity {
@@ -53,15 +97,24 @@ class BookRepositoryImpl(
             description = fetchedBookData.description,
             listPrice = null,
             category = null,
+            smallThumbnailUrl = null,
             thumbnailUrl = fetchedBookData.bookThumbnailUrl,
+            largeThumbnailUrl = null,
             registrationCount = 0,
             isSearchedNDL = false,
             ndlUrl = null,
             isSearchedGoogle = true,
             googleUrl = fetchedBookData.selfLink,
+            isSearchedRakuten = false,
+            rakutenItemUrl = null,
+            rakutenAffiliateUrl = null,
             isbn10 = fetchedBookData.isbn10,
             isbn13 = fetchedBookData.isbn13,
         )
+    }
+
+    override fun countAllBooks(): Int {
+        return bookMapper.countAllBooks()
     }
 
     override fun insert(book: BookEntity) {
@@ -74,15 +127,12 @@ class BookRepositoryImpl(
 
         return try {
             when {
-                // publishedDateが完全な日付ならそのままLocalDateにパース
-                publishedDateStr.length == PublishDateLength.FULL -> LocalDate.parse(publishedDateStr)
-
-                // publishedDateが"yyyy-MM"の形式ならあとに"-01"を付加してLocalDateにパース
-                publishedDateStr.length == PublishDateLength.NON_DAY -> LocalDate.parse("$publishedDateStr-01")
-
-                // publishedDateが"yyyy"の形式ならあとに"-01-01"を付加してLocalDateにパース
-                publishedDateStr.length == PublishDateLength.NON_MONTH_DAY -> LocalDate.parse("$publishedDateStr-01-01")
-
+                publishedDateStr.length == PublishDateLength.FULL ->
+                    LocalDate.parse(publishedDateStr)
+                publishedDateStr.length == PublishDateLength.NON_DAY ->
+                    LocalDate.parse("$publishedDateStr-01")
+                publishedDateStr.length == PublishDateLength.NON_MONTH_DAY ->
+                    LocalDate.parse("$publishedDateStr-01-01")
                 else -> null
             }
         } catch (e: Exception) {

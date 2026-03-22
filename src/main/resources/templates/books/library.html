@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{common/head :: head('My書庫')}">
+<body>
+
+<div th:replace="~{common/navbar :: navbar}"></div>
+
+<div class="filter-section py-3 mb-4 shadow-sm">
+    <div class="container">
+        <form class="row g-2 align-items-center" th:action="@{/library}" method="get">
+            <div class="col-12 col-md-4">
+                <input type="text" class="form-control" name="q"
+                       th:value="${q}" placeholder="タイトル、著者で検索...">
+            </div>
+            <div class="col-12 col-md-2">
+                <select class="form-select" name="type">
+                    <option value="title"  th:selected="${type == 'title' or type == null}">タイトル</option>
+                    <option value="author" th:selected="${type == 'author'}">著者</option>
+                </select>
+            </div>
+            <div class="col-12 col-md-2">
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="bi bi-search me-2"></i>検索
+                </button>
+            </div>
+        </form>
+
+        <!-- 検索時の結果件数表示（フォームの直下に追加） -->
+        <div th:if="${q != null and !#strings.isEmpty(q)}" class="mb-3 mt-2">
+            <span class="text-muted small">
+                「<span th:text="${q}"></span>」の検索結果：
+                <span th:text="${myBooks.size()}"></span> 件
+                &nbsp;(<a th:href="@{/library}">クリア</a>)
+            </span>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <ul class="nav nav-tabs mb-4" id="bookTab" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active fw-bold" data-bs-toggle="tab" data-bs-target="#mybooks" type="button">蔵書リスト</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link fw-bold" data-bs-toggle="tab" data-bs-target="#wishlist" type="button">気になる本</button>
+        </li>
+    </ul>
+
+    <div class="tab-content mb-4" id="bookTabContent">
+        <div class="tab-pane fade show active" id="mybooks" role="tabpanel">
+            <div class="card shadow-sm">
+                <div class="d-flex justify-content-end align-items-center px-3 pt-3 pb-2">
+                    <span class="me-2 small text-muted fw-bold">表示件数</span>
+                    <div class="btn-group btn-group-sm" role="group" aria-label="Basic radio toggle button group">
+                        <input type="radio" class="btn-check" name="btnradio" id="pageSize20" autocomplete="off"
+                               th:checked="${pageSize == 20}" onchange="changePageSize(20)" checked>
+                        <label class="btn btn-outline-primary" for="pageSize20">20</label>
+
+                        <input type="radio" class="btn-check" name="btnradio" id="pageSize50" autocomplete="off"
+                               th:checked="${pageSize == 50}" onchange="changePageSize(50)">
+                        <label class="btn btn-outline-primary" for="pageSize50">50</label>
+
+                        <input type="radio" class="btn-check" name="btnradio" id="pageSize100" autocomplete="off"
+                               th:checked="${pageSize == 100}" onchange="changePageSize(100)">
+                        <label class="btn btn-outline-primary" for="pageSize100">100</label>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                        <tr>
+                            <th>カバー</th>
+                            <th>タイトル / 著者</th>
+                            <th class="d-none d-lg-table-cell">カテゴリ</th>
+                            <th class="d-none d-lg-table-cell">出版社</th>
+                            <th class="d-none d-lg-table-cell">ページ数</th>
+                            <th class="d-none d-lg-table-cell">ISBN</th>
+                            <th class="d-none d-lg-table-cell">出版日</th>
+                            <th class="d-none d-lg-table-cell">購入日 / 購入金額</th>
+                            <th>操作</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="book : ${myBooks}"
+                            class="book-row"
+                            th:attr="data-href=@{/books/{id}(id=${book.bookId}, from='library')}"
+                            style="cursor: pointer;">
+                            <td><img th:src="${book.thumbnailUrl != null ? book.thumbnailUrl : 'https://dummy.kobeya.com/?width=60&height=85&bg=cccccc&color=000000&text=No%20Image&_=1772546481754'}" class="book-thumb rounded shadow-sm"></td>
+                            <td>
+                                <div class="fw-bold" th:text="${book.title}">実践Kotlin入門</div>
+                                <div class="small text-muted">
+                                    <span th:each="author, stat: ${book.author}"
+                                          th:text="${stat.last ? author : author + ','}">
+                                        リブリス太郎
+                                    </span>
+                                </div>
+                            </td>
+                            <td class="d-none d-lg-table-cell"><span class="badge bg-info text-dark">技術書</span></td>
+                            <td class="d-none d-lg-table-cell"><span class="small text-muted" th:text="${book.publisher}">リブリス出版</span></td>
+                            <td class="d-none d-lg-table-cell"><span class="small text-muted" th:text="${book.pages}">100</span></td>
+                            <td class="d-none d-lg-table-cell small text-muted" th:text="${book.isbn13 != null ? book.isbn13 : book.isbn10}">9784000000000</td>
+                            <td class="d-none d-lg-table-cell small text-muted"
+                                th:text="${book.publishDate?.toString() ?: ''}">2026/01/19</td>
+                            <td class="d-none d-lg-table-cell">
+                                <div class="fw-bold" th:text="${book.purchaseDate?.toString() ?: ''}">9999/01/01</div>
+                                <div class="fw-bold">
+                                    <span th:text="${book.purchasePrice}">000</span>円
+                                </div>
+                            </td>
+                            <td>
+                                <div class="btn-group">
+                                    <button class="btn btn-sm btn-outline-secondary"
+                                            th:data-ub-id="${book.userBooksId}"
+                                            th:data-book-id="${book.bookId}"
+                                            th:data-status="${book.status}"
+                                            th:data-purchase-price="${book.purchasePrice}"
+                                            th:data-purchase-date="${book.purchaseDate}"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#editModal">
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger"
+                                            th:data-ub-id="${book.userBooksId}"
+                                            onclick="deleteBook(this)">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <!-- ページャー -->
+                    <nav aria-label="書籍一覧ページネーション" th:if="${totalPages > 1}">
+                        <ul class="pagination justify-content-center mt-4">
+
+                            <!-- 前ページ -->
+                            <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled'">
+                                <a class="page-link"
+                                   th:href="@{/library(page=${currentPage - 1}, size=${pageSize})}"
+                                   aria-label="前へ">&laquo;</a>
+                            </li>
+
+                            <!-- ページ番号（前後2ページ + 先頭/末尾） -->
+                            <th:block th:each="p : ${#numbers.sequence(1, totalPages)}">
+                                <!-- 省略記号（先頭寄り） -->
+                                <li class="page-item disabled"
+                                    th:if="${p == 2 && currentPage > 4}">
+                                    <span class="page-link">…</span>
+                                </li>
+                                <!-- ページ番号表示条件: 先頭/末尾/現在±2 -->
+                                <li class="page-item"
+                                    th:if="${p == 1 || p == totalPages || (p >= currentPage - 2 && p <= currentPage + 2)}"
+                                    th:classappend="${p == currentPage} ? 'active'">
+                                    <a class="page-link"
+                                       th:href="@{/library(page=${p}, size=${pageSize})}"
+                                       th:text="${p}">1</a>
+                                </li>
+                                <!-- 省略記号（末尾寄り） -->
+                                <li class="page-item disabled"
+                                    th:if="${p == totalPages - 1 && currentPage < totalPages - 3}">
+                                    <span class="page-link">…</span>
+                                </li>
+                            </th:block>
+
+                            <!-- 次ページ -->
+                            <li class="page-item" th:classappend="${currentPage == totalPages} ? 'disabled'">
+                                <a class="page-link"
+                                   th:href="@{/library(page=${currentPage + 1}, size=${pageSize})}"
+                                   aria-label="次へ">&raquo;</a>
+                            </li>
+                        </ul>
+                    </nav>
+
+                    <!-- 件数表示 -->
+                    <p class="text-center text-muted small" th:if="${totalCount > 0}">
+                        全 <span th:text="${totalCount}">0</span> 件中
+                        <span th:text="${(currentPage - 1) * pageSize + 1}">1</span> 〜
+                        <span th:text="${T(java.lang.Math).min(currentPage * pageSize, totalCount)}">20</span> 件を表示
+                    </p>
+                    <p class="text-center text-muted small" th:if="${totalCount <= 0}">
+                        書籍が登録されていません。
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-pane fade" id="wishlist" role="tabpanel">
+            <div class="alert alert-info">
+                気になる本をAmazonなどのリンクから登録する機能は、開発フェーズ2で実装予定です。
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 編集モーダル -->
+<div class="modal fade" id="editModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-sm-down">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">蔵書情報を編集</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="editForm">
+                <input type="hidden" id="editUserBooksId">
+                <input type="hidden" id="editBookId">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">ステータス</label>
+                        <select id="editStatus" class="form-select">
+                            <option value="OWNED">所持中</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">購入日</label>
+                        <div class="input-group">
+                            <input type="date" id="editPurchaseDate" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">購入価格</label>
+                        <div class="input-group">
+                            <span class="input-group-text">¥</span>
+                            <input type="number" id="editPurchasePrice" class="form-control" min="0">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">キャンセル</button>
+                    <button type="submit" class="btn btn-primary">更新する</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- 共通フッター -->
+<div th:replace="~{common/footer :: footer}"></div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    function changePageSize(size) {
+        const url = new URL(window.location.href);
+        url.searchParams.set('size', size);
+        url.searchParams.set('page', 1);
+        window.location.href = url.toString();
+    };
+
+    document.querySelectorAll('.book-row').forEach(row => {
+      row.addEventListener('click', (e) => {
+      if (e.target.closest('button') || e.target.closest('a')) return;
+        window.location.href = row.dataset.href;
+      });
+    });
+
+// モーダル表示時にデータをセット
+document.getElementById('editModal').addEventListener('show.bs.modal', function (e) {
+    const btn = e.relatedTarget;
+    document.getElementById('editUserBooksId').value  = btn.dataset.ubId;
+    document.getElementById('editBookId').value        = btn.dataset.bookId;
+    document.getElementById('editStatus').value        = btn.dataset.status;
+    document.getElementById('editPurchaseDate').value  = btn.dataset.purchaseDate ?? '';
+    document.getElementById('editPurchasePrice').value = btn.dataset.purchasePrice ?? '';
+});
+
+// 編集submit
+document.getElementById('editForm').addEventListener('submit', async function (e) {
+    e.preventDefault();
+    const id = document.getElementById('editUserBooksId').value;
+
+    const params = new URLSearchParams({
+        bookId:        document.getElementById('editBookId').value,
+        status:        document.getElementById('editStatus').value,
+        purchasePrice: document.getElementById('editPurchasePrice').value || '',
+        purchaseDate:  document.getElementById('editPurchaseDate').value,
+    });
+    const res = await fetch(`/api/library/${id}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            [document.querySelector('meta[name="_csrf_header"]').content]:
+            document.querySelector('meta[name="_csrf"]').content,
+        },
+        body: params.toString(),
+    });
+    if (res.ok) {
+        bootstrap.Modal.getInstance(document.getElementById('editModal')).hide();
+        location.reload();
+    } else {
+        alert('更新に失敗しました。');
+    }
+});
+
+// 削除
+async function deleteBook(btn) {
+    if (!confirm('この書籍を書庫から削除しますか？')) return;
+    const id = btn.dataset.ubId;
+    const res = await fetch(`/api/library/${id}`, {
+        method: 'DELETE',
+        headers: {
+            [document.querySelector('meta[name="_csrf_header"]').content]:
+            document.querySelector('meta[name="_csrf"]').content,
+        },
+    });
+    if (res.ok) {
+        location.reload();
+    } else {
+        alert('削除に失敗しました。');
+    }
+};
+</script>
+</body>
+</html>

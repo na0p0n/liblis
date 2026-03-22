@@ -2,6 +2,7 @@ package net.naoponju.liblis.infra.mapper
 
 import net.naoponju.liblis.common.config.UUIDTypeHandler
 import net.naoponju.liblis.domain.entity.UserEntity
+import org.apache.ibatis.annotations.Delete
 import org.apache.ibatis.annotations.Insert
 import org.apache.ibatis.annotations.Mapper
 import org.apache.ibatis.annotations.Result
@@ -111,6 +112,26 @@ interface UserMapper {
     @ResultMap("userResult")
     fun findByAppleCredential(appleCredential: String): UserEntity?
 
+    @Select(
+        """
+        SELECT
+            id
+            , display_name
+            , mail_address
+            , password_hash
+            , role
+            , google_auth
+            , github_auth
+            , apple_auth
+            , is_deleted
+        FROM users
+        WHERE id = #{userId, jdbcType=OTHER}
+        AND is_deleted = false
+    """,
+    )
+    @ResultMap("userResult")
+    fun findById(userId: UUID): UserEntity?
+
     @Insert(
         """
         INSERT INTO users (
@@ -148,4 +169,19 @@ interface UserMapper {
 
     @Update("UPDATE users SET apple_auth = NULL WHERE mail_address = #{mailAddress}")
     fun clearAppleCredential(mailAddress: String)
+
+    @Delete("DELETE FROM users WHERE id = #{userId};")
+    fun deleteUserById(userId: UUID)
+
+    @Update(
+        """
+            UPDATE users
+            SET password_hash = #{hashedPassword}, updated_at = NOW()
+            WHERE id = #{userId};
+        """,
+    )
+    fun updatePassword(
+        userId: UUID,
+        hashedPassword: String,
+    )
 }

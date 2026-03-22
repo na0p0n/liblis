@@ -27,7 +27,7 @@ class BookRestController(
                 if (it.second) {
                     logger.info("書籍情報Web取得API: DBからのデータ取得に成功 (取得データ: $foundBookData)")
                 } else {
-                    logger.info("書籍情報Web取得API: Googleからのデータ取得に成功 (取得データ: $foundBookData)")
+                    logger.info("書籍情報Web取得API: 楽天ブックスからのデータ取得に成功 (取得データ: $foundBookData)")
                 }
             }
 
@@ -50,6 +50,19 @@ class BookRestController(
             logger.error("書籍リスト取得API: エラー: ${e.message}")
             return ResponseEntity.notFound().build()
         }
+    }
+
+    @GetMapping("/search")
+    fun searchBooks(
+        @RequestParam q: String,
+        @RequestParam(required = false) type: String?,
+    ): ResponseEntity<List<BookEntity>> {
+        val result =
+            when (type) {
+                "author" -> bookService.findByAuthor(q)
+                else -> bookService.findByTitle(q)
+            }
+        return ResponseEntity.ok(result)
     }
 
     companion object {

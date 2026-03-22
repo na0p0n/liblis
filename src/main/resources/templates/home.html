@@ -1,17 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-<head>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
-    <meta charset="UTF-8">
-    <title>ダッシュボード - Liblis</title>
-    <style>
-        body { background-color: #f8f9fa; }
-        .book-card img { height: 180px; object-fit: cover; }
-        .stats-card { border-left: 4px solid #0d6efd; }
-    </style>
-</head>
+<head th:replace="~{common/head :: head('ホーム')}">
 <body>
 
 <div th:replace="~{common/navbar :: navbar}"></div>
@@ -19,7 +9,7 @@
 <div class="container py-4">
     <div class="row mb-4">
         <div class="col">
-            <h2 class="fw-bold">
+            <h2 class="fw-bold fs-4">
                 こんにちは、<span th:text="${#authentication.principal instanceof T(org.springframework.security.oauth2.core.user.OAuth2User) ?
                               #authentication.principal.attributes['displayName'] :
                               (#authentication.principal instanceof T(net.naoponju.liblis.common.security.CustomUserDetails) ?
@@ -30,33 +20,22 @@
     </div>
 
     <div class="row g-3 mb-5">
-        <div class="col-md-4">
+        <div class="col-6 col-md-4">
             <div class="card shadow-sm stats-card h-100 p-3" style="border-left-color: #00fa9a;">
                 <div class="small text-muted fw-bold">DBに登録されている書籍</div>
                 <div class="h3 mb-0"><span th:text="${allBookCount}">***</span> <small class="fs-6">冊</small></div>
             </div>
         </div>
-        <div class="col-md-4">
+        <div class="col-6 col-md-4">
             <div class="card shadow-sm stats-card h-100 p-3">
                 <div class="small text-muted fw-bold">所持中の書籍</div>
                 <div class="h3 mb-0"><span th:text="${haveBookCount}">***</span> <small class="fs-6">冊</small></div>
             </div>
         </div>
-        <div class="col-md-4">
+        <div class="col-6 col-md-4" hidden>
             <div class="card shadow-sm stats-card h-100 p-3" style="border-left-color: #ffc107;">
                 <div class="small text-muted fw-bold">気になる本</div>
                 <div class="h3 mb-0">12 <small class="fs-6">冊</small></div>
-            </div>
-        </div>
-    </div>
-    <div class="row g-3 mb-5">
-        <div class="col-md-6">
-            <div class="card shadow-sm h-100 p-3">
-                <label class="small text-muted fw-bold mb-2">ISBNでクイック登録</label>
-                <form class="d-flex gap-2">
-                    <input type="text" class="form-control form-control-sm" placeholder="ISBN (例: 9784...)">
-                    <button type="button" class="btn btn-primary btn-sm px-3">取得</button>
-                </form>
             </div>
         </div>
     </div>
@@ -68,19 +47,24 @@
                 <a th:href="@{/}" class="small text-decoration-none text-primary">すべて見る</a>
             </div>
             <div class="row row-cols-2 row-cols-md-4 g-3">
-                <div class="col" th:each="i : ${#numbers.sequence(1, 4)}">
+                <div class="col" th:each="book : ${recentAddedBooks}">
                     <div class="card h-100 shadow-sm book-card">
-                        <img src="https://via.placeholder.com/150x200?text=Book+Cover" class="card-img-top" alt="カバー画像">
+                        <img th:src="${book.thumbnailUrl != null ? book.thumbnailUrl : 'https://dummy.kobeya.com/?width=60&height=85&bg=cccccc&color=000000&text=No%20Image&_=1772546481754'}" class="book-thumb rounded shadow-sm">
                         <div class="card-body p-2">
-                            <div class="small fw-bold text-truncate">書籍のタイトルが入ります</div>
-                            <div class="text-muted" style="font-size: 0.75rem;">著者名</div>
+                            <div class="small fw-bold text-truncate" th:text="${book.title}">書籍のタイトルが入ります</div>
+                            <div class="text-muted" style="font-size: 0.75rem;">
+                                <span th:each="author, stat: ${book.author}"
+                                      th:text="${stat.last ? author : author + ','}">
+                                    リブリス太郎
+                                </span>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="col-lg-4 mt-4 mt-lg-0">
+        <div class="col-lg-4 mt-4 mt-lg-0" hidden>
             <h5 class="mb-3 fw-bold"><i class="bi bi-star me-2"></i>気になる本</h5>
             <div class="list-group shadow-sm">
                 <div class="list-group-item list-group-item-action d-flex align-items-center p-2">
@@ -95,7 +79,8 @@
         </div>
     </div>
 </div>
-
+<!-- 共通フッター -->
+<div th:replace="~{common/footer :: footer}"></div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

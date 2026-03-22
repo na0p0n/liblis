@@ -16,8 +16,11 @@ class SecurityConfig(
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
         http
             .authorizeHttpRequests { auth ->
-                auth.requestMatchers("/login", "/register", "/css/**", "/js/**").permitAll()
+                auth.requestMatchers("/login", "/register", "/css/**", "/js/**", "/privacy", "/terms").permitAll()
                     .anyRequest().authenticated()
+            }
+            .sessionManagement { session ->
+                session.sessionFixation().migrateSession()
             }
             .formLogin { form ->
                 form.loginPage("/login")

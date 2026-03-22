@@ -15,7 +15,7 @@ class UserRepositoryImpl(private val userMapper: UserMapper) : UserRepository {
 
     override fun findByGitHubCredential(githubId: String) = userMapper.findByGitHubCredential(githubId)
 
-    override fun findByAppleCredential(appleId: String) = userMapper.findByAppleCredential(appleId)
+    override fun findById(userId: UUID) = userMapper.findById(userId)
 
     override fun save(user: UserEntity) = userMapper.insert(user)
 
@@ -29,14 +29,18 @@ class UserRepositoryImpl(private val userMapper: UserMapper) : UserRepository {
         githubId: String,
     ) = userMapper.updateGithubCredential(id, githubId)
 
-    override fun addAppleCredentialById(
-        id: UUID,
-        appleId: String,
-    ) = userMapper.updateAppleCredential(id, appleId)
-
     override fun clearGoogleCredentialByMailAddress(email: String) = userMapper.clearGoogleCredential(email)
 
     override fun clearGithubCredentialByMailAddress(email: String) = userMapper.clearGithubCredential(email)
 
-    override fun clearAppleCredentialByMailAddress(email: String) = userMapper.clearAppleCredential(email)
+    override fun deleteUser(userId: UUID) {
+        userMapper.deleteUserById(userId)
+    }
+
+    override fun updatePassword(
+        userId: UUID,
+        hashedPassword: String,
+    ) {
+        userMapper.updatePassword(userId, hashedPassword)
+    }
 }

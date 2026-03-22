@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{common/head :: head('プライバシーポリシー')}">
+<head>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>プライバシーポリシー | liblis</title>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/bootstrap-icons.css}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body class="d-flex flex-column min-vh-100">
+
+<!-- 共通ヘッダー -->
+<div th:replace="~{common/navbar :: navbar}"></div>
+
+<!-- メインコンテンツ -->
+<main class="flex-grow-1 bg-light">
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-7">
+
+                <!-- タイトル -->
+                <div class="mb-4">
+                    <h1 class="h2 fw-bold">
+                        <i class="bi bi-shield-lock me-2 text-primary"></i>プライバシーポリシー
+                    </h1>
+                    <p class="text-muted">施行日：2026年3月28日</p>
+                    <hr>
+                </div>
+
+                <!-- 本文 -->
+                <div class="bg-white p-4 rounded shadow-sm">
+
+                    <p>「liblis」（以下「本サービス」）は、ユーザーの個人情報の取り扱いについて、以下のとおりプライバシーポリシー（以下「本ポリシー」）を定めます。</p>
+
+                    <!-- 第1条 -->
+                    <h2 class="h5 fw-bold mt-4">第1条　事業者</h2>
+                    <table class="table table-bordered mt-2">
+                        <tbody>
+                        <tr><th scope="row" class="w-25 bg-light">運営者</th><td>なお</td></tr>
+                        <tr><th scope="row" class="w-25 bg-light">連絡先</th><td>メールアドレス（下記 第9条 参照）</td></tr>
+                        </tbody>
+                    </table>
+
+                    <!-- 第2条 -->
+                    <h2 class="h5 fw-bold mt-4">第2条　取得する情報</h2>
+                    <p>本サービスでは、以下の情報を取得します。</p>
+                    <p class="fw-semibold mb-1">① ユーザー登録時</p>
+                    <ul>
+                        <li>メールアドレス</li>
+                        <li>パスワード（BCrypt によりハッシュ化して保存。平文での保存は行いません）</li>
+                    </ul>
+                    <p class="fw-semibold mb-1">② Google / GitHub OAuth 認証を利用した場合</p>
+                    <ul>
+                        <li>メールアドレス</li>
+                        <li>表示名（アカウント名）</li>
+                    </ul>
+                    <p class="fw-semibold mb-1">③ サービス利用中に自動取得される情報</p>
+                    <ul>
+                        <li>セッション情報（ログイン状態の維持目的）</li>
+                        <li>アクセスログ（IPアドレス・リクエスト内容・処理時間）</li>
+                    </ul>
+
+                    <!-- 第3条 -->
+                    <h2 class="h5 fw-bold mt-4">第3条　利用目的</h2>
+                    <p>取得した情報は、以下の目的にのみ利用します。</p>
+                    <ol>
+                        <li>ユーザー認証およびアカウント管理</li>
+                        <li>本サービスの提供・運営・改善</li>
+                        <li>お問い合わせへの対応</li>
+                        <li>不正利用の防止</li>
+                        <li>サービス利用状況の統計的な分析（個人を特定しない形での利用）</li>
+                    </ol>
+
+                    <!-- 第4条 -->
+                    <h2 class="h5 fw-bold mt-4">第4条　第三者への提供</h2>
+                    <p>取得した個人情報は、以下の場合を除き第三者に提供しません。</p>
+                    <p class="fw-semibold">サービス運営上、以下の外部サービスと連携しています：</p>
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-sm">
+                            <thead class="table-light">
+                            <tr>
+                                <th>サービス</th>
+                                <th>目的</th>
+                                <th>送信される情報</th>
+                                <th>プライバシーポリシー</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>Google（OAuth）</td>
+                                <td>ログイン認証</td>
+                                <td>なし（認証トークンのみ）</td>
+                                <td><a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google PP</a></td>
+                            </tr>
+                            <tr>
+                                <td>GitHub（OAuth）</td>
+                                <td>ログイン認証</td>
+                                <td>なし（認証トークンのみ）</td>
+                                <td><a href="https://docs.github.com/ja/site-policy/privacy-policies/github-general-privacy-statement" target="_blank" rel="noopener">GitHub PP</a></td>
+                            </tr>
+                            <tr>
+                                <td>楽天ウェブサービス</td>
+                                <td>書籍情報の取得</td>
+                                <td>個人情報は送信しません</td>
+                                <td><a href="https://privacy.rakuten.co.jp/" target="_blank" rel="noopener">楽天 PP</a></td>
+                            </tr>
+                            <tr>
+                                <td>Google Analytics</td>
+                                <td>アクセス解析</td>
+                                <td>Cookie・IPアドレス（匿名化）</td>
+                                <td><a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google PP</a></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p>また、法令に基づき開示を求められた場合は、これに応じることがあります。</p>
+
+                    <!-- 第5条 -->
+                    <h2 class="h5 fw-bold mt-4">第5条　情報の保管と管理</h2>
+                    <ul>
+                        <li>取得した個人情報は、退会処理が完了するまで保管します</li>
+                        <li>パスワードは BCrypt でハッシュ化して保存し、平文での保存・閲覧は一切行いません</li>
+                        <li>アクセスログはローテーション管理し、一定期間経過後に削除します</li>
+                        <li>情報への不正アクセス・漏洩・改ざんを防ぐための適切な安全管理措置を講じます</li>
+                    </ul>
+
+                    <!-- 第6条 -->
+                    <h2 class="h5 fw-bold mt-4">第6条　個人情報の開示・訂正・削除</h2>
+                    <p>ご自身の個人情報について、開示・訂正・利用停止・削除をご希望の場合は、第9条記載のお問い合わせフォームよりご連絡ください。本人確認のうえ、速やかに対応します。</p>
+
+                    <!-- 第7条 -->
+                    <h2 class="h5 fw-bold mt-4">第7条　Cookie およびアクセス解析ツールの利用</h2>
+                    <p>本サービスでは、以下の目的で Cookie を使用しています。</p>
+                    <p class="fw-semibold mb-1">① セッション管理 Cookie（必須）</p>
+                    <p>ログイン状態の維持を目的として使用します。このCookieを無効にすると、本サービスにログインできなくなります。</p>
+                    <p class="fw-semibold mb-1">② Google Analytics（アクセス解析）</p>
+                    <p>サービス改善のため、Google Analytics を使用してアクセス情報を収集しています。Google Analytics は Cookie を使用して、個人を特定しない形でアクセス情報（ページビュー・滞在時間・使用デバイスなど）を収集します。</p>
+                    <ul>
+                        <li>収集データは Google のプライバシーポリシーに基づき管理されます</li>
+                        <li>Google Analytics によるデータ収集を無効にしたい場合は、<a href="https://tools.google.com/dlpage/gaoptout" target="_blank" rel="noopener">Google アナリティクス オプトアウト アドオン</a>をご利用ください</li>
+                    </ul>
+
+                    <!-- 第8条 -->
+                    <h2 class="h5 fw-bold mt-4">第8条　プライバシーポリシーの変更</h2>
+                    <p>本ポリシーは、必要に応じて変更することがあります。重要な変更を行う場合は、本サービス上でお知らせします。変更後のポリシーは本ページに掲載した時点で効力を生じます。</p>
+
+                    <!-- 第9条 -->
+                    <h2 class="h5 fw-bold mt-4">第9条　お問い合わせ</h2>
+                    <p>本ポリシーに関するお問い合わせは、以下のメールアドレスよりご連絡ください。</p>
+                    <p><strong>お問い合わせ先：</strong>
+                        <a href="mailto:support@naoponju.net">support@naoponju.net</a>
+                    </p>
+
+                </div><!-- /.bg-white -->
+
+                <!-- 戻るボタン -->
+                <div class="mt-4 text-center">
+                    <a th:href="@{/}" class="btn btn-outline-secondary">
+                        <i class="bi bi-house-door me-1"></i>トップページへ戻る
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+<!-- 共通フッター -->
+<div th:replace="~{common/footer :: footer}"></div>
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

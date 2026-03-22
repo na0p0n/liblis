@@ -1,35 +1,27 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
-    <meta charset="UTF-8">
-    <title>蔵書一覧 - Liblis</title>
-    <style>
-        body { background-color: #f8f9fa; }
-        .book-thumb { width: 60px; height: 85px; object-fit: cover; }
-        .filter-section { background-color: white; border-bottom: 1px solid #dee2e6; }
-    </style>
-</head>
+<head th:replace="~{common/head :: head('書籍一覧')}">
 <body>
 
 <div th:replace="~{common/navbar :: navbar}"></div>
 
 <div class="filter-section py-3 mb-4 shadow-sm">
     <div class="container">
-        <form class="row g-2 align-items-center" th:action="@{/books}" method="get" aria-disabled="true">
+        <form class="row g-2" th:action="@{/books/list}" method="get">
             <div class="col-md-4">
-                <input type="text" class="form-control" placeholder="タイトル、著者で検索..." disabled>
+                <input type="text" class="form-control" name="q"
+                       th:value="${q}" placeholder="タイトル、著者で検索...">
             </div>
             <div class="col-md-2">
-                <select class="form-select" disabled>
-                    <option selected>すべてのカテゴリ</option>
-                    <option>技術書</option>
-                    <option>小説</option>
+                <select class="form-select" name="type">
+                    <option value="title"  th:selected="${type == 'title' or type == null}">タイトル</option>
+                    <option value="author" th:selected="${type == 'author'}">著者</option>
                 </select>
             </div>
             <div class="col-md-2">
-                <button type="submit" class="btn btn-primary w-100" disabled><i class="bi bi-search me-2"></i>検索</button>
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="bi bi-search me-2"></i>検索
+                </button>
             </div>
         </form>
     </div>
@@ -45,25 +37,44 @@
         </li>
     </ul>
 
-    <div class="tab-content" id="bookTabContent">
+    <div class="tab-content mb-4" id="bookTabContent">
         <div class="tab-pane fade show active" id="mybooks" role="tabpanel">
             <div class="card shadow-sm">
+                <div class="d-flex justify-content-end align-items-center px-3 pt-3 pb-2">
+                    <span class="me-2 small text-muted fw-bold">表示件数</span>
+                    <div class="btn-group btn-group-sm" role="group" aria-label="Basic radio toggle button group">
+                        <input type="radio" class="btn-check" name="btnradio" id="pageSize20" autocomplete="off"
+                               th:checked="${pageSize == 20}" onchange="changePageSize(20)" checked>
+                        <label class="btn btn-outline-primary" for="pageSize20">20</label>
+
+                        <input type="radio" class="btn-check" name="btnradio" id="pageSize50" autocomplete="off"
+                               th:checked="${pageSize == 50}" onchange="changePageSize(50)">
+                        <label class="btn btn-outline-primary" for="pageSize50">50</label>
+
+                        <input type="radio" class="btn-check" name="btnradio" id="pageSize100" autocomplete="off"
+                               th:checked="${pageSize == 100}" onchange="changePageSize(100)">
+                        <label class="btn btn-outline-primary" for="pageSize100">100</label>
+                    </div>
+                </div>
                 <div class="table-responsive">
                     <table class="table table-hover align-middle mb-0">
                         <thead class="table-light">
                         <tr>
                             <th>カバー</th>
                             <th>タイトル / 著者</th>
-                            <th>カテゴリ</th>
-                            <th>出版社</th>
-                            <th>ページ数</th>
-                            <th>ISBN</th>
-                            <th>登録日</th>
+                            <th class="d-none d-lg-table-cell">カテゴリ</th>
+                            <th class="d-none d-lg-table-cell">出版社</th>
+                            <th class="d-none d-lg-table-cell">ページ数</th>
+                            <th class="d-none d-lg-table-cell">ISBN</th>
+                            <th class="d-none d-lg-table-cell">出版日</th>
                             <th>操作</th>
                         </tr>
                         </thead>
                         <tbody>
-                        <tr th:each="book : ${books}">
+                        <tr th:each="book : ${books}"
+                            class="book-row"
+                            th:attr="data-href=@{/books/{id}(id=${book.id}, from='list')}"
+                            style="cursor: pointer;">
                             <td><img th:src="${book.thumbnailUrl != null ? book.thumbnailUrl : 'https://dummy.kobeya.com/?width=60&height=85&bg=cccccc&color=000000&text=No%20Image&_=1772546481754'}" class="book-thumb rounded shadow-sm"></td>
                             <td>
                                 <div class="fw-bold" th:text="${book.title}">実践Kotlin入門</div>
@@ -74,21 +85,88 @@
                                     </span>
                                 </div>
                             </td>
-                            <td><span class="badge bg-info text-dark">技術書</span></td>
-                            <td><span class="small text-muted" th:text="${book.publisher}">リブリス出版</span></td>
-                            <td><span class="small text-muted" th:text="${book.pages}">100</span></td>
-                            <td class="small text-muted" th:text="${book.isbn13 != null ? book.isbn13 : book.isbn10}">9784000000000</td>
-                            <td class="small text-muted"
+                            <td class="d-none d-lg-table-cell">
+                                <span th:if="${book.category != null and genreNameMap[book.category.split('/')[0]] != null}"
+                                      class="badge bg-info text-dark"
+                                      th:text="${genreNameMap[book.category.split('/')[0]]}">ジャンル名</span>
+                                <span th:if="${book.category == null or genreNameMap[book.category.split('/')[0]] == null}"
+                                      class="text-muted small">—</span>
+                            </td>
+                            <td class="d-none d-lg-table-cell"><span class="small text-muted" th:text="${book.publisher}">リブリス出版</span></td>
+                            <td class="d-none d-lg-table-cell"><span class="small text-muted" th:text="${book.pages}">100</span></td>
+                            <td class="d-none d-lg-table-cell small text-muted" th:text="${book.isbn13 != null ? book.isbn13 : book.isbn10}">9784000000000</td>
+                            <td class="d-none d-lg-table-cell small text-muted"
                                 th:text="${book.publishDate?.toString() ?: ''}">2026/01/19</td>
                             <td>
                                 <div class="btn-group">
-                                    <button class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil"></i></button>
-                                    <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                                    <!-- 所持済みなら disabled バッジ、未所持なら登録ボタン -->
+                                    <span th:if="${ownedBookIds.contains(book.id)}"
+                                          class="btn btn-sm btn-success disabled">
+                                        <i class="bi bi-check-lg me-1"></i>登録済み
+                                    </span>
+                                    <button th:unless="${ownedBookIds.contains(book.id)}"
+                                            type="button" class="btn btn-outline-primary btn-sm"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#bookRegistrationModal"
+                                            th:data-bs-book="${@jsonHelper.toJson(book)}">
+                                        書庫に登録
+                                    </button>
                                 </div>
                             </td>
                         </tr>
                         </tbody>
                     </table>
+                    <!-- ページャー -->
+                    <nav aria-label="書籍一覧ページネーション" th:if="${totalPages > 1}">
+                        <ul class="pagination justify-content-center mt-4">
+
+                            <!-- 前ページ -->
+                            <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled'">
+                                <a class="page-link"
+                                   th:href="@{/books/list(page=${currentPage - 1}, size=${pageSize})}"
+                                   aria-label="前へ">&laquo;</a>
+                            </li>
+
+                            <!-- ページ番号（前後2ページ + 先頭/末尾） -->
+                            <th:block th:each="p : ${#numbers.sequence(1, totalPages)}">
+                                <!-- 省略記号（先頭寄り） -->
+                                <li class="page-item disabled"
+                                    th:if="${p == 2 && currentPage > 4}">
+                                    <span class="page-link">…</span>
+                                </li>
+                                <!-- ページ番号表示条件: 先頭/末尾/現在±2 -->
+                                <li class="page-item"
+                                    th:if="${p == 1 || p == totalPages || (p >= currentPage - 2 && p <= currentPage + 2)}"
+                                    th:classappend="${p == currentPage} ? 'active'">
+                                    <a class="page-link"
+                                       th:href="@{/books/list(page=${p}, size=${pageSize})}"
+                                       th:text="${p}">1</a>
+                                </li>
+                                <!-- 省略記号（末尾寄り） -->
+                                <li class="page-item disabled"
+                                    th:if="${p == totalPages - 1 && currentPage < totalPages - 3}">
+                                    <span class="page-link">…</span>
+                                </li>
+                            </th:block>
+
+                            <!-- 次ページ -->
+                            <li class="page-item" th:classappend="${currentPage == totalPages} ? 'disabled'">
+                                <a class="page-link"
+                                   th:href="@{/books/list(page=${currentPage + 1}, size=${pageSize})}"
+                                   aria-label="次へ">&raquo;</a>
+                            </li>
+                        </ul>
+                    </nav>
+
+                    <!-- 件数表示 -->
+                    <p class="text-center text-muted small" th:if="${totalCount > 0}">
+                        全 <span th:text="${totalCount}">0</span> 件中
+                        <span th:text="${(currentPage - 1) * pageSize + 1}">1</span> 〜
+                        <span th:text="${T(java.lang.Math).min(currentPage * pageSize, totalCount)}">20</span> 件を表示
+                    </p>
+                    <p class="text-center text-muted small" th:if="${totalCount <= 0}">
+                        書籍が登録されていません。
+                    </p>
                 </div>
             </div>
         </div>
@@ -102,5 +180,154 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<div class="modal fade" id="bookRegistrationModal" tabindex="-1" aria-labelledby="modalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable modal-fullscreen-sm-down">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalTitle">新規書籍登録</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <form id="registrationForm">
+                <input type="hidden" id="bookId" name="bookId">
+                <input type="hidden" name="status" value="OWNED">
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label for="bookTitle" class="form-label">書籍タイトル <span class="badge bg-danger">必須</span></label>
+                            <input type="text" class="form-control" id="bookTitle" placeholder="例：プログラミングの基礎" disabled>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="author" class="form-label">著者名</label>
+                            <input type="text" class="form-control" id="author" placeholder="例：山田 太郎" disabled>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="isbn" class="form-label">ISBN</label>
+                            <input type="text" class="form-control" id="isbn" placeholder="9784..." disabled>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="publisher" class="form-label">出版社</label>
+                            <input type="text" class="form-control" id="publisher" placeholder="例：リブリス出版" disabled>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="publishDate" class="form-label">出版日</label>
+                            <input type="date" class="form-control" id="publishDate" disabled>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="category" class="form-label">カテゴリ</label>
+                            <select class="form-select" id="category" disabled>
+                                <option selected>選択してください...</option>
+                                <option value="1">技術書</option>
+                                <option value="2">ビジネス</option>
+                                <option value="3">小説</option>
+                                <option value="4">その他</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6"></div>
+
+                        <div class="col-md-6">
+                            <label for="purchaseDate" class="form-label">購入日</label>
+                            <input type="date" class="form-control" id="purchaseDate" required>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="purchasePrice" class="form-label small fw-bold">購入価格</label>
+                            <div class="input-group">
+                                <span class="input-group-text">¥</span>
+                                <input type="number" class="form-control" id="purchasePrice" min="0">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">キャンセル</button>
+                    <button type="submit" class="btn btn-primary">登録する</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- 共通フッター -->
+<div th:replace="~{common/footer :: footer}"></div>
+<script>
+    function changePageSize(size) {
+        const url = new URL(window.location.href);
+        url.searchParams.set('size', size);
+        url.searchParams.set('page', 1);
+        window.location.href = url.toString();
+    };
+
+    document.querySelectorAll('.book-row').forEach(row => {
+      row.addEventListener('click', (e) => {
+      if (e.target.closest('[data-bs-toggle="modal"]')) return;
+        window.location.href = row.dataset.href;
+      });
+    });
+
+    const bookModal = document.getElementById('bookRegistrationModal');
+    bookModal.addEventListener('show.bs.modal', function (event) {
+        const button = event.relatedTarget;
+
+        const bookJson = button.getAttribute('data-bs-book');
+        const book = JSON.parse(bookJson);
+        const modal = this;
+
+        modal.querySelector('#bookId').value = book.id;
+        modal.querySelector('#bookTitle').value = book.title;
+        modal.querySelector('#author').value = book.author;
+        modal.querySelector('#isbn').value = book.isbn13;
+        modal.querySelector('#publishDate').value = book.publishDate;
+        modal.querySelector('#publisher').value = book.publisher;
+    });
+    document.getElementById('registrationForm').addEventListener('submit', async function (e) {
+        e.preventDefault();
+        const purchaseDateVal = document.getElementById('purchaseDate').value;
+        if (!purchaseDateVal) {
+            alert('購入日を入力してください');
+            return;
+        }
+        const [year, month, day] = purchaseDateVal.split('-');
+
+        const params = new URLSearchParams({
+            bookId:        document.getElementById('bookId').value,
+            status:        'OWNED',
+            purchaseYear:  year,
+            purchaseMonth: month,
+            purchaseDay:   day,
+            purchasePrice: document.getElementById('purchasePrice').value || '',
+        });
+
+        try {
+            const res = await fetch('/api/library/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    [document.querySelector('meta[name="_csrf_header"]').content]:
+                        document.querySelector('meta[name="_csrf"]').content,
+                },
+                body: params.toString(),
+            });
+            if (res.ok) {
+                bootstrap.Modal.getInstance(
+                    document.getElementById('bookRegistrationModal')
+                ).hide();
+                alert('書庫に登録しました！');
+                location.reload(); // 書籍一覧を更新
+            } else {
+                alert('登録に失敗しました。入力内容を確認してください。');
+            }
+        } catch (err) {
+            console.error(err);
+            alert('エラーが発生しました');
+        }
+    });
+</script>
 </body>
 </html>

@@ -5,10 +5,12 @@ import io.mockk.mockk
 import io.mockk.mockkStatic
 import io.mockk.spyk
 import io.mockk.unmockkStatic
+import io.mockk.verify
 import net.naoponju.liblis.application.dto.GoogleBookDataDto
 import net.naoponju.liblis.common.exception.BookNotFoundException
 import net.naoponju.liblis.domain.entity.BookEntity
 import net.naoponju.liblis.infra.api.GoogleBooksApiClient
+import net.naoponju.liblis.infra.api.RakutenBooksApiClient
 import net.naoponju.liblis.infra.mapper.BookMapper
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions
@@ -17,6 +19,7 @@ import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
 import java.util.UUID
 
+@Suppress("MaxLineLength")
 class BookRepositoryImplTest {
     @AfterEach
     fun tearDown() {
@@ -26,6 +29,7 @@ class BookRepositoryImplTest {
 
     private val bookMapper: BookMapper = mockk()
     private val googleBooksApiClient: GoogleBooksApiClient = mockk()
+    private val rakutenBooksApiClient: RakutenBooksApiClient = mockk()
 
     private val bookRepositoryImpl =
         spyk(
@@ -33,6 +37,7 @@ class BookRepositoryImplTest {
                 BookRepositoryImpl(
                     bookMapper = bookMapper,
                     googleBooksApiClient = googleBooksApiClient,
+                    rakutenBooksApiClient = rakutenBooksApiClient,
                 ),
         )
 
@@ -62,6 +67,29 @@ class BookRepositoryImplTest {
 
         val actual = bookRepositoryImpl.findBookByISBN(isbn = isbn)
         Assertions.assertEquals(expect, actual)
+    }
+
+    @Test
+    @DisplayName("BookIDリストから書籍一覧取得_正常系_書籍あり")
+    fun findBookListByBookIdListSuccess01() {
+        val bookIds = listOf(UUID.fromString("00000000-0000-0000-0000-000000000001"))
+        val expect = listOf(defaultBookEntity)
+
+        every { bookMapper.fetchBookList(bookIds) } returns listOf(defaultBookEntity)
+
+        val actual = bookRepositoryImpl.findBookListByBookIdList(bookIds)
+        Assertions.assertEquals(expect, actual)
+    }
+
+    @Test
+    @DisplayName("BookIDリストから書籍一覧取得_正常系_空リスト")
+    fun findBookListByBookIdListSuccess02() {
+        val bookIds = emptyList<UUID>()
+
+        every { bookMapper.fetchBookList(bookIds) } returns emptyList()
+
+        val actual = bookRepositoryImpl.findBookListByBookIdList(bookIds)
+        Assertions.assertEquals(emptyList<BookEntity>(), actual)
     }
 
     @Test
@@ -286,8 +314,265 @@ class BookRepositoryImplTest {
         Assertions.assertEquals(errorMessage, actual.message)
     }
 
+    @Test
+    @DisplayName("ユーザー所持書籍IDリスト検索_正常系")
+    fun fetchUserHavingBookIdsInBookIdListSuccess01() {
+        val userId = DEFAULT_USER_ID
+        val bookIds = listOf(UUID.fromString("00000000-0000-0000-0000-000000000001"))
+        val expect = listOf(defaultBookEntity)
+
+        every {
+            bookMapper.fetchUserHavingBookIdsInBookIdList(userId, bookIds)
+        } returns listOf(defaultBookEntity)
+
+        val actual = bookRepositoryImpl.fetchUserHavingBookIdsInBookIdList(userId, bookIds)
+        Assertions.assertEquals(expect, actual)
+    }
+
+    @Test
+    @DisplayName("ユーザー所持書籍IDリスト検索_正常系_nullを返す")
+    fun fetchUserHavingBookIdsInBookIdListSuccess02() {
+        val userId = DEFAULT_USER_ID
+        val bookIds = emptyList<UUID>()
+
+        every {
+            bookMapper.fetchUserHavingBookIdsInBookIdList(userId, bookIds)
+        } returns null
+
+        val actual = bookRepositoryImpl.fetchUserHavingBookIdsInBookIdList(userId, bookIds)
+        Assertions.assertNull(actual)
+    }
+
+    @Test
+    @DisplayName("ユーザー所持書籍ページング取得_正常系")
+    fun fetchUserHavingBooksPagedSuccess01() {
+        val userId = DEFAULT_USER_ID
+        val offset = 0
+        val limit = 20
+        val expect = listOf(defaultBookEntity)
+
+        every {
+            bookMapper.fetchUserBooksPaged(userId, offset, limit)
+        } returns listOf(defaultBookEntity)
+
+        val actual = bookRepositoryImpl.fetchUserHavingBooksPaged(userId, offset, limit)
+        Assertions.assertEquals(expect, actual)
+    }
+
+    @Test
+    @DisplayName("ユーザー所持書籍ページング取得_正常系_mapperがnullを返す場合は空リスト")
+    fun fetchUserHavingBooksPagedSuccess02() {
+        val userId = DEFAULT_USER_ID
+        val offset = 0
+        val limit = 20
+
+        every {
+            bookMapper.fetchUserBooksPaged(userId, offset, limit)
+        } returns null
+
+        val actual = bookRepositoryImpl.fetchUserHavingBooksPaged(userId, offset, limit)
+        Assertions.assertEquals(emptyList<BookEntity>(), actual)
+    }
+
+    @Test
+    @DisplayName("書籍一覧ページング取得_正常系")
+    fun findAllPagedSuccess01() {
+        val offset = 0
+        val limit = 20
+        val expect = listOf(defaultBookEntity)
+
+        every { bookMapper.findAllPaged(offset, limit) } returns listOf(defaultBookEntity)
+
+        val actual = bookRepositoryImpl.findAllPaged(offset, limit)
+        Assertions.assertEquals(expect, actual)
+    }
+
+    @Test
+    @DisplayName("書籍一覧ページング取得_正常系_空リスト")
+    fun findAllPagedSuccess02() {
+        val offset = 20
+        val limit = 20
+
+        every { bookMapper.findAllPaged(offset, limit) } returns emptyList()
+
+        val actual = bookRepositoryImpl.findAllPaged(offset, limit)
+        Assertions.assertEquals(emptyList<BookEntity>(), actual)
+    }
+
+    @Test
+    @DisplayName("全書籍件数取得_正常系")
+    fun countAllBooksSuccess01() {
+        every { bookMapper.countAllBooks() } returns 100
+
+        val actual = bookRepositoryImpl.countAllBooks()
+        Assertions.assertEquals(100, actual)
+    }
+
+    @Test
+    @DisplayName("全書籍件数取得_正常系_0件")
+    fun countAllBooksSuccess02() {
+        every { bookMapper.countAllBooks() } returns 0
+
+        val actual = bookRepositoryImpl.countAllBooks()
+        Assertions.assertEquals(0, actual)
+    }
+
+    @Test
+    @DisplayName("書籍ID検索_正常系_書籍が見つかる")
+    fun findByIdSuccess01() {
+        val bookId = UUID.fromString("00000000-0000-0000-0000-000000000001")
+        val expect = defaultBookEntity.copy(id = bookId)
+
+        every { bookMapper.findById(bookId) } returns expect
+
+        val actual = bookRepositoryImpl.findById(bookId)
+        Assertions.assertEquals(expect, actual)
+    }
+
+    @Test
+    @DisplayName("書籍ID検索_正常系_書籍が見つからない場合nullを返す")
+    fun findByIdSuccess02() {
+        val bookId = UUID.fromString("00000000-0000-0000-0000-000000000001")
+
+        every { bookMapper.findById(bookId) } returns null
+
+        val actual = bookRepositoryImpl.findById(bookId)
+        Assertions.assertNull(actual)
+    }
+
+    @Test
+    @DisplayName("書籍ID検索_境界値_異なるIDには異なる書籍が返される")
+    fun findByIdReturnsDifferentBooksForDifferentIds() {
+        val bookId1 = UUID.fromString("00000000-0000-0000-0000-000000000001")
+        val bookId2 = UUID.fromString("00000000-0000-0000-0000-000000000002")
+        val book1 = defaultBookEntity.copy(id = bookId1, title = "Title 1")
+        val book2 = defaultBookEntity.copy(id = bookId2, title = "Title 2")
+
+        every { bookMapper.findById(bookId1) } returns book1
+        every { bookMapper.findById(bookId2) } returns book2
+
+        Assertions.assertEquals(book1, bookRepositoryImpl.findById(bookId1))
+        Assertions.assertEquals(book2, bookRepositoryImpl.findById(bookId2))
+    }
+
+    @Test
+    @DisplayName("楽天から書籍データ検索_正常系_書籍が見つかる")
+    fun findBookByISBNFromRakutenSuccess01() {
+        val isbn = DEFAULT_ISBN
+        val expect = defaultBookEntity.copy(isSearchedRakuten = true)
+
+        every { rakutenBooksApiClient.findByIsbn(isbn) } returns expect
+
+        val actual = bookRepositoryImpl.findBookByISBNFromRakuten(isbn)
+        Assertions.assertEquals(expect, actual)
+    }
+
+    @Test
+    @DisplayName("楽天から書籍データ検索_正常系_書籍が見つからない場合nullを返す")
+    fun findBookByISBNFromRakutenSuccess02() {
+        val isbn = DEFAULT_ISBN
+
+        every { rakutenBooksApiClient.findByIsbn(isbn) } returns null
+
+        val actual = bookRepositoryImpl.findBookByISBNFromRakuten(isbn)
+        Assertions.assertNull(actual)
+    }
+
+    @Test
+    @DisplayName("楽天から書籍データ検索_正常系_rakutenBooksApiClientに正確なISBNが渡される")
+    fun findBookByISBNFromRakutenPassesCorrectIsbn() {
+        val isbn = "9784000000001"
+        val expect = defaultBookEntity.copy(isbn13 = isbn, isSearchedRakuten = true)
+
+        every { rakutenBooksApiClient.findByIsbn(isbn) } returns expect
+
+        val actual = bookRepositoryImpl.findBookByISBNFromRakuten(isbn)
+        Assertions.assertEquals(expect, actual)
+    }
+
+    @Test
+    @DisplayName("ユーザー書庫タイトル検索_正常系_書籍あり")
+    fun findUserBooksByTitleSuccess01() {
+        val userId = DEFAULT_USER_ID
+        val title = "テスト本"
+        val expect = listOf(defaultBookEntity.copy(title = title))
+
+        every { bookMapper.findUserBooksByTitle(userId, title) } returns listOf(defaultBookEntity.copy(title = title))
+
+        val actual = bookRepositoryImpl.findUserBooksByTitle(userId, title)
+        Assertions.assertEquals(expect, actual)
+    }
+
+    @Test
+    @DisplayName("ユーザー書庫タイトル検索_正常系_検索結果なし")
+    fun findUserBooksByTitleSuccess02() {
+        val userId = DEFAULT_USER_ID
+        val title = "存在しない本"
+
+        every { bookMapper.findUserBooksByTitle(userId, title) } returns emptyList()
+
+        val actual = bookRepositoryImpl.findUserBooksByTitle(userId, title)
+        Assertions.assertEquals(emptyList<BookEntity>(), actual)
+    }
+
+    @Test
+    @DisplayName("ユーザー書庫タイトル検索_正常系_mapperに正確な引数が渡される")
+    fun findUserBooksByTitlePassesCorrectArgs() {
+        val userId = DEFAULT_USER_ID
+        val title = "テスト"
+        val otherId = UUID.fromString("00000000-0000-0000-0000-000000000001")
+
+        every { bookMapper.findUserBooksByTitle(userId, title) } returns emptyList()
+
+        bookRepositoryImpl.findUserBooksByTitle(userId, title)
+
+        verify(exactly = 1) { bookMapper.findUserBooksByTitle(userId, title) }
+        verify(exactly = 0) { bookMapper.findUserBooksByTitle(otherId, title) }
+    }
+
+    @Test
+    @DisplayName("ユーザー書庫著者検索_正常系_書籍あり")
+    fun findUserBooksByAuthorSuccess01() {
+        val userId = DEFAULT_USER_ID
+        val author = "テスト著者"
+        val expect = listOf(defaultBookEntity.copy(author = listOf(author)))
+
+        every { bookMapper.findUserBooksByAuthor(userId, author) } returns listOf(defaultBookEntity.copy(author = listOf(author)))
+
+        val actual = bookRepositoryImpl.findUserBooksByAuthor(userId, author)
+        Assertions.assertEquals(expect, actual)
+    }
+
+    @Test
+    @DisplayName("ユーザー書庫著者検索_正常系_検索結果なし")
+    fun findUserBooksByAuthorSuccess02() {
+        val userId = DEFAULT_USER_ID
+        val author = "存在しない著者"
+
+        every { bookMapper.findUserBooksByAuthor(userId, author) } returns emptyList()
+
+        val actual = bookRepositoryImpl.findUserBooksByAuthor(userId, author)
+        Assertions.assertEquals(emptyList<BookEntity>(), actual)
+    }
+
+    @Test
+    @DisplayName("ユーザー書庫著者検索_正常系_mapperに正確な引数が渡される")
+    fun findUserBooksByAuthorPassesCorrectArgs() {
+        val userId = DEFAULT_USER_ID
+        val author = "テスト著者"
+        val otherId = UUID.fromString("00000000-0000-0000-0000-000000000001")
+
+        every { bookMapper.findUserBooksByAuthor(userId, author) } returns emptyList()
+
+        bookRepositoryImpl.findUserBooksByAuthor(userId, author)
+
+        verify(exactly = 1) { bookMapper.findUserBooksByAuthor(userId, author) }
+        verify(exactly = 0) { bookMapper.findUserBooksByAuthor(otherId, author) }
+    }
+
     companion object {
         private const val DEFAULT_ISBN = "1111222233334"
+        private val DEFAULT_USER_ID = UUID.fromString("00000000-0000-0000-0000-000000000099")
         private val defaultBookEntity =
             BookEntity(
                 id = null,

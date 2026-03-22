@@ -72,3 +72,9 @@ logging:
 google:
   api:
     key: dummy
+rakuten:
+  api:
+    application-id: dummy
+    affiliate-id: dummy
+    key: dummy
+    site-url: dummy
