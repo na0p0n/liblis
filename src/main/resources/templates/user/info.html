@@ -1,22 +1,10 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>アカウント設定 - Liblis</title>
-    <style>
-        body { background-color: #f8f9fa; }
-        .settings-card { max-width: 600px; margin: 2rem auto; }
-        @media (min-width: 576px) {
-            .account-action-btn { width: auto !important; }
-        }
-    </style>
-</head>
+<head th:replace="~{common/head :: head('書籍一覧')}">
 <body class="bg-light">
 <div th:replace="~{common/navbar :: navbar}"></div>
 <div class="container">
-    <div class="card shadow-sm settings-card">
+    <div class="card shadow-sm settings-card mb-4">
         <div class="card-header bg-white py-3">
             <h5 class="mb-0 fw-bold">アカウント設定</h5>
         </div>
