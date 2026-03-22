@@ -19,7 +19,7 @@ import java.util.UUID
 import kotlin.math.ceil
 
 @Controller
-@Suppress("FunctionOnlyReturningConstant")
+@Suppress("FunctionOnlyReturningConstant", "LongParameterList", "CyclomaticComplexMethod")
 @RequestMapping("/books")
 class BookController(
     private val bookService: BookService,

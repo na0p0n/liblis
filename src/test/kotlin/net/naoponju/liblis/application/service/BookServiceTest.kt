@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.util.UUID
 
+@Suppress("MaxLineLength")
 class BookServiceTest {
     private val bookRepository: BookRepository = mockk(relaxed = true)
 

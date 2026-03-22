@@ -60,14 +60,15 @@ class BookControllerTest {
             )
         } returns emptyList()
 
-        val actual = bookController.showBookList(
-            q = null,
-            type = null,
-            page = 1,
-            size = 20,
-            userDetails = userDetails,
-            model = model,
-        )
+        val actual =
+            bookController.showBookList(
+                q = null,
+                type = null,
+                page = 1,
+                size = 20,
+                userDetails = userDetails,
+                model = model,
+            )
         Assertions.assertEquals("books/list", actual)
     }
 
@@ -91,28 +92,30 @@ class BookControllerTest {
             )
         } returns emptyList()
 
-        val actual = bookController.showBookList(
-            q = null,
-            type = null,
-            page = 1,
-            size = 20,
-            userDetails = oauth2User,
-            model = model,
-        )
+        val actual =
+            bookController.showBookList(
+                q = null,
+                type = null,
+                page = 1,
+                size = 20,
+                userDetails = oauth2User,
+                model = model,
+            )
         Assertions.assertEquals("books/list", actual)
     }
 
     @Test
     @DisplayName("書籍一覧表示_異常系_未認証はログインにリダイレクト")
     fun showBookListFailure01() {
-        val actual = bookController.showBookList(
-            q = null,
-            type = null,
-            page = 1,
-            size = 20,
-            userDetails = null,
-            model = model,
-        )
+        val actual =
+            bookController.showBookList(
+                q = null,
+                type = null,
+                page = 1,
+                size = 20,
+                userDetails = null,
+                model = model,
+            )
         Assertions.assertEquals("redirect:/login", actual)
     }
 
@@ -128,14 +131,15 @@ class BookControllerTest {
         every { bookService.getAllBookCount() } returns 20
 
         // page=0 is invalid
-        val actual = bookController.showBookList(
-            q = null,
-            type = null,
-            page = 0,
-            size = 20,
-            userDetails = userDetails,
-            model = model,
-        )
+        val actual =
+            bookController.showBookList(
+                q = null,
+                type = null,
+                page = 0,
+                size = 20,
+                userDetails = userDetails,
+                model = model,
+            )
         Assertions.assertEquals("redirect:/books/list?page=1", actual)
     }
 
@@ -151,14 +155,15 @@ class BookControllerTest {
         // 20 books with pageSize=20 → 1 page total, page=2 is out of range
         every { bookService.getAllBookCount() } returns 20
 
-        val actual = bookController.showBookList(
-            q = null,
-            type = null,
-            page = 2,
-            size = 20,
-            userDetails = userDetails,
-            model = model,
-        )
+        val actual =
+            bookController.showBookList(
+                q = null,
+                type = null,
+                page = 2,
+                size = 20,
+                userDetails = userDetails,
+                model = model,
+            )
         Assertions.assertEquals("redirect:/books/list?page=1", actual)
     }
 
@@ -182,14 +187,15 @@ class BookControllerTest {
             )
         } returns emptyList()
 
-        val actual = bookController.showBookList(
-            q = null,
-            type = null,
-            page = 1,
-            size = 15,
-            userDetails = userDetails,
-            model = model,
-        )
+        val actual =
+            bookController.showBookList(
+                q = null,
+                type = null,
+                page = 1,
+                size = 15,
+                userDetails = userDetails,
+                model = model,
+            )
         Assertions.assertEquals("books/list", actual)
     }
 
@@ -212,14 +218,15 @@ class BookControllerTest {
             )
         } returns emptyList()
 
-        val actual = bookController.showBookList(
-            q = "テスト",
-            type = "title",
-            page = 1,
-            size = 20,
-            userDetails = userDetails,
-            model = model,
-        )
+        val actual =
+            bookController.showBookList(
+                q = "テスト",
+                type = "title",
+                page = 1,
+                size = 20,
+                userDetails = userDetails,
+                model = model,
+            )
         Assertions.assertEquals("books/list", actual)
     }
 
@@ -242,14 +249,15 @@ class BookControllerTest {
             )
         } returns emptyList()
 
-        val actual = bookController.showBookList(
-            q = "著者名",
-            type = "author",
-            page = 1,
-            size = 20,
-            userDetails = userDetails,
-            model = model,
-        )
+        val actual =
+            bookController.showBookList(
+                q = "著者名",
+                type = "author",
+                page = 1,
+                size = 20,
+                userDetails = userDetails,
+                model = model,
+            )
         Assertions.assertEquals("books/list", actual)
     }
 
@@ -390,14 +398,15 @@ class BookControllerTest {
         every { bookService.getBookListPaged(0, 20) } returns listOf(defaultBookEntity)
         every { userService.findByEmail(DEFAULT_EMAIL) } returns defaultUserDto.copy(id = null)
 
-        val actual = bookController.showBookList(
-            q = null,
-            type = null,
-            page = 1,
-            size = 20,
-            userDetails = userDetails,
-            model = model,
-        )
+        val actual =
+            bookController.showBookList(
+                q = null,
+                type = null,
+                page = 1,
+                size = 20,
+                userDetails = userDetails,
+                model = model,
+            )
         Assertions.assertEquals("books/list", actual)
     }
 

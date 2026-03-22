@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam
 import kotlin.math.ceil
 
 @Controller
-@Suppress("FunctionOnlyReturningConstant")
+@Suppress("FunctionOnlyReturningConstant", "LongParameterList", "LongMethod", "CyclomaticComplexMethod")
 @RequestMapping("/library")
 class UserBookViewController(
     private val userService: UserService,

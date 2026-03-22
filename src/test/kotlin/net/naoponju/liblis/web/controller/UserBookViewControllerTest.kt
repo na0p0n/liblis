@@ -47,14 +47,15 @@ class UserBookViewControllerTest {
         every { bookService.getHavingBooksPaged(DEFAULT_USER_ID, 0, 20) } returns listOf(defaultBookEntity)
         every { userBooksService.getUserHavingBooks(DEFAULT_USER_ID) } returns listOf(defaultUserBooksDto)
 
-        val actual = controller.showUserBooks(
-            q = null,
-            type = null,
-            page = 1,
-            size = 20,
-            userDetails = userDetails,
-            model = model,
-        )
+        val actual =
+            controller.showUserBooks(
+                q = null,
+                type = null,
+                page = 1,
+                size = 20,
+                userDetails = userDetails,
+                model = model,
+            )
         Assertions.assertEquals("books/library", actual)
     }
 
@@ -69,28 +70,30 @@ class UserBookViewControllerTest {
         every { bookService.getHavingBooksPaged(DEFAULT_USER_ID, 0, 20) } returns listOf(defaultBookEntity)
         every { userBooksService.getUserHavingBooks(DEFAULT_USER_ID) } returns listOf(defaultUserBooksDto)
 
-        val actual = controller.showUserBooks(
-            q = null,
-            type = null,
-            page = 1,
-            size = 20,
-            userDetails = oauth2User,
-            model = model,
-        )
+        val actual =
+            controller.showUserBooks(
+                q = null,
+                type = null,
+                page = 1,
+                size = 20,
+                userDetails = oauth2User,
+                model = model,
+            )
         Assertions.assertEquals("books/library", actual)
     }
 
     @Test
     @DisplayName("書庫画面表示_異常系_未認証はログインにリダイレクト")
     fun showUserBooksFailure01() {
-        val actual = controller.showUserBooks(
-            q = null,
-            type = null,
-            page = 1,
-            size = 20,
-            userDetails = null,
-            model = model,
-        )
+        val actual =
+            controller.showUserBooks(
+                q = null,
+                type = null,
+                page = 1,
+                size = 20,
+                userDetails = null,
+                model = model,
+            )
         Assertions.assertEquals("redirect:/login", actual)
     }
 
@@ -102,14 +105,15 @@ class UserBookViewControllerTest {
 
         every { userService.findByEmail(DEFAULT_EMAIL) } returns null
 
-        val actual = controller.showUserBooks(
-            q = null,
-            type = null,
-            page = 1,
-            size = 20,
-            userDetails = userDetails,
-            model = model,
-        )
+        val actual =
+            controller.showUserBooks(
+                q = null,
+                type = null,
+                page = 1,
+                size = 20,
+                userDetails = userDetails,
+                model = model,
+            )
         Assertions.assertEquals("redirect:/login", actual)
     }
 
@@ -123,14 +127,15 @@ class UserBookViewControllerTest {
         every { userBooksService.countUserBooks(DEFAULT_USER_ID) } returns 20
 
         // page=0 は不正 (< 1) → リダイレクト
-        val actual = controller.showUserBooks(
-            q = null,
-            type = null,
-            page = 0,
-            size = 20,
-            userDetails = userDetails,
-            model = model,
-        )
+        val actual =
+            controller.showUserBooks(
+                q = null,
+                type = null,
+                page = 0,
+                size = 20,
+                userDetails = userDetails,
+                model = model,
+            )
         Assertions.assertEquals("redirect:/library?page=1", actual)
     }
 
@@ -146,14 +151,15 @@ class UserBookViewControllerTest {
         every { bookService.getHavingBooksPaged(DEFAULT_USER_ID, 0, 20) } returns listOf(defaultBookEntity)
         every { userBooksService.getUserHavingBooks(DEFAULT_USER_ID) } returns listOf(defaultUserBooksDto)
 
-        val actual = controller.showUserBooks(
-            q = null,
-            type = null,
-            page = 1,
-            size = 30,
-            userDetails = userDetails,
-            model = model,
-        )
+        val actual =
+            controller.showUserBooks(
+                q = null,
+                type = null,
+                page = 1,
+                size = 30,
+                userDetails = userDetails,
+                model = model,
+            )
         Assertions.assertEquals("books/library", actual)
     }
 
@@ -169,14 +175,15 @@ class UserBookViewControllerTest {
         every { bookService.getHavingBooksPaged(DEFAULT_USER_ID, 0, 20) } returns emptyList()
         every { userBooksService.getUserHavingBooks(DEFAULT_USER_ID) } returns emptyList()
 
-        val actual = controller.showUserBooks(
-            q = null,
-            type = null,
-            page = 1,
-            size = 20,
-            userDetails = userDetails,
-            model = model,
-        )
+        val actual =
+            controller.showUserBooks(
+                q = null,
+                type = null,
+                page = 1,
+                size = 20,
+                userDetails = userDetails,
+                model = model,
+            )
         Assertions.assertEquals("books/library", actual)
     }
 
@@ -190,14 +197,15 @@ class UserBookViewControllerTest {
         every { bookService.findUserBooksByTitle(DEFAULT_USER_ID, "テスト") } returns listOf(defaultBookEntity)
         every { userBooksService.getUserHavingBooks(DEFAULT_USER_ID) } returns listOf(defaultUserBooksDto)
 
-        val actual = controller.showUserBooks(
-            q = "テスト",
-            type = "title",
-            page = 1,
-            size = 20,
-            userDetails = userDetails,
-            model = model,
-        )
+        val actual =
+            controller.showUserBooks(
+                q = "テスト",
+                type = "title",
+                page = 1,
+                size = 20,
+                userDetails = userDetails,
+                model = model,
+            )
         Assertions.assertEquals("books/library", actual)
     }
 
@@ -211,14 +219,15 @@ class UserBookViewControllerTest {
         every { bookService.findUserBooksByAuthor(DEFAULT_USER_ID, "著者名") } returns listOf(defaultBookEntity)
         every { userBooksService.getUserHavingBooks(DEFAULT_USER_ID) } returns listOf(defaultUserBooksDto)
 
-        val actual = controller.showUserBooks(
-            q = "著者名",
-            type = "author",
-            page = 1,
-            size = 20,
-            userDetails = userDetails,
-            model = model,
-        )
+        val actual =
+            controller.showUserBooks(
+                q = "著者名",
+                type = "author",
+                page = 1,
+                size = 20,
+                userDetails = userDetails,
+                model = model,
+            )
         Assertions.assertEquals("books/library", actual)
     }
 
@@ -232,14 +241,15 @@ class UserBookViewControllerTest {
         every { bookService.findUserBooksByTitle(DEFAULT_USER_ID, "存在しない本") } returns emptyList()
         every { userBooksService.getUserHavingBooks(DEFAULT_USER_ID) } returns emptyList()
 
-        val actual = controller.showUserBooks(
-            q = "存在しない本",
-            type = "title",
-            page = 1,
-            size = 20,
-            userDetails = userDetails,
-            model = model,
-        )
+        val actual =
+            controller.showUserBooks(
+                q = "存在しない本",
+                type = "title",
+                page = 1,
+                size = 20,
+                userDetails = userDetails,
+                model = model,
+            )
         Assertions.assertEquals("books/library", actual)
     }
 
